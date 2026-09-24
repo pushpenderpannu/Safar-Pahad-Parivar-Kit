@@ -69,7 +69,7 @@ The subtitle track (ST1) stays as the plain, editable source and the **.srt you 
 4. Inspector → paste into **SRT text**. Set **This clip starts at timeline time (s)**:
    - clip placed at the very start of the timeline → `0`;
    - otherwise type where the clip begins, in seconds (e.g. clip starts at 00:02:15 → `135`).
-5. Pick **Animation**: `0` word pop · `1` karaoke (gold current word) · `2` simple fade.
-   **Position**: `0` bottom · `1` raised (Shorts, clears the YouTube buttons) · `2` centre · `3` top. Optional dark **plate**.
-6. Hide/disable ST1 when rendering so captions aren't shown twice (keep it for the YouTube .srt).
+5. **Animation** dropdown: *Word pop + highlight* (gold follows the spoken word) · *Karaoke (colour sweep)* · *Simple fade*.
+   **Position** dropdown: Bottom · Raised (Shorts, clears the YouTube buttons) · Centre · Top. Optional dark **plate**.
+6. Turn off ST1 (click its eye/enable toggle) so captions aren't shown twice — Resolve also burns it into renders when enabled; keep it for the YouTube .srt.
 Edited the text? Export the SRT again and re-paste. Words animate whole, so Hindi always shapes correctly.
