@@ -52,3 +52,10 @@ Your room has AC noise and no pop filter, so:
 4. **Dialogue Leveler** or a compressor (ratio ~3:1) for even volume.
 5. **Loudness:** final mix at **−14 LUFS integrated** for YouTube (Fairlight → Loudness meter); music sits ~15–20 dB under the voice.
 Tip: a ₹300 pop filter + recording with the AC off will help more than any plugin.
+
+## 6. Starting a new video
+```
+.\Tools\new_video.ps1 -Trip "2026-10 Chopta Tungnath" -Video "01 Main Film"
+```
+Then in Resolve: new project → Project Settings → Working Folders → *Project media location* = `<video>\Resolve Media`,
+run **New Timeline** and **Import Brand Graphics**. Titles: **Effects → Titles → Safar Pahad Parivar**.

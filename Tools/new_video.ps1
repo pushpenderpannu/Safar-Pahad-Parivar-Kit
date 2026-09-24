@@ -1,33 +1,37 @@
 <#
-  Safar Pahad Parivar - create the standard folder set for a new video.
+  Safar Pahad Parivar - create the standard folders for a trip and a video in it.
+  Footage lives once per TRIP; each VIDEO made from that trip gets its own folder + Resolve project.
 
   Usage:
-      .\Tools\new_video.ps1 -Name "2026-06 Dharchula Panchachuli"
-      .\Tools\new_video.ps1 -Name "2026-10 Chopta Tungnath" -Root "F:\Video Editing\Projects"
+      .\Tools\new_video.ps1 -Trip "2026-10 Chopta Tungnath" -Video "01 Main Film"
+      .\Tools\new_video.ps1 -Trip "2026-10 Chopta Tungnath" -Video "02 Shorts"      # adds a video to an existing trip
 #>
 param(
-  [Parameter(Mandatory = $true)][string]$Name,
-  [string]$Root = (Join-Path (Split-Path $PSScriptRoot -Parent | Split-Path -Parent) "Projects")
+  [Parameter(Mandatory = $true)][string]$Trip,
+  [Parameter(Mandatory = $true)][string]$Video,
+  [string]$Root = (Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "Projects")
 )
 $ErrorActionPreference = "Stop"
-$P = Join-Path $Root $Name
-$dirs = @(
-  "01_Footage",            # dump camera/phone files here, then run Tools\spp_sort_media.py on it
-  "02_Audio\VO", "02_Audio\Music", "02_Audio\SFX",
-  "03_Graphics",           # thumbnails, maps, stills made for this video
-  "04_Exports",            # final renders (YouTube, Shorts)
-  "05_Resolve",            # exported .drp project backups
-  "06_Docs"                # script, VO text, notes, GPS data
-)
-foreach ($d in $dirs) { New-Item -ItemType Directory -Force -Path (Join-Path $P $d) | Out-Null }
-Write-Host "Created: $P"
+$TripDir  = Join-Path $Root $Trip
+$VideoDir = Join-Path $TripDir $Video
+New-Item -ItemType Directory -Force -Path (Join-Path $TripDir "Footage") | Out-Null
+foreach ($d in @("Audio\VO","Audio\Music","Audio\SFX","Graphics","Exports","Resolve","Resolve Media","Docs")) {
+  New-Item -ItemType Directory -Force -Path (Join-Path $VideoDir $d) | Out-Null
+}
+Write-Host "Trip:  $TripDir"
+Write-Host "Video: $VideoDir"
 Write-Host @"
 
 Next:
-  1. Copy footage into 01_Footage, then sort it:
-       python "$(Join-Path $PSScriptRoot 'spp_sort_media.py')" "$(Join-Path $P '01_Footage')" --apply
-  2. In Resolve: new project named "$Name"
+  1. Copy the trip's camera/phone files into:  $TripDir\Footage
+     then sort them (dry run first, then --apply):
+       python "$(Join-Path $PSScriptRoot 'spp_sort_media.py')" "$TripDir\Footage"
+       python "$(Join-Path $PSScriptRoot 'spp_sort_media.py')" "$TripDir\Footage" --apply
+  2. In Resolve: create a project named "$Video" (or a clear name), then
+       File > Project Settings > Master Settings > Working Folders >
+         Project media location  =  $VideoDir\Resolve Media
        Workspace > Scripts > Safar Pahad Parivar > New Timeline - YouTube 16x9
        Workspace > Scripts > Safar Pahad Parivar > Import Brand Graphics
-  3. When done: File > Export Project -> save the .drp into 05_Resolve
+  3. Music/SFX you download (e.g. Epidemic Sound): save into $VideoDir\Audio\...
+  4. When done: File > Export Project -> save the .drp into $VideoDir\Resolve
 "@

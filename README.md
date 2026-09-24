@@ -17,29 +17,35 @@ This folder is the **single source of truth** — Resolve gets its copies from h
 | `Resolve\Templates\Edit\Titles\Safar Pahad Parivar` | OGraf titles: Info Card, Altitude Counter, Peak Callout, Pop-up Title, Credits (+ bundled fonts) |
 | `Graphics` | Intro (5s), End card (15s), Watermarks (16x9 and Shorts) — 4K, transparent |
 | `Brand` | Logo lock-ups, brand board, mock-ups |
-| `Tools` | `spp_sort_media.py` (sort footage by true orientation), `new_video.ps1` (standard project folders) |
+| `Tools` | `spp_sort_media.py` (sort footage by true orientation, with undo log), `new_video.ps1` (trip + video folders) |
 | `Docs` | Cheat sheet, VO scripts |
 | `Source` | Generators for every graphic/template, fonts, reference images |
 
-## One video = one Resolve project
-Keep each video in its own Resolve project (fast, isolated — editing one can never change another).
+## Folder layout: one trip, many videos — one Resolve project per video
+Footage is stored **once per trip**; every video made from it (main film, Shorts, spin-offs) gets its own
+folder and its own Resolve project (fast, isolated — editing one can never change another).
 Consistency comes from this kit, not from a shared project.
 
 ```
 F:\Video Editing\
-  _Safar Pahad Parivar Kit\      <- this repo (git)
+  _Safar Pahad Parivar Kit\                         <- this repo (git)
   Projects\
-    2026-06 Dharchula Panchachuli\
-      01_Footage\  (Horizontal / Vertical / Square / Photos after sorting)
-      02_Audio\    VO / Music / SFX
-      03_Graphics\ 04_Exports\ 05_Resolve\ (.drp backups) 06_Docs\
+    2026-06 Kumaon - Dharchula Darma Munsiyari\
+      Footage\  Horizontal · Vertical · Square · Photos   (shared by all videos of the trip)
+      01 Himalaya ki Sair\
+        Audio\ (VO · Music · SFX)   Graphics\   Exports\   Docs\
+        Resolve\        <- .drp backups
+        Resolve Media\  <- Resolve "Project media location" (recordings, generated audio)
+      02 Two Sides of Panchachuli\ ...
+      03 Shorts\ ...
 ```
-Create one with: `.\Tools\new_video.ps1 -Name "2026-06 Dharchula Panchachuli"`
+Create with: `.\Tools\new_video.ps1 -Trip "2026-10 Chopta Tungnath" -Video "01 Main Film"` (prints the next steps).
 
 ## Backups — what git covers and what it doesn't
 - **This kit** → git remote (GitHub/GitLab/your server). Large binaries go through **Git LFS** (see `.gitattributes`).
 - **Footage** is too big for git → back up `Projects\` to an external drive / NAS / cloud drive.
-- **Resolve projects** live in Resolve's database → *File → Export Project* (.drp) into `05_Resolve`, and turn on
+- **Music/SFX**: keep the files a video uses inside its `Audio` folder (not only in the Epidemic Sound app cache).
+- **Resolve projects** live in Resolve's database → *File → Export Project* (.drp) into the video's `Resolve` folder, and turn on
   *Preferences → User → Project Save and Load → Project backups* pointing at a backed-up folder.
 
 ## Rebuilding graphics / templates (only needed when changing the design)
