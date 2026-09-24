@@ -23,6 +23,11 @@ CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Popup-Title", [3000], (1920, 1080), "bg_a.jpg", {"position": 0}, "bl"),
     ("SPP-Credits", [800, 2000, 5000], (1920, 1080), "bg_b.jpg", {}, "169"),
     ("SPP-Credits", [5000], (1080, 1920), "bg_b.jpg", {}, "916"),
+    ("SPP-Captions", [1150, 1900, 3500, 5200, 7000], (1920, 1080), "bg_a.jpg", {"style": 0}, "pop"),
+    ("SPP-Captions", [8300, 9600, 10900], (1920, 1080), "bg_b.jpg", {"style": 1}, "karaoke"),
+    ("SPP-Captions", [5500], (1080, 1920), "bg_b.jpg", {"style": 1, "position": 1, "size": 1.15}, "916"),
+    ("SPP-Captions", [12500], (1920, 1080), "bg_a.jpg", {"style": 2, "plate": True, "position": 3}, "plate"),
+    ("SPP-Captions", [6000], (1920, 1080), "bg_a.jpg", {"clipStart": 3}, "offset"),
 ]
 errors = []
 with sync_playwright() as pw:

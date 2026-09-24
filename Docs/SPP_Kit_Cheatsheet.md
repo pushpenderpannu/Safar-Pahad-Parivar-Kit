@@ -59,3 +59,17 @@ Tip: a ₹300 pop filter + recording with the AC off will help more than any plu
 ```
 Then in Resolve: new project → Project Settings → Working Folders → *Project media location* = `<video>\Resolve Media`,
 run **New Timeline** and **Import Brand Graphics**. Titles: **Effects → Titles → Safar Pahad Parivar**.
+
+## 7. Animated Hindi captions (SPP Captions)
+Resolve's built-in *animated* subtitles break Devanagari (matras and conjuncts come apart), so use **SPP Captions** instead.
+The subtitle track (ST1) stays as the plain, editable source and the **.srt you upload to YouTube for CC**.
+1. Make the subtitles as usual (type them, or *Timeline → Create Subtitles from Audio*), and fix the text.
+2. Export them: **File → Export → Subtitle… → SRT**. Open the .srt in Notepad → Ctrl+A, Ctrl+C.
+3. **Effects → Titles → Safar Pahad Parivar → SPP Captions** → drag it onto **V3** and stretch it over the whole VO section.
+4. Inspector → paste into **SRT text**. Set **This clip starts at timeline time (s)**:
+   - clip placed at the very start of the timeline → `0`;
+   - otherwise type where the clip begins, in seconds (e.g. clip starts at 00:02:15 → `135`).
+5. Pick **Animation**: `0` word pop · `1` karaoke (gold current word) · `2` simple fade.
+   **Position**: `0` bottom · `1` raised (Shorts, clears the YouTube buttons) · `2` centre · `3` top. Optional dark **plate**.
+6. Hide/disable ST1 when rendering so captions aren't shown twice (keep it for the YouTube .srt).
+Edited the text? Export the SRT again and re-paste. Words animate whole, so Hindi always shapes correctly.

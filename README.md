@@ -14,7 +14,7 @@ This folder is the **single source of truth** — Resolve gets its copies from h
 | Folder | Contents |
 |---|---|
 | `Resolve\Scripts\Utility\Safar Pahad Parivar` | Menu scripts: New Timeline (YouTube 16x9 / Shorts 9x16), Tag Shot Type (9 colours), Import Brand Graphics, Setup Render Presets |
-| `Resolve\Templates\Edit\Titles\Safar Pahad Parivar` | OGraf titles: Info Card, Altitude Counter, Peak Callout, Pop-up Title, Credits (+ bundled fonts) |
+| `Resolve\Templates\Edit\Titles\Safar Pahad Parivar` | OGraf titles: Info Card, Altitude Counter, Peak Callout, Pop-up Title, Credits, Captions (animated Hindi subtitles from SRT) (+ bundled fonts) |
 | `Graphics` | Intro (5s), End card (15s), Watermarks (16x9 and Shorts) — 4K, transparent |
 | `Brand` | Logo lock-ups, brand board, mock-ups |
 | `Tools` | `spp_sort_media.py` (sort footage by true orientation, with undo log), `new_video.ps1` (trip + video folders) |

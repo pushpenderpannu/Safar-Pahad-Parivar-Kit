@@ -1,0 +1,92 @@
+{
+  "$schema": "https://ograf.ebu.io/v1/specification/json-schemas/graphics/schema.json",
+  "id": "spp-captions",
+  "version": "1.0.0",
+  "name": "SPP Captions",
+  "description": "Animated Hindi captions from pasted SRT text. Words animate whole, so Devanagari shaping stays correct.",
+  "author": {
+    "name": "Safar Pahad Parivar"
+  },
+  "main": "SPP-Captions.js",
+  "supportsRealTime": false,
+  "supportsNonRealTime": true,
+  "stepCount": 1,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "srt": {
+        "type": "string",
+        "gddType": "multi-line",
+        "title": "SRT text (paste subtitles here)",
+        "default": "1\n00:00:01,000 --> 00:00:04,000\nसाल की सबसे यादगार ट्रिप\n\n2\n00:00:04,300 --> 00:00:07,800\nफ़रीदाबाद से सीधे कुमाऊँ की आख़िरी सरहद तक\n\n3\n00:00:08,100 --> 00:00:11,500\nदारचूला, पंचाचूली और मुंस्यारी\n\n4\n00:00:11,800 --> 00:00:14,500\nचलिए, साथ चलते हैं\n"
+      },
+      "clipStart": {
+        "type": "number",
+        "title": "This clip starts at timeline time (s)",
+        "minimum": 0,
+        "maximum": 7200,
+        "default": 0
+      },
+      "style": {
+        "type": "integer",
+        "title": "Animation (0 word pop 1 karaoke 2 fade)",
+        "minimum": 0,
+        "maximum": 2,
+        "default": 0
+      },
+      "position": {
+        "type": "integer",
+        "title": "Position (0 bottom 1 Shorts-raised 2 centre 3 top)",
+        "minimum": 0,
+        "maximum": 3,
+        "default": 0
+      },
+      "size": {
+        "type": "number",
+        "title": "Size",
+        "minimum": 0.5,
+        "maximum": 2.0,
+        "default": 1.0
+      },
+      "plate": {
+        "type": "boolean",
+        "title": "Dark plate behind text",
+        "default": false
+      },
+      "textColor": {
+        "type": "string",
+        "title": "Text Colour",
+        "gddType": "color-rrggbb",
+        "pattern": "^#[0-9a-f]{6}$",
+        "default": "#f5f8fc"
+      },
+      "highlightColor": {
+        "type": "string",
+        "title": "Highlight Colour",
+        "gddType": "color-rrggbb",
+        "pattern": "^#[0-9a-f]{6}$",
+        "default": "#f4b03e"
+      }
+    }
+  },
+  "renderRequirements": [
+    {
+      "resolution": {
+        "width": {
+          "ideal": 1920
+        },
+        "height": {
+          "ideal": 1080
+        }
+      },
+      "frameRate": {
+        "ideal": 30
+      },
+      "accessToPublicInternet": false
+    }
+  ],
+  "v_bmd": {
+    "duration": 1200
+  }
+}

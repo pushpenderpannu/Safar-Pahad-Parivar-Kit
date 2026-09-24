@@ -33,6 +33,7 @@ const POP=`"SPP Pop","Poppins","Segoe UI",sans-serif`;
 const MIX=`"SPP Pop","SPP Deva","Poppins","Noto Sans Devanagari","Nirmala UI",sans-serif`;
 const fmtM=(n)=>Math.round(n).toLocaleString("en-IN");
 const setT=(n,v)=>{v=(v??"")+"";if(n.textContent!==v)n.textContent=v;};
+function parseSRT(txt){const out=[];const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
 const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:none;--u:1px;--accent:#f4b03e;--navy:#07122b;--snow:#f5f8fc}
 *{box-sizing:border-box;margin:0;padding:0}
 .scene{position:absolute;inset:0;opacity:0}
@@ -114,6 +115,7 @@ ICONS = {
 def color_prop(title, default="#f4b03e"):
     return {"type": "string", "title": title, "gddType": "color-rrggbb", "pattern": "^#[0-9a-f]{6}$", "default": default}
 
+SAMPLE_SRT = '1\n00:00:01,000 --> 00:00:04,000\nसाल की सबसे यादगार ट्रिप\n\n2\n00:00:04,300 --> 00:00:07,800\nफ़रीदाबाद से सीधे कुमाऊँ की आख़िरी सरहद तक\n\n3\n00:00:08,100 --> 00:00:11,500\nदारचूला, पंचाचूली और मुंस्यारी\n\n4\n00:00:11,800 --> 00:00:14,500\nचलिए, साथ चलते हैं\n'
 TEMPLATES = []
 
 # ------------------------------------------------------------------ 1. INFO CARD
@@ -415,6 +417,66 @@ this.$.bd.style.opacity=String(eo(seg(t,0,0.6)));
 const h=eo(seg(t,0.2,0.8)); this.$.hd.style.opacity=String(h); this.$.hd.style.letterSpacing=(0.6-0.3*h).toFixed(3)+"em";
 this._vis.forEach((i,j)=>{const q=eo(seg(t,0.5+0.16*j,1.0+0.16*j));this.$.cells[i].forEach(x=>{x.style.opacity=String(q);x.style.transform=`translateY(${Math.round(14*this._u*(1-q))}px)`;});});
 const b=eo(seg(t,0.8+0.16*this._vis.length,1.4+0.16*this._vis.length)); this.$.brand.style.opacity=String(b); this.$.brand.style.transform=`translateY(${Math.round(12*this._u*(1-b))}px)`;""",
+))
+
+
+# ------------------------------------------------------------------ 6. CAPTIONS (SRT-driven, Devanagari-safe)
+TEMPLATES.append(dict(
+    id="spp-captions", name="SPP Captions", file="SPP-Captions", duration=1200,
+    desc="Animated Hindi captions from pasted SRT text. Words animate whole, so Devanagari shaping stays correct.",
+    props={
+        "srt": {"type": "string", "gddType": "multi-line", "title": "SRT text (paste subtitles here)", "default": SAMPLE_SRT},
+        "clipStart": {"type": "number", "title": "This clip starts at timeline time (s)", "minimum": 0, "maximum": 7200, "default": 0},
+        "style": {"type": "integer", "title": "Animation (0 word pop 1 karaoke 2 fade)", "minimum": 0, "maximum": 2, "default": 0},
+        "position": {"type": "integer", "title": "Position (0 bottom 1 Shorts-raised 2 centre 3 top)", "minimum": 0, "maximum": 3, "default": 0},
+        "size": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
+        "plate": {"type": "boolean", "title": "Dark plate behind text", "default": False},
+        "textColor": color_prop("Text Colour", "#f5f8fc"),
+        "highlightColor": color_prop("Highlight Colour", "#f4b03e"),
+    },
+    css=f"""
+.cap{{position:absolute;left:50%;display:flex;justify-content:center}}
+.box{{text-align:center;font-weight:800;line-height:1.38;color:var(--txt);padding:{U(6)} {U(22)} {U(10)};border-radius:{U(14)}}}
+.box.plate{{background:rgba(7,18,43,.62)}}
+.w{{display:inline-block;white-space:pre;
+   text-shadow:0 0 {U(3)} rgba(7,18,43,.95),0 {U(2)} {U(6)} rgba(7,18,43,.85),0 {U(4)} {U(18)} rgba(0,0,0,.45)}}
+.box.plate .w{{text-shadow:none}}""",
+    build=r"""
+this.$.cap=el("div","cap",scene); this.$.box=el("div","box deva",this.$.cap);
+this._cues=[]; this._srtKey=null; this._cueIdx=-2; this._words=[];""",
+    apply=r"""
+const s=this._state; this.style.setProperty("--txt",s.textColor||"#f5f8fc"); this.style.setProperty("--hl",s.highlightColor||"#f4b03e");
+if(this._srtKey!==s.srt){this._srtKey=s.srt;this._cues=parseSRT(s.srt||"");this._cueIdx=-2;}
+this.$.box.classList.toggle("plate",!!s.plate);
+const v=this._vertical,p=s.position|0,sz=(s.size||1)*(v?60:54);
+this.$.box.style.fontSize=Math.round(sz*this._u)+"px";
+this.$.cap.style.width=(v?88:80)+"%";
+this.$.cap.style.top=this.$.cap.style.bottom="auto";
+if(p===0)this.$.cap.style.bottom=(v?14:8)+"%"; else if(p===1)this.$.cap.style.bottom=(v?30:20)+"%";
+else if(p===3)this.$.cap.style.top=(v?16:7)+"%"; else this.$.cap.style.top="50%";
+this._pos=p;""",
+    frame=r"""
+const s=this._state,T=t+(s.clipStart||0),cues=this._cues;
+let idx=-1; for(let i=0;i<cues.length;i++){if(T>=cues[i].a&&T<cues[i].b+0.2){idx=i;}if(cues[i].a>T)break;}
+this.$.cap.style.transform=`translateX(-50%)${this._pos===2?" translateY(-50%)":""}`;
+if(idx<0){this.$.box.style.opacity="0";return;}
+const c=cues[idx];
+if(idx!==this._cueIdx){this._cueIdx=idx;this.$.box.innerHTML="";this._words=[];
+  const lines=c.text.split("\n");
+  lines.forEach((ln,li)=>{ln.split(/\s+/).filter(Boolean).forEach((w,wi,arr)=>{
+     const sp=el("span","w",this.$.box);sp.textContent=w+(wi<arr.length-1?" ":"");this._words.push(sp);});
+     if(li<lines.length-1)el("br","",this.$.box);});
+  const L=this._words.map(x=>x.textContent.trim().length||1),tot=L.reduce((a,b)=>a+b,0);let acc=0;
+  this._wt=L.map(l=>{const f=acc/tot;acc+=l;return [f,acc/tot];});}
+const dur=Math.max(0.3,c.b-c.a),lt=T-c.a,st=s.style|0;
+const boxIn=eo(seg(lt,0,0.18)),boxOut=1-eo(seg(lt,dur,dur+0.2));
+this.$.box.style.opacity=String(st===2?boxIn*boxOut:(s.plate?boxIn*boxOut:boxOut));
+this._words.forEach((w,i)=>{const [f0,f1]=this._wt[i];
+  if(st===0){const ta=dur*0.85*f0,k=eo(seg(lt,ta,ta+0.22));w.style.opacity=String(k);
+     w.style.transform=`translateY(${Math.round(14*this._u*(1-k))}px) scale(${(0.92+0.08*eb(seg(lt,ta,ta+0.22))).toFixed(4)})`;w.style.color="";}
+  else if(st===1){const a=dur*0.9*f0,b=dur*0.9*f1,on=lt>=a&&lt<b+0.05;w.style.opacity=String(boxIn);
+     w.style.color=(lt>=a)?(on?"var(--hl)":"var(--txt)"):"rgba(245,248,252,.55)";w.style.transform=on?"scale(1.06)":"scale(1)";}
+  else{w.style.opacity="1";w.style.transform="none";w.style.color="";}});""",
 ))
 
 # ------------------------------------------------------------------ write files
