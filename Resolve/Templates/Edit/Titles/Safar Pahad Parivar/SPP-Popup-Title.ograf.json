@@ -31,11 +31,26 @@
         "default": "INTO THE DARMA VALLEY"
       },
       "position": {
-        "type": "integer",
-        "title": "Position (0 BL 1 BR 2 TL 3 TR 4 centre)",
-        "minimum": 0,
-        "maximum": 4,
-        "default": 4
+        "type": "string",
+        "title": "Position",
+        "enum": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "gddType": "select",
+        "gddOptions": {
+          "labels": {
+            "0": "Bottom left",
+            "1": "Bottom right",
+            "2": "Top left",
+            "3": "Top right",
+            "4": "Centre"
+          }
+        },
+        "default": "4"
       },
       "backdrop": {
         "type": "boolean",

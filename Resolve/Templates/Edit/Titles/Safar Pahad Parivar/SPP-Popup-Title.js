@@ -1,4 +1,4 @@
-const DEFAULTS={"kicker": "अध्याय 2 · CHAPTER 2", "titleHi": "दारमा वैली", "titleEn": "INTO THE DARMA VALLEY", "position": 4, "backdrop": true, "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e"};
+const DEFAULTS={"kicker": "अध्याय 2 · CHAPTER 2", "titleHi": "दारमा वैली", "titleEn": "INTO THE DARMA VALLEY", "position": "4", "backdrop": true, "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e"};
 const DURATION=5;
 const CSS=`
 .bd{position:absolute;inset:0;background:radial-gradient(80% 70% at 50% 50%, rgba(7,18,43,.55), rgba(7,18,43,0) 75%)}
@@ -31,6 +31,7 @@ const POP=`"SPP Pop","Poppins","Segoe UI",sans-serif`;
 const MIX=`"SPP Pop","SPP Deva","Poppins","Noto Sans Devanagari","Nirmala UI",sans-serif`;
 const fmtM=(n)=>Math.round(n).toLocaleString("en-IN");
 const setT=(n,v)=>{v=(v??"")+"";if(n.textContent!==v)n.textContent=v;};
+function parseSRT(txt){const out=[];const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").replace(/<[^>]*>/g,"").replace(/\{\\[^}]*\}/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
 const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:none;--u:1px;--accent:#f4b03e;--navy:#07122b;--snow:#f5f8fc}
 *{box-sizing:border-box;margin:0;padding:0}
 .scene{position:absolute;inset:0;opacity:0}

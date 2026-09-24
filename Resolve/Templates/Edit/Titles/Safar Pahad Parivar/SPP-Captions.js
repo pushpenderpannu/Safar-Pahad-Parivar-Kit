@@ -1,4 +1,4 @@
-const DEFAULTS={"srt": "1\n00:00:01,000 --> 00:00:04,000\nसाल की सबसे यादगार ट्रिप\n\n2\n00:00:04,300 --> 00:00:07,800\nफ़रीदाबाद से सीधे कुमाऊँ की आख़िरी सरहद तक\n\n3\n00:00:08,100 --> 00:00:11,500\nदारचूला, पंचाचूली और मुंस्यारी\n\n4\n00:00:11,800 --> 00:00:14,500\nचलिए, साथ चलते हैं\n", "clipStart": 0, "style": 0, "position": 0, "size": 1.0, "plate": false, "textColor": "#f5f8fc", "highlightColor": "#f4b03e"};
+const DEFAULTS={"srt": "1\n00:00:01,000 --> 00:00:04,000\nसाल की सबसे यादगार ट्रिप\n\n2\n00:00:04,300 --> 00:00:07,800\nफ़रीदाबाद से सीधे कुमाऊँ की आख़िरी सरहद तक\n\n3\n00:00:08,100 --> 00:00:11,500\nदारचूला, पंचाचूली और मुंस्यारी\n\n4\n00:00:11,800 --> 00:00:14,500\nचलिए, साथ चलते हैं\n", "clipStart": 0, "style": "0", "position": "0", "size": 1.0, "plate": false, "textColor": "#f5f8fc", "highlightColor": "#f4b03e"};
 const DURATION=1200;
 const CSS=`
 .cap{position:absolute;left:50%;display:flex;justify-content:center}
@@ -30,7 +30,7 @@ const POP=`"SPP Pop","Poppins","Segoe UI",sans-serif`;
 const MIX=`"SPP Pop","SPP Deva","Poppins","Noto Sans Devanagari","Nirmala UI",sans-serif`;
 const fmtM=(n)=>Math.round(n).toLocaleString("en-IN");
 const setT=(n,v)=>{v=(v??"")+"";if(n.textContent!==v)n.textContent=v;};
-function parseSRT(txt){const out=[];const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
+function parseSRT(txt){const out=[];const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").replace(/<[^>]*>/g,"").replace(/\{\\[^}]*\}/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
 const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:none;--u:1px;--accent:#f4b03e;--navy:#07122b;--snow:#f5f8fc}
 *{box-sizing:border-box;margin:0;padding:0}
 .scene{position:absolute;inset:0;opacity:0}
@@ -121,7 +121,8 @@ const boxIn=eo(seg(lt,0,0.18)),boxOut=1-eo(seg(lt,dur,dur+0.2));
 this.$.box.style.opacity=String(st===2?boxIn*boxOut:(s.plate?boxIn*boxOut:boxOut));
 this._words.forEach((w,i)=>{const [f0,f1]=this._wt[i];
   if(st===0){const ta=dur*0.85*f0,k=eo(seg(lt,ta,ta+0.22));w.style.opacity=String(k);
-     w.style.transform=`translateY(${Math.round(14*this._u*(1-k))}px) scale(${(0.92+0.08*eb(seg(lt,ta,ta+0.22))).toFixed(4)})`;w.style.color="";}
+     const tb=dur*0.85*f1,cur=lt>=ta&&lt<tb+0.08;
+     w.style.transform=`translateY(${Math.round(14*this._u*(1-k))}px) scale(${(0.92+0.08*eb(seg(lt,ta,ta+0.22))).toFixed(4)})`;w.style.color=cur?"var(--hl)":"";}
   else if(st===1){const a=dur*0.9*f0,b=dur*0.9*f1,on=lt>=a&&lt<b+0.05;w.style.opacity=String(boxIn);
      w.style.color=(lt>=a)?(on?"var(--hl)":"var(--txt)"):"rgba(245,248,252,.55)";w.style.transform=on?"scale(1.06)":"scale(1)";}
   else{w.style.opacity="1";w.style.transform="none";w.style.color="";}});

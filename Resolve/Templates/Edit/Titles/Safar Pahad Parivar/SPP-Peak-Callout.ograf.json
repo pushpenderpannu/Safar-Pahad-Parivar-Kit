@@ -66,11 +66,20 @@
         "default": -16
       },
       "marker": {
-        "type": "integer",
-        "title": "Marker (0 dot 1 arrow)",
-        "minimum": 0,
-        "maximum": 1,
-        "default": 0
+        "type": "string",
+        "title": "Marker",
+        "enum": [
+          "0",
+          "1"
+        ],
+        "gddType": "select",
+        "gddOptions": {
+          "labels": {
+            "0": "Dot + line",
+            "1": "Arrow"
+          }
+        },
+        "default": "0"
       },
       "scale": {
         "type": "number",

@@ -63,11 +63,32 @@
         "default": "09:58 AM"
       },
       "weather": {
-        "type": "integer",
-        "title": "Weather (0 none 1 sun 2 part-cloud 3 cloud 4 rain 5 snow 6 fog 7 night)",
-        "minimum": 0,
-        "maximum": 7,
-        "default": 1
+        "type": "string",
+        "title": "Weather",
+        "enum": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "gddType": "select",
+        "gddOptions": {
+          "labels": {
+            "0": "None",
+            "1": "Sunny",
+            "2": "Partly cloudy",
+            "3": "Cloudy",
+            "4": "Rain",
+            "5": "Snow",
+            "6": "Fog",
+            "7": "Night"
+          }
+        },
+        "default": "1"
       },
       "temperature": {
         "type": "string",
@@ -75,11 +96,24 @@
         "default": "14°C"
       },
       "position": {
-        "type": "integer",
-        "title": "Position (0 BL 1 BR 2 TL 3 TR)",
-        "minimum": 0,
-        "maximum": 3,
-        "default": 0
+        "type": "string",
+        "title": "Position",
+        "enum": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        "gddType": "select",
+        "gddOptions": {
+          "labels": {
+            "0": "Bottom left",
+            "1": "Bottom right",
+            "2": "Top left",
+            "3": "Top right"
+          }
+        },
+        "default": "0"
       },
       "scale": {
         "type": "number",

@@ -14,7 +14,7 @@ srv = subprocess.Popen([sys.executable, "-m", "http.server", "8765", "--bind", "
 time.sleep(1.0)
 CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Info-Card", [300, 700, 1200, 3000, 7700], (1920, 1080), "bg_a.jpg", {}, "169"),
-    ("SPP-Info-Card", [3000], (1080, 1920), "bg_b.jpg", {"position": 3, "weather": 5}, "916"),
+    ("SPP-Info-Card", [3000], (1080, 1920), "bg_b.jpg", {"position": "3", "weather": "5"}, "916"),
     ("SPP-Altitude-Counter", [500, 1800, 4000], (1920, 1080), "bg_b.jpg", {}, "169"),
     ("SPP-Altitude-Counter", [4000], (1920, 1080), "bg_b.jpg", {"position": 4, "scale": 1.4}, "center"),
     ("SPP-Peak-Callout", [200, 600, 1000, 3000], (1920, 1080), "bg_a.jpg", {"targetX": 34, "targetY": 12, "labelDX": 14, "labelDY": 18}, "dot"),
@@ -23,9 +23,9 @@ CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Popup-Title", [3000], (1920, 1080), "bg_a.jpg", {"position": 0}, "bl"),
     ("SPP-Credits", [800, 2000, 5000], (1920, 1080), "bg_b.jpg", {}, "169"),
     ("SPP-Credits", [5000], (1080, 1920), "bg_b.jpg", {}, "916"),
-    ("SPP-Captions", [1150, 1900, 3500, 5200, 7000], (1920, 1080), "bg_a.jpg", {"style": 0}, "pop"),
+    ("SPP-Captions", [1150, 1900, 3500, 5200, 7000], (1920, 1080), "bg_a.jpg", {"style": "0", "srt": "1\n00:00:01,000 --> 00:00:04,000\n<b>साल की सबसे यादगार ट्रिप</b>\n"}, "pop"),
     ("SPP-Captions", [8300, 9600, 10900], (1920, 1080), "bg_b.jpg", {"style": 1}, "karaoke"),
-    ("SPP-Captions", [5500], (1080, 1920), "bg_b.jpg", {"style": 1, "position": 1, "size": 1.15}, "916"),
+    ("SPP-Captions", [5500], (1080, 1920), "bg_b.jpg", {"style": "1", "position": "1", "size": 1.15}, "916"),
     ("SPP-Captions", [12500], (1920, 1080), "bg_a.jpg", {"style": 2, "plate": True, "position": 3}, "plate"),
     ("SPP-Captions", [6000], (1920, 1080), "bg_a.jpg", {"clipStart": 3}, "offset"),
 ]

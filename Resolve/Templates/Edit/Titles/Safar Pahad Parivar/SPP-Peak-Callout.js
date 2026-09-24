@@ -1,4 +1,4 @@
-const DEFAULTS={"peakHi": "पंचाचूली", "peakEn": "PANCHACHULI", "showHeight": true, "heightM": 6904, "targetX": 50, "targetY": 38, "labelDX": 12, "labelDY": -16, "marker": 0, "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e"};
+const DEFAULTS={"peakHi": "पंचाचूली", "peakEn": "PANCHACHULI", "showHeight": true, "heightM": 6904, "targetX": 50, "targetY": 38, "labelDX": 12, "labelDY": -16, "marker": "0", "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e"};
 const DURATION=6;
 const CSS=`
 .lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
@@ -29,6 +29,7 @@ const POP=`"SPP Pop","Poppins","Segoe UI",sans-serif`;
 const MIX=`"SPP Pop","SPP Deva","Poppins","Noto Sans Devanagari","Nirmala UI",sans-serif`;
 const fmtM=(n)=>Math.round(n).toLocaleString("en-IN");
 const setT=(n,v)=>{v=(v??"")+"";if(n.textContent!==v)n.textContent=v;};
+function parseSRT(txt){const out=[];const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").replace(/<[^>]*>/g,"").replace(/\{\\[^}]*\}/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
 const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:none;--u:1px;--accent:#f4b03e;--navy:#07122b;--snow:#f5f8fc}
 *{box-sizing:border-box;margin:0;padding:0}
 .scene{position:absolute;inset:0;opacity:0}

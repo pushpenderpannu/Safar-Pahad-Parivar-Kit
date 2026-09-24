@@ -33,7 +33,7 @@ const POP=`"SPP Pop","Poppins","Segoe UI",sans-serif`;
 const MIX=`"SPP Pop","SPP Deva","Poppins","Noto Sans Devanagari","Nirmala UI",sans-serif`;
 const fmtM=(n)=>Math.round(n).toLocaleString("en-IN");
 const setT=(n,v)=>{v=(v??"")+"";if(n.textContent!==v)n.textContent=v;};
-function parseSRT(txt){const out=[];const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
+function parseSRT(txt){const out=[];const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").replace(/<[^>]*>/g,"").replace(/\{\\[^}]*\}/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
 const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:none;--u:1px;--accent:#f4b03e;--navy:#07122b;--snow:#f5f8fc}
 *{box-sizing:border-box;margin:0;padding:0}
 .scene{position:absolute;inset:0;opacity:0}
@@ -112,6 +112,12 @@ ICONS = {
     "time": '<svg viewBox="0 0 24 24" fill="none" stroke="#f5f8fc" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7 V12 L15.5 14"/></svg>',
 }
 
+def select_prop(title, labels, default=0):
+    """Dropdown in Resolve's Inspector. Values are "0","1",... so template code can use (s.x|0)."""
+    keys = [str(i) for i in range(len(labels))]
+    return {"type": "string", "title": title, "enum": keys, "gddType": "select",
+            "gddOptions": {"labels": dict(zip(keys, labels))}, "default": str(default)}
+
 def color_prop(title, default="#f4b03e"):
     return {"type": "string", "title": title, "gddType": "color-rrggbb", "pattern": "^#[0-9a-f]{6}$", "default": default}
 
@@ -133,9 +139,9 @@ TEMPLATES.append(dict(
         "date": {"type": "string", "title": "Date", "default": "26 जून 2026"},
         "showTime": {"type": "boolean", "title": "Show Time", "default": True},
         "time": {"type": "string", "title": "Time", "default": "09:58 AM"},
-        "weather": {"type": "integer", "title": "Weather (0 none 1 sun 2 part-cloud 3 cloud 4 rain 5 snow 6 fog 7 night)", "minimum": 0, "maximum": 7, "default": 1},
+        "weather": select_prop("Weather", ["None", "Sunny", "Partly cloudy", "Cloudy", "Rain", "Snow", "Fog", "Night"], 1),
         "temperature": {"type": "string", "title": "Temperature (blank = hide)", "default": "14°C"},
-        "position": {"type": "integer", "title": "Position (0 BL 1 BR 2 TL 3 TR)", "minimum": 0, "maximum": 3, "default": 0},
+        "position": select_prop("Position", ["Bottom left", "Bottom right", "Top left", "Top right"], 0),
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 8, "default": 0},
         "accentColor": color_prop("Accent Colour"),
@@ -196,7 +202,7 @@ TEMPLATES.append(dict(
         "labelEn": {"type": "string", "title": "Label (English)", "default": "ALTITUDE"},
         "place": {"type": "string", "title": "Place (optional)", "default": "मुंस्यारी · MUNSIYARI"},
         "showProfile": {"type": "boolean", "title": "Show Mountain Profile", "default": True},
-        "position": {"type": "integer", "title": "Position (0 BL 1 BR 2 TL 3 TR 4 centre)", "minimum": 0, "maximum": 4, "default": 3},
+        "position": select_prop("Position", ["Bottom left", "Bottom right", "Top left", "Top right", "Centre"], 3),
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.5, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 8, "default": 0},
         "accentColor": color_prop("Accent Colour"),
@@ -258,7 +264,7 @@ TEMPLATES.append(dict(
         "targetY": {"type": "number", "title": "Peak Y (% of height)", "minimum": 0, "maximum": 100, "default": 38},
         "labelDX": {"type": "number", "title": "Label Offset X (%)", "minimum": -60, "maximum": 60, "default": 12},
         "labelDY": {"type": "number", "title": "Label Offset Y (%)", "minimum": -60, "maximum": 60, "default": -16},
-        "marker": {"type": "integer", "title": "Marker (0 dot 1 arrow)", "minimum": 0, "maximum": 1, "default": 0},
+        "marker": select_prop("Marker", ["Dot + line", "Arrow"], 0),
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 6, "default": 0},
         "accentColor": color_prop("Accent Colour"),
@@ -326,7 +332,7 @@ TEMPLATES.append(dict(
         "kicker": {"type": "string", "title": "Kicker (small line, blank = hide)", "default": "अध्याय 2 · CHAPTER 2"},
         "titleHi": {"type": "string", "title": "Headline (Hindi)", "default": "दारमा वैली"},
         "titleEn": {"type": "string", "title": "English Line (blank = hide)", "default": "INTO THE DARMA VALLEY"},
-        "position": {"type": "integer", "title": "Position (0 BL 1 BR 2 TL 3 TR 4 centre)", "minimum": 0, "maximum": 4, "default": 4},
+        "position": select_prop("Position", ["Bottom left", "Bottom right", "Top left", "Top right", "Centre"], 4),
         "backdrop": {"type": "boolean", "title": "Darken Background", "default": True},
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 5, "default": 0},
@@ -427,8 +433,8 @@ TEMPLATES.append(dict(
     props={
         "srt": {"type": "string", "gddType": "multi-line", "title": "SRT text (paste subtitles here)", "default": SAMPLE_SRT},
         "clipStart": {"type": "number", "title": "This clip starts at timeline time (s)", "minimum": 0, "maximum": 7200, "default": 0},
-        "style": {"type": "integer", "title": "Animation (0 word pop 1 karaoke 2 fade)", "minimum": 0, "maximum": 2, "default": 0},
-        "position": {"type": "integer", "title": "Position (0 bottom 1 Shorts-raised 2 centre 3 top)", "minimum": 0, "maximum": 3, "default": 0},
+        "style": select_prop("Animation", ["Word pop + highlight", "Karaoke (colour sweep)", "Simple fade"], 0),
+        "position": select_prop("Position", ["Bottom", "Raised (Shorts)", "Centre", "Top"], 0),
         "size": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
         "plate": {"type": "boolean", "title": "Dark plate behind text", "default": False},
         "textColor": color_prop("Text Colour", "#f5f8fc"),
@@ -473,7 +479,8 @@ const boxIn=eo(seg(lt,0,0.18)),boxOut=1-eo(seg(lt,dur,dur+0.2));
 this.$.box.style.opacity=String(st===2?boxIn*boxOut:(s.plate?boxIn*boxOut:boxOut));
 this._words.forEach((w,i)=>{const [f0,f1]=this._wt[i];
   if(st===0){const ta=dur*0.85*f0,k=eo(seg(lt,ta,ta+0.22));w.style.opacity=String(k);
-     w.style.transform=`translateY(${Math.round(14*this._u*(1-k))}px) scale(${(0.92+0.08*eb(seg(lt,ta,ta+0.22))).toFixed(4)})`;w.style.color="";}
+     const tb=dur*0.85*f1,cur=lt>=ta&&lt<tb+0.08;
+     w.style.transform=`translateY(${Math.round(14*this._u*(1-k))}px) scale(${(0.92+0.08*eb(seg(lt,ta,ta+0.22))).toFixed(4)})`;w.style.color=cur?"var(--hl)":"";}
   else if(st===1){const a=dur*0.9*f0,b=dur*0.9*f1,on=lt>=a&&lt<b+0.05;w.style.opacity=String(boxIn);
      w.style.color=(lt>=a)?(on?"var(--hl)":"var(--txt)"):"rgba(245,248,252,.55)";w.style.transform=on?"scale(1.06)":"scale(1)";}
   else{w.style.opacity="1";w.style.transform="none";w.style.color="";}});""",

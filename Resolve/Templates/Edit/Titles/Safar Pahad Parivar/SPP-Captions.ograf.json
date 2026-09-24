@@ -29,18 +29,42 @@
         "default": 0
       },
       "style": {
-        "type": "integer",
-        "title": "Animation (0 word pop 1 karaoke 2 fade)",
-        "minimum": 0,
-        "maximum": 2,
-        "default": 0
+        "type": "string",
+        "title": "Animation",
+        "enum": [
+          "0",
+          "1",
+          "2"
+        ],
+        "gddType": "select",
+        "gddOptions": {
+          "labels": {
+            "0": "Word pop + highlight",
+            "1": "Karaoke (colour sweep)",
+            "2": "Simple fade"
+          }
+        },
+        "default": "0"
       },
       "position": {
-        "type": "integer",
-        "title": "Position (0 bottom 1 Shorts-raised 2 centre 3 top)",
-        "minimum": 0,
-        "maximum": 3,
-        "default": 0
+        "type": "string",
+        "title": "Position",
+        "enum": [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        "gddType": "select",
+        "gddOptions": {
+          "labels": {
+            "0": "Bottom",
+            "1": "Raised (Shorts)",
+            "2": "Centre",
+            "3": "Top"
+          }
+        },
+        "default": "0"
       },
       "size": {
         "type": "number",
