@@ -1,0 +1,126 @@
+{
+  "$schema": "https://ograf.ebu.io/v1/specification/json-schemas/graphics/schema.json",
+  "id": "spp-info-card",
+  "version": "1.0.0",
+  "name": "SPP Info Card",
+  "description": "Location card: Hindi + English place, date, time, altitude, weather. Each item can be shown or hidden.",
+  "author": {
+    "name": "Safar Pahad Parivar"
+  },
+  "main": "SPP-Info-Card.js",
+  "supportsRealTime": false,
+  "supportsNonRealTime": true,
+  "stepCount": 1,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "placeHi": {
+        "type": "string",
+        "title": "Place (Hindi)",
+        "default": "मुंस्यारी"
+      },
+      "placeEn": {
+        "type": "string",
+        "title": "Place (English)",
+        "default": "MUNSIYARI · UTTARAKHAND"
+      },
+      "showAltitude": {
+        "type": "boolean",
+        "title": "Show Altitude",
+        "default": true
+      },
+      "altitude": {
+        "type": "integer",
+        "title": "Altitude (m)",
+        "minimum": 0,
+        "maximum": 9000,
+        "default": 2200
+      },
+      "countUp": {
+        "type": "boolean",
+        "title": "Count Altitude Up",
+        "default": true
+      },
+      "showDate": {
+        "type": "boolean",
+        "title": "Show Date",
+        "default": true
+      },
+      "date": {
+        "type": "string",
+        "title": "Date",
+        "default": "26 जून 2026"
+      },
+      "showTime": {
+        "type": "boolean",
+        "title": "Show Time",
+        "default": true
+      },
+      "time": {
+        "type": "string",
+        "title": "Time",
+        "default": "09:58 AM"
+      },
+      "weather": {
+        "type": "integer",
+        "title": "Weather (0 none 1 sun 2 part-cloud 3 cloud 4 rain 5 snow 6 fog 7 night)",
+        "minimum": 0,
+        "maximum": 7,
+        "default": 1
+      },
+      "temperature": {
+        "type": "string",
+        "title": "Temperature (blank = hide)",
+        "default": "14°C"
+      },
+      "position": {
+        "type": "integer",
+        "title": "Position (0 BL 1 BR 2 TL 3 TR)",
+        "minimum": 0,
+        "maximum": 3,
+        "default": 0
+      },
+      "scale": {
+        "type": "number",
+        "title": "Size",
+        "minimum": 0.5,
+        "maximum": 2.0,
+        "default": 1.0
+      },
+      "outAt": {
+        "type": "number",
+        "title": "Animate Out At (s, 0 = end)",
+        "minimum": 0,
+        "maximum": 8,
+        "default": 0
+      },
+      "accentColor": {
+        "type": "string",
+        "title": "Accent Colour",
+        "gddType": "color-rrggbb",
+        "pattern": "^#[0-9a-f]{6}$",
+        "default": "#f4b03e"
+      }
+    }
+  },
+  "renderRequirements": [
+    {
+      "resolution": {
+        "width": {
+          "ideal": 1920
+        },
+        "height": {
+          "ideal": 1080
+        }
+      },
+      "frameRate": {
+        "ideal": 30
+      },
+      "accessToPublicInternet": false
+    }
+  ],
+  "v_bmd": {
+    "duration": 8
+  }
+}

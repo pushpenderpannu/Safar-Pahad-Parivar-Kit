@@ -1,0 +1,87 @@
+{
+  "$schema": "https://ograf.ebu.io/v1/specification/json-schemas/graphics/schema.json",
+  "id": "spp-popup-title",
+  "version": "1.0.0",
+  "name": "SPP Pop-up Title",
+  "description": "Chapter / pop-up text: kicker, Hindi headline and English line with a wipe-in.",
+  "author": {
+    "name": "Safar Pahad Parivar"
+  },
+  "main": "SPP-Popup-Title.js",
+  "supportsRealTime": false,
+  "supportsNonRealTime": true,
+  "stepCount": 1,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "kicker": {
+        "type": "string",
+        "title": "Kicker (small line, blank = hide)",
+        "default": "अध्याय 2 · CHAPTER 2"
+      },
+      "titleHi": {
+        "type": "string",
+        "title": "Headline (Hindi)",
+        "default": "दारमा वैली"
+      },
+      "titleEn": {
+        "type": "string",
+        "title": "English Line (blank = hide)",
+        "default": "INTO THE DARMA VALLEY"
+      },
+      "position": {
+        "type": "integer",
+        "title": "Position (0 BL 1 BR 2 TL 3 TR 4 centre)",
+        "minimum": 0,
+        "maximum": 4,
+        "default": 4
+      },
+      "backdrop": {
+        "type": "boolean",
+        "title": "Darken Background",
+        "default": true
+      },
+      "scale": {
+        "type": "number",
+        "title": "Size",
+        "minimum": 0.5,
+        "maximum": 2.0,
+        "default": 1.0
+      },
+      "outAt": {
+        "type": "number",
+        "title": "Animate Out At (s, 0 = end)",
+        "minimum": 0,
+        "maximum": 5,
+        "default": 0
+      },
+      "accentColor": {
+        "type": "string",
+        "title": "Accent Colour",
+        "gddType": "color-rrggbb",
+        "pattern": "^#[0-9a-f]{6}$",
+        "default": "#f4b03e"
+      }
+    }
+  },
+  "renderRequirements": [
+    {
+      "resolution": {
+        "width": {
+          "ideal": 1920
+        },
+        "height": {
+          "ideal": 1080
+        }
+      },
+      "frameRate": {
+        "ideal": 30
+      },
+      "accessToPublicInternet": false
+    }
+  ],
+  "v_bmd": {
+    "duration": 5
+  }
+}

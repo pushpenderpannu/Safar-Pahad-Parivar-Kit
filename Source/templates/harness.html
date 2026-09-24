@@ -1,0 +1,16 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>html,body{margin:0;overflow:hidden;background:#222 center/cover no-repeat}</style></head>
+<body><script type="module">
+const q=new URLSearchParams(location.search);
+const W=+q.get("w"),H=+q.get("h"),file=q.get("t"),bg=q.get("bg")||"bg_a.jpg";
+document.body.style.width=W+"px";document.body.style.height=H+"px";document.body.style.backgroundImage=`url(${bg})`;
+const mod=await import(`./Safar%20Pahad%20Parivar/${file}.js`);
+customElements.define("spp-g",mod.default);
+const g=document.createElement("spp-g");g.style.cssText="position:absolute;inset:0;";document.body.appendChild(g);
+const data=q.get("data")?JSON.parse(q.get("data")):{};
+await g.load({data,renderType:"non-realtime",renderCharacteristics:{resolution:{width:W,height:H},frameRate:30}});
+await g.setActionsSchedule({schedule:[{timestamp:0,action:{type:"playAction",params:{}}}]});
+window.seek=async(ms)=>{await g.goToTime({timestamp:ms});};
+window.update=async(d)=>{await g.updateAction({data:d});};
+window.ready=true;
+</script></body></html>

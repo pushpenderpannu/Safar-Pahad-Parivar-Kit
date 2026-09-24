@@ -1,0 +1,117 @@
+{
+  "$schema": "https://ograf.ebu.io/v1/specification/json-schemas/graphics/schema.json",
+  "id": "spp-peak-callout",
+  "version": "1.0.0",
+  "name": "SPP Peak Callout",
+  "description": "Point at a mountain: dot or arrow on the peak, leader line and a name label with height.",
+  "author": {
+    "name": "Safar Pahad Parivar"
+  },
+  "main": "SPP-Peak-Callout.js",
+  "supportsRealTime": false,
+  "supportsNonRealTime": true,
+  "stepCount": 1,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "peakHi": {
+        "type": "string",
+        "title": "Peak Name (Hindi)",
+        "default": "पंचाचूली"
+      },
+      "peakEn": {
+        "type": "string",
+        "title": "Peak Name (English)",
+        "default": "PANCHACHULI"
+      },
+      "showHeight": {
+        "type": "boolean",
+        "title": "Show Height",
+        "default": true
+      },
+      "heightM": {
+        "type": "integer",
+        "title": "Height (m)",
+        "minimum": 0,
+        "maximum": 9000,
+        "default": 6904
+      },
+      "targetX": {
+        "type": "number",
+        "title": "Peak X (% of width)",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 50
+      },
+      "targetY": {
+        "type": "number",
+        "title": "Peak Y (% of height)",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 38
+      },
+      "labelDX": {
+        "type": "number",
+        "title": "Label Offset X (%)",
+        "minimum": -60,
+        "maximum": 60,
+        "default": 12
+      },
+      "labelDY": {
+        "type": "number",
+        "title": "Label Offset Y (%)",
+        "minimum": -60,
+        "maximum": 60,
+        "default": -16
+      },
+      "marker": {
+        "type": "integer",
+        "title": "Marker (0 dot 1 arrow)",
+        "minimum": 0,
+        "maximum": 1,
+        "default": 0
+      },
+      "scale": {
+        "type": "number",
+        "title": "Size",
+        "minimum": 0.5,
+        "maximum": 2.0,
+        "default": 1.0
+      },
+      "outAt": {
+        "type": "number",
+        "title": "Animate Out At (s, 0 = end)",
+        "minimum": 0,
+        "maximum": 6,
+        "default": 0
+      },
+      "accentColor": {
+        "type": "string",
+        "title": "Accent Colour",
+        "gddType": "color-rrggbb",
+        "pattern": "^#[0-9a-f]{6}$",
+        "default": "#f4b03e"
+      }
+    }
+  },
+  "renderRequirements": [
+    {
+      "resolution": {
+        "width": {
+          "ideal": 1920
+        },
+        "height": {
+          "ideal": 1080
+        }
+      },
+      "frameRate": {
+        "ideal": 30
+      },
+      "accessToPublicInternet": false
+    }
+  ],
+  "v_bmd": {
+    "duration": 6
+  }
+}

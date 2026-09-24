@@ -1,0 +1,441 @@
+"""Generate Safar Pahad Parivar OGraf title templates for DaVinci Resolve."""
+import json, os, shutil
+from pathlib import Path as _P
+SRC = str(_P(__file__).resolve().parents[1])      # <kit>/Source
+KIT = str(_P(__file__).resolve().parents[2])      # <kit>
+S = SRC
+OUT = os.path.join(KIT, "Resolve", "Templates", "Edit", "Titles", "Safar Pahad Parivar")
+os.makedirs(OUT, exist_ok=True)
+
+def U(n):  # size in "design units" (1u = 1px at 1080-short-side)
+    return f"calc(var(--u)*{n})"
+
+BASE = r"""
+const clamp=(v,a,b)=>Math.max(a,Math.min(v,b));
+const seg=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+const eo=(t)=>1-Math.pow(1-t,3);
+const eb=(t)=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);};
+const DEVA_RANGE="U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF";
+const LAT_RANGE="U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215";
+const FONT_DIR=new URL("./fonts/",import.meta.url);
+let _fontsReady=null;
+function sppFonts(){
+  if(_fontsReady) return _fontsReady;
+  const defs=[];
+  for(const w of [500,700,800]){defs.push(["SPP Deva",`deva-${w}.woff2`,w,DEVA_RANGE]);defs.push(["SPP Deva",`deva-latin-${w}.woff2`,w,LAT_RANGE]);}
+  defs.push(["SPP Pop","pop-500.ttf",500,null]);defs.push(["SPP Pop","pop-700.ttf",700,null]);
+  _fontsReady=Promise.all(defs.map(async([fam,file,w,range])=>{try{const o={weight:String(w)};if(range)o.unicodeRange=range;
+    const f=new FontFace(fam,`url("${new URL(file,FONT_DIR).href}")`,o);await f.load();document.fonts.add(f);}catch(e){}}));
+  return _fontsReady;
+}
+const DEVA=`"SPP Deva","Noto Sans Devanagari","Noto Sans Devanagari UI","Nirmala UI",sans-serif`;
+const POP=`"SPP Pop","Poppins","Segoe UI",sans-serif`;
+const MIX=`"SPP Pop","SPP Deva","Poppins","Noto Sans Devanagari","Nirmala UI",sans-serif`;
+const fmtM=(n)=>Math.round(n).toLocaleString("en-IN");
+const setT=(n,v)=>{v=(v??"")+"";if(n.textContent!==v)n.textContent=v;};
+const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:none;--u:1px;--accent:#f4b03e;--navy:#07122b;--snow:#f5f8fc}
+*{box-sizing:border-box;margin:0;padding:0}
+.scene{position:absolute;inset:0;opacity:0}
+.deva{font-family:${DEVA}} .pop{font-family:${POP}} .mix{font-family:${MIX}}`;
+function el(tag,cls,parent,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;if(parent)parent.appendChild(e);return e;}
+function svgEl(tag,attrs,parent){const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+const MARK_SVG=`<svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><circle cx="150" cy="30" r="11" fill="var(--accent)"/>
+<path d="M8 118 L58 60 L78 82 L103 26 L133 76 L148 60 L192 118" fill="none" stroke="#f5f8fc" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M86 62 L95 70 L103 60 L111 70 L121 62" fill="none" stroke="#f5f8fc" stroke-width="3.6" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M100 124 C 82 112, 120 104, 101 92 C 88 86, 110 82, 103 76" fill="none" stroke="var(--accent)" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="0.1 9.6"/></svg>`;
+
+class SPPGraphic extends HTMLElement{
+  constructor(){super();this._state={...DEFAULTS};this._initialData={};this._schedule=[];this._currentStep=0;this.$={};this._u=1;this._w=1920;this._h=1080;
+    const root=this.attachShadow({mode:"open"});const st=document.createElement("style");st.textContent=BASE_CSS+CSS;
+    const scene=document.createElement("div");scene.className="scene";root.append(st,scene);this.$.scene=scene;this._build(scene);}
+  _setUnit(w,h){this._w=w;this._h=h;this._u=Math.min(w,h)/1080;this._vertical=h>w;this.style.setProperty("--u",this._u+"px");}
+  px(n){return Math.round(n*this._u)+"px";}
+  async load(p){this._initialData=p?.data||{};this._state={...DEFAULTS,...this._initialData};this._schedule=[];
+    const r=p?.renderCharacteristics?.resolution;
+    this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);
+    await sppFonts();
+    if(document.fonts&&document.fonts.load){await Promise.all(['800 60px "SPP Deva"','700 30px "SPP Deva"','500 30px "SPP Deva"','700 20px "SPP Pop"','500 20px "SPP Pop"'].map(f=>document.fonts.load(f))).catch(()=>undefined);}
+    this._apply();this._currentStep=1;this._setFrame(0);return{statusCode:200};}
+  async dispose(){this.$.scene.remove();return{statusCode:200};}
+  async playAction(){this._currentStep=1;this._setFrame(1.5);return{statusCode:200,currentStep:1};}
+  async stopAction(){this._currentStep=0;this._setFrame(-1);return{statusCode:200};}
+  async updateAction(p){const d=p?.data||{};this._state={...this._state,...d};
+    if(!this._schedule.some(e=>e.action?.type==="updateAction"))this._initialData={...this._initialData,...d};
+    this._apply();return{statusCode:200};}
+  async customAction(){return{statusCode:200};}
+  async setActionsSchedule(p){this._schedule=(p?.schedule||p?.actions||[]).slice().sort((a,b)=>a.timestamp-b.timestamp);return{statusCode:200};}
+  async goToTime(p){const ts=p?.timestamp??0;this._state={...DEFAULTS,...this._initialData};
+    let lastPlay=null,lastStop=null;
+    for(const e of this._schedule){if(e.timestamp>ts)break;const a=e.action||{};
+      if(a.type==="updateAction")this._state={...this._state,...(a.params?.data||{})};
+      else if(a.type==="playAction"){lastPlay=e.timestamp;lastStop=null;}
+      else if(a.type==="stopAction"){lastStop=e.timestamp;lastPlay=null;}}
+    this._apply();
+    if(lastStop!==null){this._currentStep=0;this._setFrame(-1);}
+    else{this._currentStep=1;this._setFrame((ts-(lastPlay??0))/1000);}
+    return{statusCode:200};}
+  _setFrame(t){const sc=this.$.scene,s=this._state;
+    if(this._currentStep===0||t<0||t>DURATION){sc.style.opacity="0";return;}
+    const outAt=(typeof s.outAt==="number"&&s.outAt>0)?s.outAt:DURATION-0.6;
+    const out=1-eo(seg(t,outAt,outAt+0.5));
+    sc.style.opacity=String(out);this._frame(t,out);}
+  _corner(node,pos,mx,my,mxv,myb,myt){ // place a box in a corner (0 BL,1 BR,2 TL,3 TR,4 centre)
+    const v=this._vertical;node.style.left=node.style.right=node.style.top=node.style.bottom="auto";
+    const X=this.px(v?mxv:mx),B=this.px(v?myb:my),T=this.px(v?myt:my);
+    if(pos===4){node.style.left="50%";node.style.top="50%";return "center";}
+    if(pos===0||pos===2)node.style.left=X;else node.style.right=X;
+    if(pos===0||pos===1)node.style.bottom=B;else node.style.top=T;
+    return (pos===1||pos===3)?"right":"left";}
+}
+"""
+
+def weather_icons():
+    s = 'stroke="#f5f8fc" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"'
+    sun = '<circle cx="32" cy="32" r="11" fill="var(--accent)"/><g stroke="var(--accent)" stroke-width="3.2" stroke-linecap="round">' + "".join(
+        f'<line x1="{32+17*c:.1f}" y1="{32+17*s_:.1f}" x2="{32+24*c:.1f}" y2="{32+24*s_:.1f}"/>'
+        for c, s_ in [(1,0),(0.707,0.707),(0,1),(-0.707,0.707),(-1,0),(-0.707,-0.707),(0,-1),(0.707,-0.707)]) + '</g>'
+    cloud = f'<path d="M18 46 h28 a10 10 0 0 0 0-20 a14 14 0 0 0-27-3 a10 10 0 0 0-1 23z" {s}/>'
+    return {
+        1: sun,
+        2: '<circle cx="24" cy="24" r="9" fill="var(--accent)"/>' + f'<path d="M22 50 h26 a9 9 0 0 0 0-18 a13 13 0 0 0-25-3 a9 9 0 0 0-1 21z" {s} fill="rgba(7,18,43,.55)"/>',
+        3: cloud,
+        4: cloud + f'<g {s}><line x1="24" y1="52" x2="21" y2="60"/><line x1="33" y1="52" x2="30" y2="60"/><line x1="42" y1="52" x2="39" y2="60"/></g>',
+        5: cloud + '<g fill="#f5f8fc"><circle cx="23" cy="56" r="2.4"/><circle cx="32" cy="59" r="2.4"/><circle cx="41" cy="56" r="2.4"/></g>',
+        6: f'<g {s}><line x1="12" y1="24" x2="52" y2="24"/><line x1="8" y1="33" x2="48" y2="33"/><line x1="14" y1="42" x2="54" y2="42"/><line x1="10" y1="51" x2="44" y2="51"/></g>',
+        7: '<path d="M40 14 a20 20 0 1 0 12 30 a16 16 0 0 1-12-30z" fill="var(--accent)"/>',
+    }
+
+ICONS = {
+    "alt": '<svg viewBox="0 0 24 24"><path d="M2 20 L9 8 L13 14 L16 10 L22 20 Z" fill="var(--accent)"/></svg>',
+    "date": '<svg viewBox="0 0 24 24" fill="none" stroke="#f5f8fc" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>',
+    "time": '<svg viewBox="0 0 24 24" fill="none" stroke="#f5f8fc" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7 V12 L15.5 14"/></svg>',
+}
+
+def color_prop(title, default="#f4b03e"):
+    return {"type": "string", "title": title, "gddType": "color-rrggbb", "pattern": "^#[0-9a-f]{6}$", "default": default}
+
+TEMPLATES = []
+
+# ------------------------------------------------------------------ 1. INFO CARD
+wx = weather_icons()
+TEMPLATES.append(dict(
+    id="spp-info-card", name="SPP Info Card", file="SPP-Info-Card", duration=8,
+    desc="Location card: Hindi + English place, date, time, altitude, weather. Each item can be shown or hidden.",
+    props={
+        "placeHi": {"type": "string", "title": "Place (Hindi)", "default": "मुंस्यारी"},
+        "placeEn": {"type": "string", "title": "Place (English)", "default": "MUNSIYARI · UTTARAKHAND"},
+        "showAltitude": {"type": "boolean", "title": "Show Altitude", "default": True},
+        "altitude": {"type": "integer", "title": "Altitude (m)", "minimum": 0, "maximum": 9000, "default": 2200},
+        "countUp": {"type": "boolean", "title": "Count Altitude Up", "default": True},
+        "showDate": {"type": "boolean", "title": "Show Date", "default": True},
+        "date": {"type": "string", "title": "Date", "default": "26 जून 2026"},
+        "showTime": {"type": "boolean", "title": "Show Time", "default": True},
+        "time": {"type": "string", "title": "Time", "default": "09:58 AM"},
+        "weather": {"type": "integer", "title": "Weather (0 none 1 sun 2 part-cloud 3 cloud 4 rain 5 snow 6 fog 7 night)", "minimum": 0, "maximum": 7, "default": 1},
+        "temperature": {"type": "string", "title": "Temperature (blank = hide)", "default": "14°C"},
+        "position": {"type": "integer", "title": "Position (0 BL 1 BR 2 TL 3 TR)", "minimum": 0, "maximum": 3, "default": 0},
+        "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
+        "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 8, "default": 0},
+        "accentColor": color_prop("Accent Colour"),
+    },
+    css=f"""
+.card{{position:absolute;display:flex;gap:{U(20)};padding:{U(22)} {U(32)} {U(22)} {U(22)};background:rgba(7,18,43,.62);border-radius:{U(18)};box-shadow:0 {U(10)} {U(40)} rgba(0,0,0,.35)}}
+.bar{{width:{U(6)};border-radius:{U(3)};background:var(--accent);transform-origin:50% 0}}
+.top{{display:flex;align-items:center;gap:{U(18)}}}
+.wx{{width:{U(66)};height:{U(66)};flex:none}} .wx svg{{width:100%;height:100%;overflow:visible}}
+.hi{{font-size:{U(60)};font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.35)}}
+.en{{font-size:{U(17)};font-weight:700;color:var(--accent);white-space:nowrap;margin-top:{U(2)}}}
+.meta{{display:flex;flex-wrap:nowrap;gap:{U(28)};margin-top:{U(16)};font-size:{U(22)};font-weight:500;color:rgba(245,248,252,.92)}}
+.m{{display:inline-flex;align-items:center;gap:{U(9)};white-space:nowrap}} .m svg{{width:{U(22)};height:{U(22)}}}
+.m b{{font-weight:700}}""",
+    build=f"""
+this.$.card=el("div","card",scene); this.$.bar=el("div","bar",this.$.card);
+const body=el("div","body",this.$.card); const top=el("div","top",body);
+this.$.wx=el("div","wx",top); const ti=el("div","",top);
+this.$.hi=el("div","hi deva",ti); this.$.en=el("div","en pop",ti);
+this.$.meta=el("div","meta mix",body);
+this.$.alt=el("span","m",this.$.meta,{json.dumps(ICONS['alt'])}+'<span><b class="av">0</b> m</span>');
+this.$.date=el("span","m",this.$.meta,{json.dumps(ICONS['date'])}+'<span class="dv"></span>');
+this.$.time=el("span","m",this.$.meta,{json.dumps(ICONS['time'])}+'<span class="tv"></span>');
+this.$.temp=el("span","m",this.$.meta,'<span class="pv"></span>');
+this.WX={json.dumps(wx, ensure_ascii=False)};""",
+    apply="""
+const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e");
+setT(this.$.hi,s.placeHi||""); setT(this.$.en,s.placeEn||""); this.$.en.style.display=s.placeEn?"block":"none";
+this.$.alt.style.display=s.showAltitude?"inline-flex":"none"; this.$.date.style.display=(s.showDate&&s.date)?"inline-flex":"none";
+this.$.time.style.display=(s.showTime&&s.time)?"inline-flex":"none"; this.$.temp.style.display=s.temperature?"inline-flex":"none";
+setT(this.$.date.querySelector(".dv"),s.date||""); setT(this.$.time.querySelector(".tv"),s.time||"");
+setT(this.$.temp.querySelector(".pv"),s.temperature||"");
+const w=this.WX[s.weather]; this.$.wx.style.display=w?"block":"none"; if(w&&this._wxk!==s.weather){this.$.wx.innerHTML=`<svg viewBox="0 0 64 64">${w}</svg>`;this._wxk=s.weather;}
+const anyMeta=s.showAltitude||(s.showDate&&s.date)||(s.showTime&&s.time)||s.temperature; this.$.meta.style.display=anyMeta?"flex":"none";
+this._side=this._corner(this.$.card,s.position|0,90,84,60,560,250);
+this.$.card.style.transformOrigin=(this._side==="right"?"100% ":"0% ")+((s.position|0)>=2?"0%":"100%");""",
+    frame="""
+const s=this._state,dir=this._side==="right"?1:-1,sc=s.scale||1;
+const k=eo(seg(t,0.05,0.5)); this.$.card.style.opacity=String(k);
+this.$.card.style.transform=`translateX(${Math.round(dir*40*this._u*(1-k)+dir*30*this._u*(1-out))}px) scale(${sc})`;
+this.$.bar.style.transform=`scaleY(${eo(seg(t,0,0.4))})`;
+const h=eo(seg(t,0.2,0.65)); this.$.hi.style.opacity=String(h); this.$.hi.style.transform=`translateY(${Math.round(16*this._u*(1-h))}px)`;
+const e=eo(seg(t,0.35,0.9)); this.$.en.style.opacity=String(e); this.$.en.style.letterSpacing=(0.62-0.32*e).toFixed(3)+"em";
+const wk=eb(seg(t,0.25,0.75)); this.$.wx.style.opacity=String(clamp(wk,0,1)); this.$.wx.style.transform=`scale(${0.4+0.6*wk}) rotate(${(t*6).toFixed(2)}deg)`;
+[this.$.alt,this.$.date,this.$.time,this.$.temp].forEach((m,i)=>{const q=eo(seg(t,0.55+0.1*i,0.95+0.1*i));m.style.opacity=String(q);m.style.transform=`translateY(${Math.round(10*this._u*(1-q))}px)`;});
+const a=s.countUp?eo(seg(t,0.6,1.9)):1; setT(this.$.alt.querySelector(".av"),fmtM((s.altitude||0)*a));""",
+))
+
+# ------------------------------------------------------------------ 2. ALTITUDE COUNTER
+TEMPLATES.append(dict(
+    id="spp-altitude-counter", name="SPP Altitude Counter", file="SPP-Altitude-Counter", duration=8,
+    desc="Altitude counts up in metres while a mountain profile draws itself.",
+    props={
+        "startAltitude": {"type": "integer", "title": "Start Altitude (m)", "minimum": 0, "maximum": 9000, "default": 1500},
+        "endAltitude": {"type": "integer", "title": "End Altitude (m)", "minimum": 0, "maximum": 9000, "default": 2200},
+        "countSeconds": {"type": "number", "title": "Count Duration (s)", "minimum": 0.5, "maximum": 6, "default": 3.0},
+        "labelHi": {"type": "string", "title": "Label (Hindi)", "default": "ऊँचाई"},
+        "labelEn": {"type": "string", "title": "Label (English)", "default": "ALTITUDE"},
+        "place": {"type": "string", "title": "Place (optional)", "default": "मुंस्यारी · MUNSIYARI"},
+        "showProfile": {"type": "boolean", "title": "Show Mountain Profile", "default": True},
+        "position": {"type": "integer", "title": "Position (0 BL 1 BR 2 TL 3 TR 4 centre)", "minimum": 0, "maximum": 4, "default": 3},
+        "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.5, "default": 1.0},
+        "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 8, "default": 0},
+        "accentColor": color_prop("Accent Colour"),
+    },
+    css=f"""
+.box{{position:absolute;padding:{U(22)} {U(30)};background:rgba(7,18,43,.6);border-radius:{U(18)};box-shadow:0 {U(10)} {U(40)} rgba(0,0,0,.35)}}
+.lab{{display:flex;align-items:center;gap:{U(10)};font-size:{U(22)};font-weight:700;color:var(--snow);white-space:nowrap}}
+.lab svg{{width:{U(22)};height:{U(22)}}} .lab .le{{font-size:{U(15)};letter-spacing:.3em;color:var(--accent)}}
+.num{{display:flex;align-items:baseline;gap:{U(10)};margin-top:{U(2)}}}
+.nv{{font-size:{U(104)};font-weight:700;color:var(--snow);line-height:1.05;font-variant-numeric:tabular-nums;text-shadow:0 {U(3)} {U(14)} rgba(0,0,0,.35)}}
+.nu{{font-size:{U(40)};font-weight:700;color:var(--accent)}}
+.pl{{font-size:{U(21)};font-weight:500;color:rgba(245,248,252,.85);white-space:nowrap}}
+.prof{{display:block;width:{U(420)};height:{U(92)};margin-top:{U(12)};overflow:visible}}""",
+    build=f"""
+this.$.box=el("div","box",scene);
+this.$.lab=el("div","lab mix",this.$.box,{json.dumps(ICONS['alt'])}+'<span class="lh"></span><span class="le pop"></span>');
+const n=el("div","num pop",this.$.box); this.$.nv=el("span","nv",n,"0"); el("span","nu",n,"m");
+this.$.pl=el("div","pl mix",this.$.box);
+this.$.prof=svgEl("svg",{{viewBox:"0 0 420 92",class:"prof"}},this.$.box);
+const defs=svgEl("defs",{{}},this.$.prof); const g=svgEl("linearGradient",{{id:"pg",x1:"0",y1:"0",x2:"0",y2:"1"}},defs);
+svgEl("stop",{{offset:"0","stop-color":"#f5f8fc","stop-opacity":"0.28"}},g); svgEl("stop",{{offset:"1","stop-color":"#f5f8fc","stop-opacity":"0"}},g);
+const P=[[0,86],[40,78],[70,82],[105,66],[135,70],[170,52],[200,58],[235,40],[262,46],[295,28],[322,34],[352,18],[380,24],[412,8]];
+const d="M"+P.map(p=>p.join(" ")).join(" L");
+this._P=P;
+this.$.fill=svgEl("path",{{d:"",fill:"url(#pg)"}},this.$.prof);
+this.$.line=svgEl("path",{{d:"",fill:"none",stroke:"#f5f8fc","stroke-width":"3","stroke-linejoin":"round","stroke-linecap":"round"}},this.$.prof);
+this.$.dot=svgEl("circle",{{r:"6",fill:"var(--accent)"}},this.$.prof);""",
+    apply="""
+const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e");
+setT(this.$.lab.querySelector(".lh"),s.labelHi||""); setT(this.$.lab.querySelector(".le"),s.labelEn||"");
+setT(this.$.pl,s.place||""); this.$.pl.style.display=s.place?"block":"none";
+this.$.prof.style.display=s.showProfile?"block":"none";
+this._side=this._corner(this.$.box,s.position|0,90,84,60,560,250);
+const p=s.position|0; this.$.box.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));""",
+    frame="""
+const s=this._state,sc=s.scale||1,p=s.position|0;
+const k=eo(seg(t,0,0.45)); this.$.box.style.opacity=String(k);
+const base=p===4?"translate(-50%,-50%) ":""; this.$.box.style.transform=`${base}translateY(${Math.round(24*this._u*(1-k))}px) scale(${sc*(0.96+0.04*k)})`;
+const c=eo(seg(t,0.45,0.45+(s.countSeconds||3)));
+const a0=s.startAltitude||0,a1=s.endAltitude||0; setT(this.$.nv,fmtM(a0+(a1-a0)*c));
+const P=this._P,X=412*c,pts=[P[0]];
+for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];if(b[0]<=X){pts.push(b);}else{const f=(X-a[0])/(b[0]-a[0]);if(f>0)pts.push([X,a[1]+(b[1]-a[1])*f]);break;}}
+const fx=v=>v.toFixed(2),path="M"+pts.map(q=>fx(q[0])+" "+fx(q[1])).join(" L"),last=pts[pts.length-1];
+this.$.line.setAttribute("d",pts.length>1?path:""); this.$.fill.setAttribute("d",pts.length>1?path+` L${fx(last[0])} 92 L0 92 Z`:"");
+this.$.dot.setAttribute("cx",fx(last[0])); this.$.dot.setAttribute("cy",fx(last[1]));
+this.$.dot.setAttribute("opacity",String(seg(t,0.4,0.6)));""",
+))
+
+# ------------------------------------------------------------------ 3. PEAK CALLOUT
+TEMPLATES.append(dict(
+    id="spp-peak-callout", name="SPP Peak Callout", file="SPP-Peak-Callout", duration=6,
+    desc="Point at a mountain: dot or arrow on the peak, leader line and a name label with height.",
+    props={
+        "peakHi": {"type": "string", "title": "Peak Name (Hindi)", "default": "पंचाचूली"},
+        "peakEn": {"type": "string", "title": "Peak Name (English)", "default": "PANCHACHULI"},
+        "showHeight": {"type": "boolean", "title": "Show Height", "default": True},
+        "heightM": {"type": "integer", "title": "Height (m)", "minimum": 0, "maximum": 9000, "default": 6904},
+        "targetX": {"type": "number", "title": "Peak X (% of width)", "minimum": 0, "maximum": 100, "default": 50},
+        "targetY": {"type": "number", "title": "Peak Y (% of height)", "minimum": 0, "maximum": 100, "default": 38},
+        "labelDX": {"type": "number", "title": "Label Offset X (%)", "minimum": -60, "maximum": 60, "default": 12},
+        "labelDY": {"type": "number", "title": "Label Offset Y (%)", "minimum": -60, "maximum": 60, "default": -16},
+        "marker": {"type": "integer", "title": "Marker (0 dot 1 arrow)", "minimum": 0, "maximum": 1, "default": 0},
+        "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
+        "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 6, "default": 0},
+        "accentColor": color_prop("Accent Colour"),
+    },
+    css=f"""
+.lines{{position:absolute;inset:0;width:100%;height:100%;overflow:visible}}
+.lbl{{position:absolute;white-space:nowrap;background:rgba(7,18,43,.55);padding:{U(8)} {U(18)} {U(10)};border-radius:{U(12)}}}
+.ph{{font-size:{U(52)};font-weight:800;color:var(--snow);line-height:1.2;text-shadow:0 {U(2)} {U(12)} rgba(0,0,0,.6),0 0 {U(3)} rgba(0,0,0,.4)}}
+.pe{{display:flex;gap:{U(14)};align-items:baseline;font-size:{U(17)};font-weight:700;color:var(--accent);letter-spacing:.28em;text-shadow:0 {U(1)} {U(6)} rgba(0,0,0,.6)}}
+.pm{{color:var(--snow);letter-spacing:.06em;font-size:{U(20)}}}""",
+    build="""
+this.$.svg=svgEl("svg",{class:"lines"},scene);
+this.$.ring=svgEl("circle",{fill:"none",stroke:"var(--accent)","stroke-width":"3"},this.$.svg);
+this.$.dot=svgEl("circle",{fill:"var(--accent)",stroke:"#07122b","stroke-width":"2"},this.$.svg);
+this.$.arrow=svgEl("path",{fill:"var(--accent)"},this.$.svg);
+this.$.lead=svgEl("path",{fill:"none",stroke:"#f5f8fc","stroke-width":"3","stroke-linecap":"round","stroke-linejoin":"round"},this.$.svg);
+this.$.under=svgEl("line",{stroke:"var(--accent)","stroke-width":"4","stroke-linecap":"round"},this.$.svg);
+this.$.lbl=el("div","lbl",scene); this.$.ph=el("div","ph deva",this.$.lbl);
+const pe=el("div","pe pop",this.$.lbl); this.$.pe=el("span","",pe); this.$.pm=el("span","pm",pe);""",
+    apply="""
+const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e");
+setT(this.$.ph,s.peakHi||""); setT(this.$.pe,s.peakEn||"");
+setT(this.$.pm,(s.showHeight&&s.heightM)?fmtM(s.heightM)+" m":""); this.$.svg.setAttribute("viewBox",`0 0 ${this._w} ${this._h}`);""",
+    frame="""
+const s=this._state,W=this._w,H=this._h,u=this._u*(s.scale||1);
+const tx=W*(s.targetX??50)/100,ty=H*(s.targetY??38)/100,ax=tx+W*(s.labelDX??12)/100,ay=ty+H*(s.labelDY??-16)/100;
+const right=ax>=tx;
+// label box
+const lw=this.$.lbl.offsetWidth*(s.scale||1)||300*u;
+this.$.lbl.style.transformOrigin=right?"0% 100%":"100% 100%";
+const lk=eo(seg(t,0.75,1.2)); this.$.lbl.style.opacity=String(lk);
+this.$.lbl.style.left=right?Math.round(ax+8*u)+"px":"auto"; this.$.lbl.style.right=right?"auto":Math.round(W-ax+8*u)+"px";
+this.$.lbl.style.top=Math.round(ay-this.$.lbl.offsetHeight*(s.scale||1)-6*u)+"px";
+this.$.lbl.style.transform=`translateY(${Math.round(14*u*(1-lk))}px) scale(${s.scale||1})`;
+this.$.pm.style.opacity=String(eo(seg(t,1.0,1.4)));
+// marker
+const mk=eb(seg(t,0,0.35));
+if((s.marker|0)===0){
+  this.$.arrow.setAttribute("opacity","0"); this.$.dot.setAttribute("opacity","1");
+  this.$.dot.setAttribute("cx",tx);this.$.dot.setAttribute("cy",ty);this.$.dot.setAttribute("r",String(Math.max(0,9*u*mk)));
+  const ph=(t*0.9)%1; this.$.ring.setAttribute("cx",tx);this.$.ring.setAttribute("cy",ty);
+  this.$.ring.setAttribute("r",String(9*u+26*u*ph)); this.$.ring.setAttribute("opacity",String((1-ph)*seg(t,0.2,0.4)));
+  this.$.ring.setAttribute("stroke-width",String(3*u));
+}else{
+  this.$.dot.setAttribute("opacity","0"); this.$.ring.setAttribute("opacity","0"); this.$.arrow.setAttribute("opacity",String(clamp(mk,0,1)));
+  const ang=Math.atan2(ty-ay,tx-ax),L=26*u*clamp(mk,0,1.2),Wd=13*u*clamp(mk,0,1.2);
+  const bx=tx-Math.cos(ang)*L,by=ty-Math.sin(ang)*L,nx=-Math.sin(ang),ny=Math.cos(ang);
+  this.$.arrow.setAttribute("d",`M${tx} ${ty} L${bx+nx*Wd} ${by+ny*Wd} L${bx-nx*Wd} ${by-ny*Wd} Z`);
+}
+// leader line from marker to label anchor, then underline under label
+const sx=tx+(ax-tx)*0.0,sy=ty; const ang2=Math.atan2(ay-ty,ax-tx); const off=16*u;
+const x0=tx+Math.cos(ang2)*off,y0=ty+Math.sin(ang2)*off;
+const lineLen=Math.hypot(ax-x0,ay-y0); const lp=eo(seg(t,0.25,0.8));
+this.$.lead.setAttribute("d",`M${x0} ${y0} L${x0+(ax-x0)*lp} ${y0+(ay-y0)*lp}`); this.$.lead.setAttribute("stroke-width",String(3*u));
+const up=eo(seg(t,0.7,1.05)),ux=right?ax+lw*up:ax-lw*up;
+this.$.under.setAttribute("x1",ax);this.$.under.setAttribute("y1",ay);this.$.under.setAttribute("x2",ux);this.$.under.setAttribute("y2",ay);
+this.$.under.setAttribute("stroke-width",String(4*u)); this.$.under.setAttribute("opacity",up>0?"1":"0");""",
+))
+
+# ------------------------------------------------------------------ 4. POP-UP TITLE
+TEMPLATES.append(dict(
+    id="spp-popup-title", name="SPP Pop-up Title", file="SPP-Popup-Title", duration=5,
+    desc="Chapter / pop-up text: kicker, Hindi headline and English line with a wipe-in.",
+    props={
+        "kicker": {"type": "string", "title": "Kicker (small line, blank = hide)", "default": "अध्याय 2 · CHAPTER 2"},
+        "titleHi": {"type": "string", "title": "Headline (Hindi)", "default": "दारमा वैली"},
+        "titleEn": {"type": "string", "title": "English Line (blank = hide)", "default": "INTO THE DARMA VALLEY"},
+        "position": {"type": "integer", "title": "Position (0 BL 1 BR 2 TL 3 TR 4 centre)", "minimum": 0, "maximum": 4, "default": 4},
+        "backdrop": {"type": "boolean", "title": "Darken Background", "default": True},
+        "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
+        "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 5, "default": 0},
+        "accentColor": color_prop("Accent Colour"),
+    },
+    css=f"""
+.bd{{position:absolute;inset:0;background:radial-gradient(80% 70% at 50% 50%, rgba(7,18,43,.55), rgba(7,18,43,0) 75%)}}
+.wrap{{position:absolute;display:flex;flex-direction:column}}
+.kick{{display:flex;align-items:center;gap:{U(14)};font-size:{U(22)};font-weight:700;color:var(--accent);white-space:nowrap;text-shadow:0 {U(2)} {U(8)} rgba(0,0,0,.5)}}
+.kb{{display:inline-block;width:{U(44)};height:{U(3)};background:var(--accent);border-radius:{U(2)};transform-origin:50% 50%}}
+.clip{{overflow:hidden;padding:{U(6)} {U(4)} {U(4)}}}
+.th{{font-size:{U(104)};font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 {U(4)} {U(24)} rgba(0,0,0,.5)}}
+.te{{font-size:{U(22)};font-weight:500;color:var(--snow);opacity:.9;white-space:nowrap;text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.5)}}""",
+    build="""
+this.$.bd=el("div","bd",scene); this.$.wrap=el("div","wrap",scene);
+this.$.kick=el("div","kick mix",this.$.wrap); this.$.kb1=el("span","kb",this.$.kick); this.$.kt=el("span","",this.$.kick); this.$.kb2=el("span","kb",this.$.kick);
+const c=el("div","clip",this.$.wrap); this.$.th=el("div","th deva",c); this.$.te=el("div","te pop",this.$.wrap);""",
+    apply="""
+const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e");
+setT(this.$.kt,s.kicker||""); this.$.kick.style.display=s.kicker?"flex":"none";
+setT(this.$.th,s.titleHi||""); setT(this.$.te,s.titleEn||""); this.$.te.style.display=s.titleEn?"block":"none";
+this.$.bd.style.display=s.backdrop?"block":"none";
+const p=s.position|0; this._side=this._corner(this.$.wrap,p,110,110,70,560,280);
+const al=p===4?"center":(this._side==="right"?"flex-end":"flex-start"); this.$.wrap.style.alignItems=al; this.$.wrap.style.textAlign=p===4?"center":this._side;
+this.$.kb2.style.display=p===4?"inline-block":"none";
+this.$.wrap.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));
+this.$.bd.style.background=p===4?"":`linear-gradient(${p>=2?"180deg":"0deg"}, rgba(7,18,43,.6), rgba(7,18,43,0) 45%)`;""",
+    frame="""
+const s=this._state,p=s.position|0,sc=s.scale||1;
+this.$.bd.style.opacity=String(eo(seg(t,0,0.5)));
+this.$.wrap.style.transform=(p===4?"translate(-50%,-50%) ":"")+`scale(${sc})`;
+const kb=eo(seg(t,0.05,0.45)); this.$.kb1.style.transform=this.$.kb2.style.transform=`scaleX(${kb})`;
+const kt=eo(seg(t,0.15,0.5)); this.$.kt.style.opacity=String(kt); this.$.kt.style.letterSpacing=(0.5-0.28*kt).toFixed(3)+"em";
+const h=eo(seg(t,0.2,0.8)); this.$.th.style.transform=`translateY(${Math.round(110*this._u*(1-h))}px)`;
+const e=eo(seg(t,0.55,1.1)); this.$.te.style.opacity=String(e*0.92); this.$.te.style.letterSpacing=(0.6-0.3*e).toFixed(3)+"em";""",
+))
+
+# ------------------------------------------------------------------ 5. CREDITS
+lines_default = [
+    "कहानी और आवाज़ / Story & Voice | Pushpender Pannu",
+    "कैमरा / Camera | Pushpender Pannu",
+    "एडिट / Edit | Pushpender Pannu",
+    "साथ में / Featuring | परिवार / Family",
+    "संगीत / Music | Epidemic Sound",
+    "", "",
+]
+credit_props = {"heading": {"type": "string", "title": "Heading", "default": "आभार · CREDITS"}}
+for i, d in enumerate(lines_default, 1):
+    credit_props[f"line{i}"] = {"type": "string", "title": f"Line {i}  (Role | Name, blank = hide)", "default": d}
+credit_props.update({
+    "showLogo": {"type": "boolean", "title": "Show Logo + Handle", "default": True},
+    "handle": {"type": "string", "title": "Handle", "default": "@safar.pahad.parivar"},
+    "backdrop": {"type": "boolean", "title": "Dark Background", "default": True},
+    "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 10, "default": 0},
+    "accentColor": color_prop("Accent Colour"),
+})
+TEMPLATES.append(dict(
+    id="spp-credits", name="SPP Credits", file="SPP-Credits", duration=10,
+    desc="Credits page: heading, up to 7 'Role | Name' lines, logo and handle.",
+    props=credit_props,
+    css=f"""
+.bd{{position:absolute;inset:0;background:rgba(7,18,43,.86)}}
+.wrap{{position:absolute;left:50%;top:50%;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-50%)}}
+.hd{{font-size:{U(26)};font-weight:700;color:var(--accent);letter-spacing:.3em;margin-bottom:{U(34)};white-space:nowrap}}
+.rows{{display:grid;grid-template-columns:auto {U(40)} auto;row-gap:{U(18)};align-items:baseline}}
+.r{{font-size:{U(29)};font-weight:500;color:rgba(245,248,252,.66);text-align:right;white-space:nowrap}}
+.sep{{text-align:center;color:var(--accent);font-size:{U(26)}}}
+.n{{font-size:{U(38)};font-weight:800;color:var(--snow);white-space:nowrap}}
+.brand{{display:flex;flex-direction:column;align-items:center;margin-top:{U(54)}}}
+.brand svg{{width:{U(130)};height:auto}} .hn{{font-size:{U(26)};font-weight:700;color:var(--snow);margin-top:{U(8)}}}""",
+    build="""
+this.$.bd=el("div","bd",scene); this.$.wrap=el("div","wrap",scene);
+this.$.hd=el("div","hd mix",this.$.wrap); this.$.rows=el("div","rows mix",this.$.wrap); this.$.cells=[];
+for(let i=0;i<7;i++){const r=el("div","r",this.$.rows),sp=el("div","sep",this.$.rows,"·"),n=el("div","n",this.$.rows);this.$.cells.push([r,sp,n]);}
+this.$.brand=el("div","brand",this.$.wrap,MARK_SVG); this.$.hn=el("div","hn pop",this.$.brand);""",
+    apply="""
+const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e");
+setT(this.$.hd,s.heading||""); this.$.hd.style.display=s.heading?"block":"none";
+this.$.bd.style.display=s.backdrop?"block":"none";
+this._vis=[];
+for(let i=0;i<7;i++){const v=(s["line"+(i+1)]||"").trim(); const [r,sp,n]=this.$.cells[i];
+  const show=!!v; [r,sp,n].forEach(x=>x.style.display=show?"block":"none");
+  if(show){const parts=v.split("|"); setT(r,(parts[0]||"").trim()); setT(n,(parts.slice(1).join("|")||"").trim()); this._vis.push(i);}}
+this.$.brand.style.display=s.showLogo?"flex":"none"; setT(this.$.hn,s.handle||"");
+this.$.wrap.style.transform=`translate(-50%,-50%) scale(${this._vertical?0.8:1})`;""",
+    frame="""
+this.$.bd.style.opacity=String(eo(seg(t,0,0.6)));
+const h=eo(seg(t,0.2,0.8)); this.$.hd.style.opacity=String(h); this.$.hd.style.letterSpacing=(0.6-0.3*h).toFixed(3)+"em";
+this._vis.forEach((i,j)=>{const q=eo(seg(t,0.5+0.16*j,1.0+0.16*j));this.$.cells[i].forEach(x=>{x.style.opacity=String(q);x.style.transform=`translateY(${Math.round(14*this._u*(1-q))}px)`;});});
+const b=eo(seg(t,0.8+0.16*this._vis.length,1.4+0.16*this._vis.length)); this.$.brand.style.opacity=String(b); this.$.brand.style.transform=`translateY(${Math.round(12*this._u*(1-b))}px)`;""",
+))
+
+# ------------------------------------------------------------------ write files
+for T in TEMPLATES:
+    defaults = {k: v["default"] for k, v in T["props"].items()}
+    cls = "".join(w.capitalize() for w in T["file"].replace("SPP-", "").split("-")) + "Graphic"
+    js = (f"const DEFAULTS={json.dumps(defaults, ensure_ascii=False)};\nconst DURATION={T['duration']};\n"
+          f"const CSS=`{T['css']}`;\n" + BASE +
+          f"\nclass {cls} extends SPPGraphic{{\n_build(scene){{{T['build']}\n}}\n_apply(){{{T['apply']}\n}}\n_frame(t,out){{{T['frame']}\n}}\n}}\nexport default {cls};\n")
+    manifest = {
+        "$schema": "https://ograf.ebu.io/v1/specification/json-schemas/graphics/schema.json",
+        "id": T["id"], "version": "1.0.0", "name": T["name"], "description": T["desc"],
+        "author": {"name": "Safar Pahad Parivar"}, "main": T["file"] + ".js",
+        "supportsRealTime": False, "supportsNonRealTime": True, "stepCount": 1,
+        "schema": {"type": "object", "additionalProperties": False, "properties": T["props"]},
+        "renderRequirements": [{"resolution": {"width": {"ideal": 1920}, "height": {"ideal": 1080}},
+                                "frameRate": {"ideal": 30}, "accessToPublicInternet": False}],
+        "v_bmd": {"duration": T["duration"]},
+    }
+    open(os.path.join(OUT, T["file"] + ".js"), "w", encoding="utf-8").write(js)
+    open(os.path.join(OUT, T["file"] + ".ograf.json"), "w", encoding="utf-8").write(json.dumps(manifest, ensure_ascii=False, indent=2))
+    print("wrote", T["file"], len(T["props"]), "props")
+shutil.copytree(os.path.join(SRC, "fonts"), os.path.join(OUT, "fonts"), dirs_exist_ok=True)
+print("fonts copied")

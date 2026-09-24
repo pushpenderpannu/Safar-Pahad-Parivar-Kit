@@ -1,0 +1,108 @@
+{
+  "$schema": "https://ograf.ebu.io/v1/specification/json-schemas/graphics/schema.json",
+  "id": "spp-altitude-counter",
+  "version": "1.0.0",
+  "name": "SPP Altitude Counter",
+  "description": "Altitude counts up in metres while a mountain profile draws itself.",
+  "author": {
+    "name": "Safar Pahad Parivar"
+  },
+  "main": "SPP-Altitude-Counter.js",
+  "supportsRealTime": false,
+  "supportsNonRealTime": true,
+  "stepCount": 1,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "startAltitude": {
+        "type": "integer",
+        "title": "Start Altitude (m)",
+        "minimum": 0,
+        "maximum": 9000,
+        "default": 1500
+      },
+      "endAltitude": {
+        "type": "integer",
+        "title": "End Altitude (m)",
+        "minimum": 0,
+        "maximum": 9000,
+        "default": 2200
+      },
+      "countSeconds": {
+        "type": "number",
+        "title": "Count Duration (s)",
+        "minimum": 0.5,
+        "maximum": 6,
+        "default": 3.0
+      },
+      "labelHi": {
+        "type": "string",
+        "title": "Label (Hindi)",
+        "default": "ऊँचाई"
+      },
+      "labelEn": {
+        "type": "string",
+        "title": "Label (English)",
+        "default": "ALTITUDE"
+      },
+      "place": {
+        "type": "string",
+        "title": "Place (optional)",
+        "default": "मुंस्यारी · MUNSIYARI"
+      },
+      "showProfile": {
+        "type": "boolean",
+        "title": "Show Mountain Profile",
+        "default": true
+      },
+      "position": {
+        "type": "integer",
+        "title": "Position (0 BL 1 BR 2 TL 3 TR 4 centre)",
+        "minimum": 0,
+        "maximum": 4,
+        "default": 3
+      },
+      "scale": {
+        "type": "number",
+        "title": "Size",
+        "minimum": 0.5,
+        "maximum": 2.5,
+        "default": 1.0
+      },
+      "outAt": {
+        "type": "number",
+        "title": "Animate Out At (s, 0 = end)",
+        "minimum": 0,
+        "maximum": 8,
+        "default": 0
+      },
+      "accentColor": {
+        "type": "string",
+        "title": "Accent Colour",
+        "gddType": "color-rrggbb",
+        "pattern": "^#[0-9a-f]{6}$",
+        "default": "#f4b03e"
+      }
+    }
+  },
+  "renderRequirements": [
+    {
+      "resolution": {
+        "width": {
+          "ideal": 1920
+        },
+        "height": {
+          "ideal": 1080
+        }
+      },
+      "frameRate": {
+        "ideal": 30
+      },
+      "accessToPublicInternet": false
+    }
+  ],
+  "v_bmd": {
+    "duration": 8
+  }
+}

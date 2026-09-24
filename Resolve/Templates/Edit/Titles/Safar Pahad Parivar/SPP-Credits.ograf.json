@@ -1,0 +1,108 @@
+{
+  "$schema": "https://ograf.ebu.io/v1/specification/json-schemas/graphics/schema.json",
+  "id": "spp-credits",
+  "version": "1.0.0",
+  "name": "SPP Credits",
+  "description": "Credits page: heading, up to 7 'Role | Name' lines, logo and handle.",
+  "author": {
+    "name": "Safar Pahad Parivar"
+  },
+  "main": "SPP-Credits.js",
+  "supportsRealTime": false,
+  "supportsNonRealTime": true,
+  "stepCount": 1,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "heading": {
+        "type": "string",
+        "title": "Heading",
+        "default": "आभार · CREDITS"
+      },
+      "line1": {
+        "type": "string",
+        "title": "Line 1  (Role | Name, blank = hide)",
+        "default": "कहानी और आवाज़ / Story & Voice | Pushpender Pannu"
+      },
+      "line2": {
+        "type": "string",
+        "title": "Line 2  (Role | Name, blank = hide)",
+        "default": "कैमरा / Camera | Pushpender Pannu"
+      },
+      "line3": {
+        "type": "string",
+        "title": "Line 3  (Role | Name, blank = hide)",
+        "default": "एडिट / Edit | Pushpender Pannu"
+      },
+      "line4": {
+        "type": "string",
+        "title": "Line 4  (Role | Name, blank = hide)",
+        "default": "साथ में / Featuring | परिवार / Family"
+      },
+      "line5": {
+        "type": "string",
+        "title": "Line 5  (Role | Name, blank = hide)",
+        "default": "संगीत / Music | Epidemic Sound"
+      },
+      "line6": {
+        "type": "string",
+        "title": "Line 6  (Role | Name, blank = hide)",
+        "default": ""
+      },
+      "line7": {
+        "type": "string",
+        "title": "Line 7  (Role | Name, blank = hide)",
+        "default": ""
+      },
+      "showLogo": {
+        "type": "boolean",
+        "title": "Show Logo + Handle",
+        "default": true
+      },
+      "handle": {
+        "type": "string",
+        "title": "Handle",
+        "default": "@safar.pahad.parivar"
+      },
+      "backdrop": {
+        "type": "boolean",
+        "title": "Dark Background",
+        "default": true
+      },
+      "outAt": {
+        "type": "number",
+        "title": "Animate Out At (s, 0 = end)",
+        "minimum": 0,
+        "maximum": 10,
+        "default": 0
+      },
+      "accentColor": {
+        "type": "string",
+        "title": "Accent Colour",
+        "gddType": "color-rrggbb",
+        "pattern": "^#[0-9a-f]{6}$",
+        "default": "#f4b03e"
+      }
+    }
+  },
+  "renderRequirements": [
+    {
+      "resolution": {
+        "width": {
+          "ideal": 1920
+        },
+        "height": {
+          "ideal": 1080
+        }
+      },
+      "frameRate": {
+        "ideal": 30
+      },
+      "accessToPublicInternet": false
+    }
+  ],
+  "v_bmd": {
+    "duration": 10
+  }
+}
