@@ -28,6 +28,8 @@ CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Captions", [5500], (1080, 1920), "bg_b.jpg", {"style": "1", "position": "1", "size": 1.15}, "916"),
     ("SPP-Captions", [12500], (1920, 1080), "bg_a.jpg", {"style": 2, "plate": True, "position": 3}, "plate"),
     ("SPP-Captions", [6000], (1920, 1080), "bg_a.jpg", {"clipStart": 3}, "offset"),
+    ("SPP-Captions", [1500, 2750, 3000, 3800], (1920, 1080), "bg_a.jpg", {"style": "0", "srt": '{"spp": 1, "cues": [{"a": 1.0, "b": 4.2, "text": "ये नज़ारा सच में बेमिसाल था", "w": [[1.0, 1.2, 0], [1.25, 1.8, 0], [1.9, 2.1, 0], [2.1, 2.3, 0], [2.6, 3.5, 1], [3.6, 3.9, 0]]}]}'}, "words"),
+    ("SPP-Captions", [2800], (1920, 1080), "bg_b.jpg", {"style": "1", "srt": '{"spp": 1, "cues": [{"a": 1.0, "b": 4.2, "text": "ये नज़ारा सच में बेमिसाल था", "w": [[1.0, 1.2, 0], [1.25, 1.8, 0], [1.9, 2.1, 0], [2.1, 2.3, 0], [2.6, 3.5, 1], [3.6, 3.9, 0]]}]}'}, "wkaraoke"),
 ]
 errors = []
 with sync_playwright() as pw:

@@ -8,16 +8,17 @@ This folder is the **single source of truth** — Resolve gets its copies from h
 1. Install DaVinci Resolve Studio, Git (+ Git LFS), Python 3, ffmpeg (`choco install ffmpeg`).
 2. `git clone <your-remote> "F:\Video Editing\_Safar Pahad Parivar Kit"` then `git lfs pull`
 3. In PowerShell inside the kit: `.\install.ps1`
-4. Restart Resolve, then once: **Workspace → Scripts → Safar Pahad Parivar → Setup Render Presets**
+4. For word-timed captions: `.\Tools\setup_word_timing.ps1`
+5. Restart Resolve, then once: **Workspace → Scripts → Safar Pahad Parivar → Setup Render Presets**
 
 ## What's inside
 | Folder | Contents |
 |---|---|
-| `Resolve\Scripts\Utility\Safar Pahad Parivar` | Menu scripts: New Timeline (YouTube 16x9 / Shorts 9x16), Tag Shot Type (9 colours), Import Brand Graphics, Setup Render Presets |
+| `Resolve\Scripts\Utility\Safar Pahad Parivar` | Menu scripts: New Timeline (YouTube 16x9 / Shorts 9x16), Tag Shot Type (9 colours), Import Brand Graphics, Setup Render Presets, Captions - Sync Words to VO |
 | `Resolve\Templates\Edit\Titles\Safar Pahad Parivar` | OGraf titles: Info Card, Altitude Counter, Peak Callout, Pop-up Title, Credits, Captions (animated Hindi subtitles from SRT) (+ bundled fonts) |
 | `Graphics` | Intro (5s), End card (15s), Watermarks (16x9 and Shorts) — 4K, transparent |
 | `Brand` | Logo lock-ups, brand board, mock-ups |
-| `Tools` | `spp_sort_media.py` (sort footage by true orientation, with undo log), `new_video.ps1` (trip + video folders) |
+| `Tools` | `spp_sort_media.py` (sort footage by true orientation, with undo log), `new_video.ps1` (trip + video folders), `spp_word_timing.py` + `setup_word_timing.ps1` (word-timed captions from the VO) |
 | `Docs` | Cheat sheet, VO scripts |
 | `Source` | Generators for every graphic/template, fonts, reference images |
 

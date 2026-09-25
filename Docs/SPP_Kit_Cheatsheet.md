@@ -73,3 +73,13 @@ The subtitle track (ST1) stays as the plain, editable source and the **.srt you 
    **Position** dropdown: Bottom · Raised (Shorts, clears the YouTube buttons) · Centre · Top. Optional dark **plate**.
 6. Turn off ST1 (click its eye/enable toggle) so captions aren't shown twice — Resolve also burns it into renders when enabled; keep it for the YouTube .srt.
 Edited the text? Export the SRT again and re-paste. Words animate whole, so Hindi always shapes correctly.
+
+### 7b. Real word timing + stress (recommended)
+One click instead of steps 2 and 4: **Workspace → Scripts → Safar Pahad Parivar → Captions - Sync Words to VO**.
+It listens to the clips on the audio track named **VO** (on the GPU), finds when each word of your subtitles is really
+spoken, trims the silences, marks words you stress (louder / stretched), and fills in the SPP Captions clip itself
+(text and start time). Resolve pauses while it works (~1 min per 10 min of VO; first run downloads a 3 GB model).
+- Your subtitle spelling is kept; the VO only supplies the timing. No subtitles yet? It creates them from the VO — fix the spelling on the subtitle track and run again.
+- Force a stress: put stars round the word in the subtitle, e.g. `ये नज़ारा *बेमिसाल* था` (stars never show).
+- Changed the subtitles or the VO edit? Just run it again.
+- New PC: run `.\Tools\setup_word_timing.ps1` once (uses the python.org Python, not the Microsoft Store one).

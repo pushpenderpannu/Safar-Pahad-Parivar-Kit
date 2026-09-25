@@ -33,7 +33,7 @@ const POP=`"SPP Pop","Poppins","Segoe UI",sans-serif`;
 const MIX=`"SPP Pop","SPP Deva","Poppins","Noto Sans Devanagari","Nirmala UI",sans-serif`;
 const fmtM=(n)=>Math.round(n).toLocaleString("en-IN");
 const setT=(n,v)=>{v=(v??"")+"";if(n.textContent!==v)n.textContent=v;};
-function parseSRT(txt){const out=[];const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").replace(/<[^>]*>/g,"").replace(/\{\\[^}]*\}/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
+function parseSRT(txt){const out=[];const j=(txt||"").trim();if(j[0]==="{"){try{const d=JSON.parse(j);return (d.cues||[]).map(c=>({a:+c.a,b:+c.b,text:String(c.text||""),w:Array.isArray(c.w)?c.w:null})).sort((x,y)=>x.a-y.a);}catch(e){return out;}}const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").replace(/<[^>]*>/g,"").replace(/\{\\[^}]*\}/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
 const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:none;--u:1px;--accent:#f4b03e;--navy:#07122b;--snow:#f5f8fc}
 *{box-sizing:border-box;margin:0;padding:0}
 .scene{position:absolute;inset:0;opacity:0}
@@ -446,7 +446,8 @@ TEMPLATES.append(dict(
 .box.plate{{background:rgba(7,18,43,.62)}}
 .w{{display:inline-block;white-space:pre;
    text-shadow:0 0 {U(3)} rgba(7,18,43,.95),0 {U(2)} {U(6)} rgba(7,18,43,.85),0 {U(4)} {U(18)} rgba(0,0,0,.45)}}
-.box.plate .w{{text-shadow:none}}""",
+.box.plate .w{{text-shadow:none}}
+.w.stress{{margin:0 .2em;transform-origin:50% 70%}}""",
     build=r"""
 this.$.cap=el("div","cap",scene); this.$.box=el("div","box deva",this.$.cap);
 this._cues=[]; this._srtKey=null; this._cueIdx=-2; this._words=[];""",
@@ -472,18 +473,23 @@ if(idx!==this._cueIdx){this._cueIdx=idx;this.$.box.innerHTML="";this._words=[];
   lines.forEach((ln,li)=>{ln.split(/\s+/).filter(Boolean).forEach((w,wi,arr)=>{
      const sp=el("span","w",this.$.box);sp.textContent=w+(wi<arr.length-1?" ":"");this._words.push(sp);});
      if(li<lines.length-1)el("br","",this.$.box);});
-  const L=this._words.map(x=>x.textContent.trim().length||1),tot=L.reduce((a,b)=>a+b,0);let acc=0;
-  this._wt=L.map(l=>{const f=acc/tot;acc+=l;return [f,acc/tot];});}
+  const n=this._words.length,d0=Math.max(0.3,c.b-c.a);
+  if(c.w&&c.w.length===n){this._wt=c.w.map(x=>[x[0]-c.a,x[1]-c.a,x[2]?1:0]);}
+  else{const L=this._words.map(x=>x.textContent.trim().length||1),tot=L.reduce((a,b)=>a+b,0);let acc=0;
+    this._wt=L.map(l=>{const f=acc/tot;acc+=l;return [d0*0.85*f,d0*0.85*acc/tot,0];});}
+  this._wt.forEach((x,i)=>{x[3]=i<n-1?Math.max(x[1],this._wt[i+1][0]):x[1]+0.25;});
+  this._words.forEach((w,i)=>w.classList.toggle("stress",!!this._wt[i][2]));}
 const dur=Math.max(0.3,c.b-c.a),lt=T-c.a,st=s.style|0;
 const boxIn=eo(seg(lt,0,0.18)),boxOut=1-eo(seg(lt,dur,dur+0.2));
 this.$.box.style.opacity=String(st===2?boxIn*boxOut:(s.plate?boxIn*boxOut:boxOut));
-this._words.forEach((w,i)=>{const [f0,f1]=this._wt[i];
-  if(st===0){const ta=dur*0.85*f0,k=eo(seg(lt,ta,ta+0.22));w.style.opacity=String(k);
-     const tb=dur*0.85*f1,cur=lt>=ta&&lt<tb+0.08;
-     w.style.transform=`translateY(${Math.round(14*this._u*(1-k))}px) scale(${(0.92+0.08*eb(seg(lt,ta,ta+0.22))).toFixed(4)})`;w.style.color=cur?"var(--hl)":"";}
-  else if(st===1){const a=dur*0.9*f0,b=dur*0.9*f1,on=lt>=a&&lt<b+0.05;w.style.opacity=String(boxIn);
-     w.style.color=(lt>=a)?(on?"var(--hl)":"var(--txt)"):"rgba(245,248,252,.55)";w.style.transform=on?"scale(1.06)":"scale(1)";}
-  else{w.style.opacity="1";w.style.transform="none";w.style.color="";}});""",
+this._words.forEach((w,i)=>{const [ws,we,str,hl]=this._wt[i],cur=lt>=ws&&lt<hl,P=str?1.1:1;
+  if(st===0){const ta=ws-0.06,k=eo(seg(lt,ta,ta+0.22)),kb=eb(seg(lt,ta,ta+(str?0.32:0.22)));w.style.opacity=String(k);
+     w.style.transform=`translateY(${Math.round(14*this._u*(1-k))}px) scale(${((0.92+0.08*kb)*(str?1+0.1*kb:1)).toFixed(4)})`;
+     w.style.color=(cur||(str&&lt>=ws))?"var(--hl)":"";}
+  else if(st===1){w.style.opacity=String(boxIn);
+     w.style.color=(lt>=ws)?((cur||str)?"var(--hl)":"var(--txt)"):"rgba(245,248,252,.55)";
+     w.style.transform=`scale(${(cur?1.06*P:(str&&lt>=ws?P:1)).toFixed(3)})`;}
+  else{w.style.opacity="1";w.style.transform=str?"scale(1.1)":"none";w.style.color=str?"var(--hl)":"";}});""",
 ))
 
 # ------------------------------------------------------------------ write files

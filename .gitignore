@@ -10,3 +10,5 @@ desktop.ini
 # test leftovers
 _render_test/
 *.tmp
+Tools/.venv/
+Tools/_setup*
