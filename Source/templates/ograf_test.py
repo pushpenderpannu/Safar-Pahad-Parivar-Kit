@@ -9,13 +9,14 @@ D = tempfile.mkdtemp(); OUT = os.path.join(SRC, "_build", "ograf_shots"); os.mak
 shutil.copytree(os.path.join(KIT, "Resolve", "Templates", "Edit", "Titles", "Safar Pahad Parivar"), os.path.join(D, "Safar Pahad Parivar"))
 shutil.copy(os.path.join(SRC, "templates", "harness.html"), D)
 for _b in ("bg_a.jpg", "bg_b.jpg"): shutil.copy(os.path.join(SRC, "assets", _b), D)
+shutil.copytree(os.path.join(SRC, "assets", "sample_route"), os.path.join(D, "route"))
 srv = subprocess.Popen([sys.executable, "-m", "http.server", "8765", "--bind", "127.0.0.1"], cwd=D,
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 time.sleep(1.0)
 CASES = [  # (template, times ms, resolution, bg, data, tag)
-    ("SPP-Info-Card", [300, 700, 1200, 3000, 7700], (1920, 1080), "bg_a.jpg", {}, "169"),
+    ("SPP-Info-Card", [300, 700, 1000, 1300, 1600, 3000, 7700], (1920, 1080), "bg_a.jpg", {}, "169"),
     ("SPP-Info-Card", [3000], (1080, 1920), "bg_b.jpg", {"position": "3", "weather": "5"}, "916"),
-    ("SPP-Altitude-Counter", [500, 1800, 4000], (1920, 1080), "bg_b.jpg", {}, "169"),
+    ("SPP-Altitude-Counter", [500, 1000, 1400, 1800, 4000], (1920, 1080), "bg_b.jpg", {}, "169"),
     ("SPP-Altitude-Counter", [4000], (1920, 1080), "bg_b.jpg", {"position": 4, "scale": 1.4}, "center"),
     ("SPP-Peak-Callout", [200, 600, 1000, 3000], (1920, 1080), "bg_a.jpg", {"targetX": 34, "targetY": 12, "labelDX": 14, "labelDY": 18}, "dot"),
     ("SPP-Peak-Callout", [3000], (1920, 1080), "bg_a.jpg", {"targetX": 92, "targetY": 33, "labelDX": -16, "labelDY": -10, "marker": 1, "peakHi": "पंचाचूली II", "peakEn": "PANCHACHULI II", "heightM": 6904}, "arrow"),
@@ -30,8 +31,12 @@ CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Captions", [6000], (1920, 1080), "bg_a.jpg", {"clipStart": 3}, "offset"),
     ("SPP-Captions", [1500, 2750, 3000, 3800], (1920, 1080), "bg_a.jpg", {"style": "0", "srt": '{"spp": 1, "cues": [{"a": 1.0, "b": 4.2, "text": "ये नज़ारा सच में बेमिसाल था", "w": [[1.0, 1.2, 0], [1.25, 1.8, 0], [1.9, 2.1, 0], [2.1, 2.3, 0], [2.6, 3.5, 1], [3.6, 3.9, 0]]}]}'}, "words"),
     ("SPP-Captions", [2800], (1920, 1080), "bg_b.jpg", {"style": "1", "srt": '{"spp": 1, "cues": [{"a": 1.0, "b": 4.2, "text": "ये नज़ारा सच में बेमिसाल था", "w": [[1.0, 1.2, 0], [1.25, 1.8, 0], [1.9, 2.1, 0], [2.1, 2.3, 0], [2.6, 3.5, 1], [3.6, 3.9, 0]]}]}'}, "wkaraoke"),
+    ("SPP-Route-Map", [500, 1600, 3500, 5200, 7600, 9500, 12500, 14000], (1920, 1080), "bg_a.jpg", {"routeFile": "http://127.0.0.1:8765/route/route.json"}, "follow"),
+    ("SPP-Route-Map", [14000], (1920, 1080), "bg_a.jpg", {"routeFile": "http://127.0.0.1:8765/route/route.json", "camera": "0"}, "whole"),
+    ("SPP-Route-Map", [2000], (1920, 1080), "bg_a.jpg", {}, "empty"),
 ]
 errors = []
+if os.environ.get("SPP_ONLY"): CASES = [c for c in CASES if c[0] == os.environ["SPP_ONLY"]]
 with sync_playwright() as pw:
     b = pw.chromium.launch()
     for tpl, times, (w, h), bg, data, tag in CASES:

@@ -83,3 +83,9 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - Force a stress: put stars round the word in the subtitle, e.g. `ये नज़ारा *बेमिसाल* था` (stars never show).
 - Changed the subtitles or the VO edit? Just run it again.
 - New PC: run `.\Tools\setup_word_timing.ps1` once (uses the python.org Python, not the Microsoft Store one).
+
+## 8. GPS: Info Cards, route map, rolling numbers
+- **Info Cards - Fill from GPS** (menu script): empty SPP Info Cards get place, altitude, date, time, weather, temperature for the shot underneath.
+- **SPP Route Map** title + **Route Map - Build from Timeline** (menu script): relief map, dotted path along the real roads, stops with arrival/departure times, running clock. Fix/add stops in `stops.csv` and run again.
+- Numbers roll like a dial (odometer altitude, spinning date/time digits) — *Rolling-dial numbers* in the Inspector.
+- Better paths: export Google Maps Timeline (`Timeline.json`) into the trip folder. Full guide: `Docs\Maps_GPS_and_Terrain.md`.

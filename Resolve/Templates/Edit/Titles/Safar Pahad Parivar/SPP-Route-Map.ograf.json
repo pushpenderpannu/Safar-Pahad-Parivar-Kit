@@ -1,0 +1,140 @@
+{
+  "$schema": "https://ograf.ebu.io/v1/specification/json-schemas/graphics/schema.json",
+  "id": "spp-route-map",
+  "version": "1.0.0",
+  "name": "SPP Route Map",
+  "description": "Animated trip route: dotted path drawn over a relief map, stops pop up with arrival / departure times.",
+  "author": {
+    "name": "Safar Pahad Parivar"
+  },
+  "main": "SPP-Route-Map.js",
+  "supportsRealTime": false,
+  "supportsNonRealTime": true,
+  "stepCount": 1,
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "routeFile": {
+        "type": "string",
+        "gddType": "file-path",
+        "gddOptions": {
+          "extensions": [
+            ".json"
+          ]
+        },
+        "title": "Route file (route.json made by spp_gps.py)",
+        "default": ""
+      },
+      "titleHi": {
+        "type": "string",
+        "title": "Title (Hindi)",
+        "default": "हमारा सफ़र"
+      },
+      "titleEn": {
+        "type": "string",
+        "title": "Title (English)",
+        "default": "OUR ROUTE"
+      },
+      "drawStart": {
+        "type": "number",
+        "title": "Route starts drawing at (s)",
+        "minimum": 0,
+        "maximum": 20,
+        "default": 1.2
+      },
+      "drawEnd": {
+        "type": "number",
+        "title": "Route finished at (s)",
+        "minimum": 2,
+        "maximum": 40,
+        "default": 12
+      },
+      "pause": {
+        "type": "number",
+        "title": "Pause at each stop (s)",
+        "minimum": 0,
+        "maximum": 4,
+        "default": 1.0
+      },
+      "camera": {
+        "type": "string",
+        "title": "Camera",
+        "enum": [
+          "0",
+          "1"
+        ],
+        "gddType": "select",
+        "gddOptions": {
+          "labels": {
+            "0": "Whole route",
+            "1": "Follow the journey"
+          }
+        },
+        "default": "1"
+      },
+      "zoom": {
+        "type": "number",
+        "title": "Follow zoom",
+        "minimum": 1.2,
+        "maximum": 4,
+        "default": 2.0
+      },
+      "showTimes": {
+        "type": "boolean",
+        "title": "Show arrival / departure times",
+        "default": true
+      },
+      "showClock": {
+        "type": "boolean",
+        "title": "Show running date & time",
+        "default": true
+      },
+      "keepLabels": {
+        "type": "boolean",
+        "title": "Keep earlier stop names",
+        "default": true
+      },
+      "dim": {
+        "type": "number",
+        "title": "Darken map",
+        "minimum": 0,
+        "maximum": 0.8,
+        "default": 0.1
+      },
+      "outAt": {
+        "type": "number",
+        "title": "Animate Out At (s, 0 = end)",
+        "minimum": 0,
+        "maximum": 40,
+        "default": 0
+      },
+      "accentColor": {
+        "type": "string",
+        "title": "Accent Colour",
+        "gddType": "color-rrggbb",
+        "pattern": "^#[0-9a-f]{6}$",
+        "default": "#f4b03e"
+      }
+    }
+  },
+  "renderRequirements": [
+    {
+      "resolution": {
+        "width": {
+          "ideal": 1920
+        },
+        "height": {
+          "ideal": 1080
+        }
+      },
+      "frameRate": {
+        "ideal": 30
+      },
+      "accessToPublicInternet": false
+    }
+  ],
+  "v_bmd": {
+    "duration": 40
+  }
+}

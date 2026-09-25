@@ -98,6 +98,11 @@
         "gddType": "color-rrggbb",
         "pattern": "^#[0-9a-f]{6}$",
         "default": "#f4b03e"
+      },
+      "rolling": {
+        "type": "boolean",
+        "title": "Rolling-dial numbers",
+        "default": true
       }
     }
   },

@@ -31,11 +31,39 @@ const POP=`"SPP Pop","Poppins","Segoe UI",sans-serif`;
 const MIX=`"SPP Pop","SPP Deva","Poppins","Noto Sans Devanagari","Nirmala UI",sans-serif`;
 const fmtM=(n)=>Math.round(n).toLocaleString("en-IN");
 const setT=(n,v)=>{v=(v??"")+"";if(n.textContent!==v)n.textContent=v;};
-function parseSRT(txt){const out=[];const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").replace(/<[^>]*>/g,"").replace(/\{\\[^}]*\}/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
+// ---- rolling digit wheels (odometer / slot-machine numbers)
+const RH=1.18;
+function rollBuild(host,text){if(host._rk===text)return host._rw;host._rk=text;host.textContent="";host.classList.add("roll");const W=[];
+  const runs=text.match(/[0-9]|[^0-9]+/g)||[];
+  for(const ch of runs){if(ch.length===1&&ch>="0"&&ch<="9"){const w=document.createElement("span");w.className="rw";const st=document.createElement("span");st.className="rs";
+      for(let r=0;r<3;r++)for(let d=0;d<10;d++){const c=document.createElement("span");c.textContent=String(d);st.appendChild(c);}
+      w.appendChild(st);host.appendChild(w);W.push({w,st,d:+ch});}
+    else{const c=document.createElement("span");c.className="rc";c.textContent=ch;host.appendChild(c);W.push({c});}}
+  host._rw=W;return W;}
+// odometer: value x counts, digits spin and carry like a car's odometer; layout fixed to the final number
+function rollOdo(host,x,final,fmt){fmt=fmt||(v=>Math.round(v).toLocaleString("en-IN"));
+  const W=rollBuild(host,fmt(final)),ds=W.filter(q=>q.st);const n=ds.length;x=Math.max(0,x);
+  ds.forEach((q,i)=>{const k=n-1-i,P=Math.pow(10,k),r=x%P;let pos=Math.floor(x/P)%10+(k===0?(x%1):Math.max(0,r-(P-1)));
+    q.st.style.transform=`translateY(${(-(pos+10)*RH).toFixed(4)}em)`;q.w.style.opacity=(k>0&&x<P-0.5)?"0.28":"1";});}
+// slot: each digit spins in (two turns) and lands on its value, left to right; other characters fade in
+function rollSlot(host,text,prog,stag){stag=stag??0.08;const W=rollBuild(host,text);
+  W.forEach((q,i)=>{const e=eo(seg(prog,i*stag,i*stag+0.62));
+    if(q.st)q.st.style.transform=`translateY(${(-(q.d+20*(1-e))*RH).toFixed(4)}em)`;else q.c.style.opacity=String(e);});}
+function rollPlain(host,text){const W=rollBuild(host,text);W.forEach(q=>{if(q.st)q.st.style.transform=`translateY(${(-(q.d+10)*RH).toFixed(4)}em)`;else q.c.style.opacity="1";});}
+
+function parseSRT(txt){const out=[];const j=(txt||"").trim();if(j[0]==="{"){try{const d=JSON.parse(j);return (d.cues||[]).map(c=>({a:+c.a,b:+c.b,text:String(c.text||""),w:Array.isArray(c.w)?c.w:null})).sort((x,y)=>x.a-y.a);}catch(e){return out;}}const re=/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/;const blocks=txt.replace(/\r/g,"").split(/\n\s*\n/);for(const b of blocks){const lines=b.split("\n");const i=lines.findIndex(l=>re.test(l));if(i<0)continue;const m=lines[i].match(re);const tt=(h,mi,se,ms)=>(+h)*3600+(+mi)*60+(+se)+(+ms)/1000;const text=lines.slice(i+1).join("\n").replace(/<[^>]*>/g,"").replace(/\{\\[^}]*\}/g,"").replace(/&nbsp;/g," ").replace(/&amp;/g,"&").trim();if(text)out.push({a:tt(m[1],m[2],m[3],m[4]),b:tt(m[5],m[6],m[7],m[8]),text});}out.sort((x,y)=>x.a-y.a);return out;}
 const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:none;--u:1px;--accent:#f4b03e;--navy:#07122b;--snow:#f5f8fc}
 *{box-sizing:border-box;margin:0;padding:0}
 .scene{position:absolute;inset:0;opacity:0}
-.deva{font-family:${DEVA}} .pop{font-family:${POP}} .mix{font-family:${MIX}}`;
+.deva{font-family:${DEVA}} .pop{font-family:${POP}} .mix{font-family:${MIX}}
+.roll{display:inline-flex;align-items:flex-end;white-space:pre;vertical-align:bottom;line-height:1.18em}
+.rw{display:inline-block;position:relative;height:1.18em;overflow:hidden;width:.64em;text-align:center;
+  -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
+.rs{display:flex;flex-direction:column;will-change:transform}
+.rs span{display:block;height:1.18em;line-height:1.18em;font-variant-numeric:tabular-nums}
+.rc{display:inline-block;height:1.18em;line-height:1.18em}`;
+function fileURL(p){p=(p||"").trim().replace(/^"|"$/g,"");if(!p)return "";if(/^(https?|file):/i.test(p))return p;
+  const parts=p.replace(/\\/g,"/").split("/");return "file:///"+parts.map((x,i)=>i===0&&/^[A-Za-z]:$/.test(x)?x:encodeURIComponent(x)).join("/");}
 function el(tag,cls,parent,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;if(parent)parent.appendChild(e);return e;}
 function svgEl(tag,attrs,parent){const e=document.createElementNS("http://www.w3.org/2000/svg",tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
 const MARK_SVG=`<svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg"><circle cx="150" cy="30" r="11" fill="var(--accent)"/>
@@ -54,12 +82,14 @@ class SPPGraphic extends HTMLElement{
     this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);
     await sppFonts();
     if(document.fonts&&document.fonts.load){await Promise.all(['800 60px "SPP Deva"','700 30px "SPP Deva"','500 30px "SPP Deva"','700 20px "SPP Pop"','500 20px "SPP Pop"'].map(f=>document.fonts.load(f))).catch(()=>undefined);}
+    if(this._prepare)await this._prepare();
     this._apply();this._currentStep=1;this._setFrame(0);return{statusCode:200};}
   async dispose(){this.$.scene.remove();return{statusCode:200};}
   async playAction(){this._currentStep=1;this._setFrame(1.5);return{statusCode:200,currentStep:1};}
   async stopAction(){this._currentStep=0;this._setFrame(-1);return{statusCode:200};}
   async updateAction(p){const d=p?.data||{};this._state={...this._state,...d};
     if(!this._schedule.some(e=>e.action?.type==="updateAction"))this._initialData={...this._initialData,...d};
+    if(this._prepare)await this._prepare();
     this._apply();return{statusCode:200};}
   async customAction(){return{statusCode:200};}
   async setActionsSchedule(p){this._schedule=(p?.schedule||p?.actions||[]).slice().sort((a,b)=>a.timestamp-b.timestamp);return{statusCode:200};}
@@ -69,6 +99,7 @@ class SPPGraphic extends HTMLElement{
       if(a.type==="updateAction")this._state={...this._state,...(a.params?.data||{})};
       else if(a.type==="playAction"){lastPlay=e.timestamp;lastStop=null;}
       else if(a.type==="stopAction"){lastStop=e.timestamp;lastPlay=null;}}
+    if(this._prepare)await this._prepare();
     this._apply();
     if(lastStop!==null){this._currentStep=0;this._setFrame(-1);}
     else{this._currentStep=1;this._setFrame((ts-(lastPlay??0))/1000);}
@@ -113,5 +144,6 @@ const kt=eo(seg(t,0.15,0.5)); this.$.kt.style.opacity=String(kt); this.$.kt.styl
 const h=eo(seg(t,0.2,0.8)); this.$.th.style.transform=`translateY(${Math.round(110*this._u*(1-h))}px)`;
 const e=eo(seg(t,0.55,1.1)); this.$.te.style.opacity=String(e*0.92); this.$.te.style.letterSpacing=(0.6-0.3*e).toFixed(3)+"em";
 }
+
 }
 export default PopupTitleGraphic;
