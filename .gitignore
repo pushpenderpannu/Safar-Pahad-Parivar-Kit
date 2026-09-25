@@ -12,3 +12,4 @@ _render_test/
 *.tmp
 Tools/.venv/
 Tools/_setup*
+Tools/_work/
