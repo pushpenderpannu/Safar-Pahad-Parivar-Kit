@@ -58,25 +58,8 @@
       },
       "position": {
         "type": "string",
-        "title": "Position",
-        "enum": [
-          "0",
-          "1",
-          "2",
-          "3",
-          "4"
-        ],
-        "gddType": "select",
-        "gddOptions": {
-          "labels": {
-            "0": "Bottom left",
-            "1": "Bottom right",
-            "2": "Top left",
-            "3": "Top right",
-            "4": "Centre"
-          }
-        },
-        "default": "3"
+        "title": "Position: bottom-left / bottom-right / top-left / top-right / centre",
+        "default": "top-right"
       },
       "scale": {
         "type": "number",

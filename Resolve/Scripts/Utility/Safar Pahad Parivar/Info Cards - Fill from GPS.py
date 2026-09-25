@@ -49,7 +49,7 @@ elif C.engine_ok():
         C.set_dyn(tool, 6, d.get("date_hi") or "")
         C.set_dyn(tool, 8, d.get("time_ampm") or "")
         if "card" in d:
-            C.set_select(tool, 9, d["card"])
+            C.set_choice(tool, 9, C.WEATHER_WORDS[int(d["card"])])
         if d.get("temp_c") is not None:
             C.set_dyn(tool, 10, "%d°C" % d["temp_c"])
         done += 1

@@ -1,5 +1,6 @@
-const DEFAULTS={"peakHi": "पंचाचूली", "peakEn": "PANCHACHULI", "showHeight": true, "heightM": 6904, "targetX": 50, "targetY": 38, "labelDX": 12, "labelDY": -16, "marker": "0", "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e"};
+const DEFAULTS={"peakHi": "पंचाचूली", "peakEn": "PANCHACHULI", "showHeight": true, "heightM": 6904, "targetX": 50, "targetY": 38, "labelDX": 12, "labelDY": -16, "marker": "dot", "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e"};
 const DURATION=6;
+const CHOICES={"marker": ["dot", "arrow"]};
 const CSS=`
 .lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .lbl{position:absolute;white-space:nowrap;background:rgba(7,18,43,.55);padding:calc(var(--u)*8) calc(var(--u)*18) calc(var(--u)*10);border-radius:calc(var(--u)*12)}
@@ -57,7 +58,7 @@ const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:non
 .roll{display:inline-flex;align-items:flex-end;white-space:pre;vertical-align:bottom;line-height:1.18em}
 .rw{display:inline-block;position:relative;height:1.18em;overflow:hidden;width:.64em;text-align:center;
   -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
-.rs{display:flex;flex-direction:column;will-change:transform}
+.rs{display:flex;flex-direction:column}
 .rs span{display:block;height:1.18em;line-height:1.18em;font-variant-numeric:tabular-nums}
 .rc{display:inline-block;height:1.18em;line-height:1.18em}`;
 function fileURL(p){p=(p||"").trim().replace(/^"|"$/g,"");if(!p)return "";if(/^(https?|file):/i.test(p))return p;
@@ -75,6 +76,10 @@ class SPPGraphic extends HTMLElement{
     const scene=document.createElement("div");scene.className="scene";root.append(st,scene);this.$.scene=scene;this._build(scene);}
   _setUnit(w,h){this._w=w;this._h=h;this._u=Math.min(w,h)/1080;this._vertical=h>w;this.style.setProperty("--u",this._u+"px");}
   px(n){return Math.round(n*this._u)+"px";}
+  _ch(k){const v=String(this._state[k]??"").trim().toLowerCase(),L=CHOICES[k]||[];if(/^\d+(\.\d+)?$/.test(v))return clamp(Math.round(+v),0,Math.max(0,L.length-1));
+    const n=x=>x.toLowerCase().replace(/[^a-z0-9\u0900-\u097f]/g,"").replace("center","centre");const q=n(v);if(!q)return 0;
+    let i=L.findIndex(o=>n(o)===q);if(i<0)i=L.findIndex(o=>n(o).startsWith(q));if(i<0)i=L.findIndex(o=>n(o).includes(q));
+    if(i<0){const d=DEFAULTS[k];i=Math.max(0,L.findIndex(o=>o===d));}return i;}
   async load(p){this._initialData=p?.data||{};this._state={...DEFAULTS,...this._initialData};this._schedule=[];
     const r=p?.renderCharacteristics?.resolution;
     this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);
@@ -146,7 +151,7 @@ this.$.lbl.style.transform=`translateY(${Math.round(14*u*(1-lk))}px) scale(${s.s
 this.$.pm.style.opacity=String(eo(seg(t,1.0,1.4)));
 // marker
 const mk=eb(seg(t,0,0.35));
-if((s.marker|0)===0){
+if(this._ch("marker")===0){
   this.$.arrow.setAttribute("opacity","0"); this.$.dot.setAttribute("opacity","1");
   this.$.dot.setAttribute("cx",tx);this.$.dot.setAttribute("cy",ty);this.$.dot.setAttribute("r",String(Math.max(0,9*u*mk)));
   const ph=(t*0.9)%1; this.$.ring.setAttribute("cx",tx);this.$.ring.setAttribute("cy",ty);

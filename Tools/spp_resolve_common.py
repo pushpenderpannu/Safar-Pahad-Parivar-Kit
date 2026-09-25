@@ -104,7 +104,9 @@ def set_dyn(tool, index, value):
         tool.SetInput(f"DynParamText{index}", value)
 
 
-def set_select(tool, index, value):
-    """Dropdowns: write both forms (text and number) - whichever the loader uses."""
-    tool.SetInput(f"DynParamText{index}", str(int(value)))
-    tool.SetInput(f"DynParamNum{index}", int(value))
+WEATHER_WORDS = ["none", "sun", "part-cloud", "cloud", "rain", "snow", "fog", "night"]
+
+
+def set_choice(tool, index, word):
+    """Choice fields are typed words in Resolve 21 (e.g. weather 'rain')."""
+    tool.SetInput(f"DynParamText{index}", str(word))

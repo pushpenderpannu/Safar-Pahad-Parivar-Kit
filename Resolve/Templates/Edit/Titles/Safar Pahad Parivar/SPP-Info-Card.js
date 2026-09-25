@@ -1,5 +1,6 @@
-const DEFAULTS={"placeHi": "मुंस्यारी", "placeEn": "MUNSIYARI · UTTARAKHAND", "showAltitude": true, "altitude": 2200, "countUp": true, "showDate": true, "date": "26 जून 2026", "showTime": true, "time": "09:58 AM", "weather": "1", "temperature": "14°C", "position": "0", "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e", "rolling": true};
+const DEFAULTS={"placeHi": "मुंस्यारी", "placeEn": "MUNSIYARI · UTTARAKHAND", "showAltitude": true, "altitude": 2200, "countUp": true, "showDate": true, "date": "26 जून 2026", "showTime": true, "time": "09:58 AM", "weather": "sun", "temperature": "14°C", "position": "bottom-left", "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e", "rolling": true};
 const DURATION=8;
+const CHOICES={"weather": ["none", "sun", "part-cloud", "cloud", "rain", "snow", "fog", "night"], "position": ["bottom-left", "bottom-right", "top-left", "top-right"]};
 const CSS=`
 .card{position:absolute;display:flex;gap:calc(var(--u)*20);padding:calc(var(--u)*22) calc(var(--u)*32) calc(var(--u)*22) calc(var(--u)*22);background:rgba(7,18,43,.62);border-radius:calc(var(--u)*18);box-shadow:0 calc(var(--u)*10) calc(var(--u)*40) rgba(0,0,0,.35)}
 .bar{width:calc(var(--u)*6);border-radius:calc(var(--u)*3);background:var(--accent);transform-origin:50% 0}
@@ -61,7 +62,7 @@ const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:non
 .roll{display:inline-flex;align-items:flex-end;white-space:pre;vertical-align:bottom;line-height:1.18em}
 .rw{display:inline-block;position:relative;height:1.18em;overflow:hidden;width:.64em;text-align:center;
   -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
-.rs{display:flex;flex-direction:column;will-change:transform}
+.rs{display:flex;flex-direction:column}
 .rs span{display:block;height:1.18em;line-height:1.18em;font-variant-numeric:tabular-nums}
 .rc{display:inline-block;height:1.18em;line-height:1.18em}`;
 function fileURL(p){p=(p||"").trim().replace(/^"|"$/g,"");if(!p)return "";if(/^(https?|file):/i.test(p))return p;
@@ -79,6 +80,10 @@ class SPPGraphic extends HTMLElement{
     const scene=document.createElement("div");scene.className="scene";root.append(st,scene);this.$.scene=scene;this._build(scene);}
   _setUnit(w,h){this._w=w;this._h=h;this._u=Math.min(w,h)/1080;this._vertical=h>w;this.style.setProperty("--u",this._u+"px");}
   px(n){return Math.round(n*this._u)+"px";}
+  _ch(k){const v=String(this._state[k]??"").trim().toLowerCase(),L=CHOICES[k]||[];if(/^\d+(\.\d+)?$/.test(v))return clamp(Math.round(+v),0,Math.max(0,L.length-1));
+    const n=x=>x.toLowerCase().replace(/[^a-z0-9\u0900-\u097f]/g,"").replace("center","centre");const q=n(v);if(!q)return 0;
+    let i=L.findIndex(o=>n(o)===q);if(i<0)i=L.findIndex(o=>n(o).startsWith(q));if(i<0)i=L.findIndex(o=>n(o).includes(q));
+    if(i<0){const d=DEFAULTS[k];i=Math.max(0,L.findIndex(o=>o===d));}return i;}
   async load(p){this._initialData=p?.data||{};this._state={...DEFAULTS,...this._initialData};this._schedule=[];
     const r=p?.renderCharacteristics?.resolution;
     this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);
@@ -140,10 +145,10 @@ this.$.alt.style.display=s.showAltitude?"inline-flex":"none"; this.$.date.style.
 this.$.time.style.display=(s.showTime&&s.time)?"inline-flex":"none"; this.$.temp.style.display=s.temperature?"inline-flex":"none";
 
 
-const w=this.WX[s.weather]; this.$.wx.style.display=w?"block":"none"; if(w&&this._wxk!==s.weather){this.$.wx.innerHTML=`<svg viewBox="0 0 64 64">${w}</svg>`;this._wxk=s.weather;}
+const w=this.WX[this._ch("weather")]; this.$.wx.style.display=w?"block":"none"; if(w&&this._wxk!==s.weather){this.$.wx.innerHTML=`<svg viewBox="0 0 64 64">${w}</svg>`;this._wxk=s.weather;}
 const anyMeta=s.showAltitude||(s.showDate&&s.date)||(s.showTime&&s.time)||s.temperature; this.$.meta.style.display=anyMeta?"flex":"none";
-this._side=this._corner(this.$.card,s.position|0,90,84,60,560,250);
-this.$.card.style.transformOrigin=(this._side==="right"?"100% ":"0% ")+((s.position|0)>=2?"0%":"100%");
+this._side=this._corner(this.$.card,this._ch("position"),90,84,60,560,250);
+this.$.card.style.transformOrigin=(this._side==="right"?"100% ":"0% ")+((this._ch("position"))>=2?"0%":"100%");
 }
 _frame(t,out){
 const s=this._state,dir=this._side==="right"?1:-1,sc=s.scale||1;

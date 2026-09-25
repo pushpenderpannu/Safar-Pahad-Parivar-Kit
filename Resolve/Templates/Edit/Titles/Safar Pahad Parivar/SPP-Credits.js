@@ -1,5 +1,6 @@
 const DEFAULTS={"heading": "आभार · CREDITS", "line1": "कहानी और आवाज़ / Story & Voice | Pushpender Pannu", "line2": "कैमरा / Camera | Pushpender Pannu", "line3": "एडिट / Edit | Pushpender Pannu", "line4": "साथ में / Featuring | परिवार / Family", "line5": "संगीत / Music | Epidemic Sound", "line6": "", "line7": "", "showLogo": true, "handle": "@safar.pahad.parivar", "backdrop": true, "outAt": 0, "accentColor": "#f4b03e"};
 const DURATION=10;
+const CHOICES={};
 const CSS=`
 .bd{position:absolute;inset:0;background:rgba(7,18,43,.86)}
 .wrap{position:absolute;left:50%;top:50%;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-50%)}
@@ -61,7 +62,7 @@ const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:non
 .roll{display:inline-flex;align-items:flex-end;white-space:pre;vertical-align:bottom;line-height:1.18em}
 .rw{display:inline-block;position:relative;height:1.18em;overflow:hidden;width:.64em;text-align:center;
   -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
-.rs{display:flex;flex-direction:column;will-change:transform}
+.rs{display:flex;flex-direction:column}
 .rs span{display:block;height:1.18em;line-height:1.18em;font-variant-numeric:tabular-nums}
 .rc{display:inline-block;height:1.18em;line-height:1.18em}`;
 function fileURL(p){p=(p||"").trim().replace(/^"|"$/g,"");if(!p)return "";if(/^(https?|file):/i.test(p))return p;
@@ -79,6 +80,10 @@ class SPPGraphic extends HTMLElement{
     const scene=document.createElement("div");scene.className="scene";root.append(st,scene);this.$.scene=scene;this._build(scene);}
   _setUnit(w,h){this._w=w;this._h=h;this._u=Math.min(w,h)/1080;this._vertical=h>w;this.style.setProperty("--u",this._u+"px");}
   px(n){return Math.round(n*this._u)+"px";}
+  _ch(k){const v=String(this._state[k]??"").trim().toLowerCase(),L=CHOICES[k]||[];if(/^\d+(\.\d+)?$/.test(v))return clamp(Math.round(+v),0,Math.max(0,L.length-1));
+    const n=x=>x.toLowerCase().replace(/[^a-z0-9\u0900-\u097f]/g,"").replace("center","centre");const q=n(v);if(!q)return 0;
+    let i=L.findIndex(o=>n(o)===q);if(i<0)i=L.findIndex(o=>n(o).startsWith(q));if(i<0)i=L.findIndex(o=>n(o).includes(q));
+    if(i<0){const d=DEFAULTS[k];i=Math.max(0,L.findIndex(o=>o===d));}return i;}
   async load(p){this._initialData=p?.data||{};this._state={...DEFAULTS,...this._initialData};this._schedule=[];
     const r=p?.renderCharacteristics?.resolution;
     this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);

@@ -67,19 +67,8 @@
       },
       "marker": {
         "type": "string",
-        "title": "Marker",
-        "enum": [
-          "0",
-          "1"
-        ],
-        "gddType": "select",
-        "gddOptions": {
-          "labels": {
-            "0": "Dot + line",
-            "1": "Arrow"
-          }
-        },
-        "default": "0"
+        "title": "Marker: dot / arrow",
+        "default": "dot"
       },
       "scale": {
         "type": "number",

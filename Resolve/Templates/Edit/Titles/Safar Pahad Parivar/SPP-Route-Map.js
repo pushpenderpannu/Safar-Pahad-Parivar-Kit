@@ -1,5 +1,6 @@
-const DEFAULTS={"routeFile": "", "titleHi": "हमारा सफ़र", "titleEn": "OUR ROUTE", "drawStart": 1.2, "drawEnd": 12, "pause": 1.0, "camera": "1", "zoom": 2.0, "showTimes": true, "showClock": true, "keepLabels": true, "dim": 0.1, "outAt": 0, "accentColor": "#f4b03e"};
+const DEFAULTS={"routeFile": "", "titleHi": "हमारा सफ़र", "titleEn": "OUR ROUTE", "drawStart": 1.2, "drawEnd": 12, "pause": 1.0, "camera": "follow", "zoom": 2.0, "showTimes": true, "showClock": true, "keepLabels": true, "dim": 0.1, "outAt": 0, "accentColor": "#f4b03e"};
 const DURATION=40;
+const CHOICES={"camera": ["whole", "follow"]};
 const CSS=`
 .cam{position:absolute;inset:0;transform-origin:0 0;will-change:transform}
 .cam img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -78,7 +79,7 @@ const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:non
 .roll{display:inline-flex;align-items:flex-end;white-space:pre;vertical-align:bottom;line-height:1.18em}
 .rw{display:inline-block;position:relative;height:1.18em;overflow:hidden;width:.64em;text-align:center;
   -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
-.rs{display:flex;flex-direction:column;will-change:transform}
+.rs{display:flex;flex-direction:column}
 .rs span{display:block;height:1.18em;line-height:1.18em;font-variant-numeric:tabular-nums}
 .rc{display:inline-block;height:1.18em;line-height:1.18em}`;
 function fileURL(p){p=(p||"").trim().replace(/^"|"$/g,"");if(!p)return "";if(/^(https?|file):/i.test(p))return p;
@@ -96,6 +97,10 @@ class SPPGraphic extends HTMLElement{
     const scene=document.createElement("div");scene.className="scene";root.append(st,scene);this.$.scene=scene;this._build(scene);}
   _setUnit(w,h){this._w=w;this._h=h;this._u=Math.min(w,h)/1080;this._vertical=h>w;this.style.setProperty("--u",this._u+"px");}
   px(n){return Math.round(n*this._u)+"px";}
+  _ch(k){const v=String(this._state[k]??"").trim().toLowerCase(),L=CHOICES[k]||[];if(/^\d+(\.\d+)?$/.test(v))return clamp(Math.round(+v),0,Math.max(0,L.length-1));
+    const n=x=>x.toLowerCase().replace(/[^a-z0-9\u0900-\u097f]/g,"").replace("center","centre");const q=n(v);if(!q)return 0;
+    let i=L.findIndex(o=>n(o)===q);if(i<0)i=L.findIndex(o=>n(o).startsWith(q));if(i<0)i=L.findIndex(o=>n(o).includes(q));
+    if(i<0){const d=DEFAULTS[k];i=Math.max(0,L.findIndex(o=>o===d));}return i;}
   async load(p){this._initialData=p?.data||{};this._state={...DEFAULTS,...this._initialData};this._schedule=[];
     const r=p?.renderCharacteristics?.resolution;
     this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);
@@ -179,7 +184,7 @@ const move=Math.max(0.5,(a1-a0)-P*(n-1)); let f=0,k=0,arrived=0,clockT=null;
     tc=te; if(i<n-1){if(t<tc+P){f=st[i].f;arrived=i+1;clockT=(t-tc<P*0.5)?(st[i].arrive_t||null):(st[i].leave_t||null);break;} tc+=P;}}}}
 const hp=this._at(f);
 // ---- camera
-const cam=s.camera|0,Z=cam===1?clamp(+s.zoom||2,1.2,4):1;
+const cam=this._ch("camera"),Z=cam===1?clamp(+s.zoom||2,1.2,4):1;
 const zin=eo(seg(t,a0-0.6,a0+0.8)),zout=eo(seg(t,a1+0.2,a1+1.6)),zk=cam===1?zin*(1-zout):0,z=1+(Z-1)*zk;
 const sm=this._at(clamp(f-0.02,0,1)),sm2=this._at(clamp(f+0.02,0,1));
 let cx=(sm[0]+hp[0]+sm2[0])/3,cy=(sm[1]+hp[1]+sm2[1])/3;

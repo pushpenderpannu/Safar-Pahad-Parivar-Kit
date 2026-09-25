@@ -30,41 +30,13 @@
       },
       "style": {
         "type": "string",
-        "title": "Animation",
-        "enum": [
-          "0",
-          "1",
-          "2"
-        ],
-        "gddType": "select",
-        "gddOptions": {
-          "labels": {
-            "0": "Word pop + highlight",
-            "1": "Karaoke (colour sweep)",
-            "2": "Simple fade"
-          }
-        },
-        "default": "0"
+        "title": "Animation: pop / karaoke / fade",
+        "default": "pop"
       },
       "position": {
         "type": "string",
-        "title": "Position",
-        "enum": [
-          "0",
-          "1",
-          "2",
-          "3"
-        ],
-        "gddType": "select",
-        "gddOptions": {
-          "labels": {
-            "0": "Bottom",
-            "1": "Raised (Shorts)",
-            "2": "Centre",
-            "3": "Top"
-          }
-        },
-        "default": "0"
+        "title": "Position: bottom / raised / centre / top",
+        "default": "bottom"
       },
       "size": {
         "type": "number",

@@ -1,5 +1,6 @@
-const DEFAULTS={"kicker": "अध्याय 2 · CHAPTER 2", "titleHi": "दारमा वैली", "titleEn": "INTO THE DARMA VALLEY", "position": "4", "backdrop": true, "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e"};
+const DEFAULTS={"kicker": "अध्याय 2 · CHAPTER 2", "titleHi": "दारमा वैली", "titleEn": "INTO THE DARMA VALLEY", "position": "centre", "backdrop": true, "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e"};
 const DURATION=5;
+const CHOICES={"position": ["bottom-left", "bottom-right", "top-left", "top-right", "centre"]};
 const CSS=`
 .bd{position:absolute;inset:0;background:radial-gradient(80% 70% at 50% 50%, rgba(7,18,43,.55), rgba(7,18,43,0) 75%)}
 .wrap{position:absolute;display:flex;flex-direction:column}
@@ -59,7 +60,7 @@ const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:non
 .roll{display:inline-flex;align-items:flex-end;white-space:pre;vertical-align:bottom;line-height:1.18em}
 .rw{display:inline-block;position:relative;height:1.18em;overflow:hidden;width:.64em;text-align:center;
   -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
-.rs{display:flex;flex-direction:column;will-change:transform}
+.rs{display:flex;flex-direction:column}
 .rs span{display:block;height:1.18em;line-height:1.18em;font-variant-numeric:tabular-nums}
 .rc{display:inline-block;height:1.18em;line-height:1.18em}`;
 function fileURL(p){p=(p||"").trim().replace(/^"|"$/g,"");if(!p)return "";if(/^(https?|file):/i.test(p))return p;
@@ -77,6 +78,10 @@ class SPPGraphic extends HTMLElement{
     const scene=document.createElement("div");scene.className="scene";root.append(st,scene);this.$.scene=scene;this._build(scene);}
   _setUnit(w,h){this._w=w;this._h=h;this._u=Math.min(w,h)/1080;this._vertical=h>w;this.style.setProperty("--u",this._u+"px");}
   px(n){return Math.round(n*this._u)+"px";}
+  _ch(k){const v=String(this._state[k]??"").trim().toLowerCase(),L=CHOICES[k]||[];if(/^\d+(\.\d+)?$/.test(v))return clamp(Math.round(+v),0,Math.max(0,L.length-1));
+    const n=x=>x.toLowerCase().replace(/[^a-z0-9\u0900-\u097f]/g,"").replace("center","centre");const q=n(v);if(!q)return 0;
+    let i=L.findIndex(o=>n(o)===q);if(i<0)i=L.findIndex(o=>n(o).startsWith(q));if(i<0)i=L.findIndex(o=>n(o).includes(q));
+    if(i<0){const d=DEFAULTS[k];i=Math.max(0,L.findIndex(o=>o===d));}return i;}
   async load(p){this._initialData=p?.data||{};this._state={...DEFAULTS,...this._initialData};this._schedule=[];
     const r=p?.renderCharacteristics?.resolution;
     this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);
@@ -129,14 +134,14 @@ const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e")
 setT(this.$.kt,s.kicker||""); this.$.kick.style.display=s.kicker?"flex":"none";
 setT(this.$.th,s.titleHi||""); setT(this.$.te,s.titleEn||""); this.$.te.style.display=s.titleEn?"block":"none";
 this.$.bd.style.display=s.backdrop?"block":"none";
-const p=s.position|0; this._side=this._corner(this.$.wrap,p,110,110,70,560,280);
+const p=this._ch("position"); this._side=this._corner(this.$.wrap,p,110,110,70,560,280);
 const al=p===4?"center":(this._side==="right"?"flex-end":"flex-start"); this.$.wrap.style.alignItems=al; this.$.wrap.style.textAlign=p===4?"center":this._side;
 this.$.kb2.style.display=p===4?"inline-block":"none";
 this.$.wrap.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));
 this.$.bd.style.background=p===4?"":`linear-gradient(${p>=2?"180deg":"0deg"}, rgba(7,18,43,.6), rgba(7,18,43,0) 45%)`;
 }
 _frame(t,out){
-const s=this._state,p=s.position|0,sc=s.scale||1;
+const s=this._state,p=this._ch("position"),sc=s.scale||1;
 this.$.bd.style.opacity=String(eo(seg(t,0,0.5)));
 this.$.wrap.style.transform=(p===4?"translate(-50%,-50%) ":"")+`scale(${sc})`;
 const kb=eo(seg(t,0.05,0.45)); this.$.kb1.style.transform=this.$.kb2.style.transform=`scaleX(${kb})`;

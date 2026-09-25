@@ -59,19 +59,8 @@
       },
       "camera": {
         "type": "string",
-        "title": "Camera",
-        "enum": [
-          "0",
-          "1"
-        ],
-        "gddType": "select",
-        "gddOptions": {
-          "labels": {
-            "0": "Whole route",
-            "1": "Follow the journey"
-          }
-        },
-        "default": "1"
+        "title": "Camera: whole / follow",
+        "default": "follow"
       },
       "zoom": {
         "type": "number",

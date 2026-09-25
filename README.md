@@ -4,6 +4,8 @@ Everything that makes a **@safar.pahad.parivar** video look and work the same: R
 title templates, brand graphics, tools and the source to rebuild all of it.
 This folder is the **single source of truth** — Resolve gets its copies from here via `install.ps1`.
 
+**📘 How to use everything: [Docs/SPP_Kit_Guide.md](Docs/SPP_Kit_Guide.md)** (with screenshots)
+
 ## Set up a PC (new or rebuilt)
 1. Install DaVinci Resolve Studio, Git (+ Git LFS), Python 3, ffmpeg (`choco install ffmpeg`).
 2. `git clone <your-remote> "F:\Video Editing\_Safar Pahad Parivar Kit"` then `git lfs pull`

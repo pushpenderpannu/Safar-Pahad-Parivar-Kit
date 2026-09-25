@@ -1,5 +1,6 @@
-const DEFAULTS={"srt": "1\n00:00:01,000 --> 00:00:04,000\nसाल की सबसे यादगार ट्रिप\n\n2\n00:00:04,300 --> 00:00:07,800\nफ़रीदाबाद से सीधे कुमाऊँ की आख़िरी सरहद तक\n\n3\n00:00:08,100 --> 00:00:11,500\nदारचूला, पंचाचूली और मुंस्यारी\n\n4\n00:00:11,800 --> 00:00:14,500\nचलिए, साथ चलते हैं\n", "clipStart": 0, "style": "0", "position": "0", "size": 1.0, "plate": false, "textColor": "#f5f8fc", "highlightColor": "#f4b03e"};
+const DEFAULTS={"srt": "1\n00:00:01,000 --> 00:00:04,000\nसाल की सबसे यादगार ट्रिप\n\n2\n00:00:04,300 --> 00:00:07,800\nफ़रीदाबाद से सीधे कुमाऊँ की आख़िरी सरहद तक\n\n3\n00:00:08,100 --> 00:00:11,500\nदारचूला, पंचाचूली और मुंस्यारी\n\n4\n00:00:11,800 --> 00:00:14,500\nचलिए, साथ चलते हैं\n", "clipStart": 0, "style": "pop", "position": "bottom", "size": 1.0, "plate": false, "textColor": "#f5f8fc", "highlightColor": "#f4b03e"};
 const DURATION=1200;
+const CHOICES={"style": ["pop", "karaoke", "fade"], "position": ["bottom", "raised", "centre", "top"]};
 const CSS=`
 .cap{position:absolute;left:50%;display:flex;justify-content:center}
 .box{text-align:center;font-weight:800;line-height:1.38;color:var(--txt);padding:calc(var(--u)*6) calc(var(--u)*22) calc(var(--u)*10);border-radius:calc(var(--u)*14)}
@@ -59,7 +60,7 @@ const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:non
 .roll{display:inline-flex;align-items:flex-end;white-space:pre;vertical-align:bottom;line-height:1.18em}
 .rw{display:inline-block;position:relative;height:1.18em;overflow:hidden;width:.64em;text-align:center;
   -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
-.rs{display:flex;flex-direction:column;will-change:transform}
+.rs{display:flex;flex-direction:column}
 .rs span{display:block;height:1.18em;line-height:1.18em;font-variant-numeric:tabular-nums}
 .rc{display:inline-block;height:1.18em;line-height:1.18em}`;
 function fileURL(p){p=(p||"").trim().replace(/^"|"$/g,"");if(!p)return "";if(/^(https?|file):/i.test(p))return p;
@@ -77,6 +78,10 @@ class SPPGraphic extends HTMLElement{
     const scene=document.createElement("div");scene.className="scene";root.append(st,scene);this.$.scene=scene;this._build(scene);}
   _setUnit(w,h){this._w=w;this._h=h;this._u=Math.min(w,h)/1080;this._vertical=h>w;this.style.setProperty("--u",this._u+"px");}
   px(n){return Math.round(n*this._u)+"px";}
+  _ch(k){const v=String(this._state[k]??"").trim().toLowerCase(),L=CHOICES[k]||[];if(/^\d+(\.\d+)?$/.test(v))return clamp(Math.round(+v),0,Math.max(0,L.length-1));
+    const n=x=>x.toLowerCase().replace(/[^a-z0-9\u0900-\u097f]/g,"").replace("center","centre");const q=n(v);if(!q)return 0;
+    let i=L.findIndex(o=>n(o)===q);if(i<0)i=L.findIndex(o=>n(o).startsWith(q));if(i<0)i=L.findIndex(o=>n(o).includes(q));
+    if(i<0){const d=DEFAULTS[k];i=Math.max(0,L.findIndex(o=>o===d));}return i;}
   async load(p){this._initialData=p?.data||{};this._state={...DEFAULTS,...this._initialData};this._schedule=[];
     const r=p?.renderCharacteristics?.resolution;
     this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);
@@ -127,7 +132,7 @@ _apply(){
 const s=this._state; this.style.setProperty("--txt",s.textColor||"#f5f8fc"); this.style.setProperty("--hl",s.highlightColor||"#f4b03e");
 if(this._srtKey!==s.srt){this._srtKey=s.srt;this._cues=parseSRT(s.srt||"");this._cueIdx=-2;}
 this.$.box.classList.toggle("plate",!!s.plate);
-const v=this._vertical,p=s.position|0,sz=(s.size||1)*(v?60:54);
+const v=this._vertical,p=this._ch("position"),sz=(s.size||1)*(v?60:54);
 this.$.box.style.fontSize=Math.round(sz*this._u)+"px";
 this.$.cap.style.width=(v?88:80)+"%";
 this.$.cap.style.top=this.$.cap.style.bottom="auto";
@@ -152,7 +157,7 @@ if(idx!==this._cueIdx){this._cueIdx=idx;this.$.box.innerHTML="";this._words=[];
     this._wt=L.map(l=>{const f=acc/tot;acc+=l;return [d0*0.85*f,d0*0.85*acc/tot,0];});}
   this._wt.forEach((x,i)=>{x[3]=i<n-1?Math.max(x[1],this._wt[i+1][0]):x[1]+0.25;});
   this._words.forEach((w,i)=>w.classList.toggle("stress",!!this._wt[i][2]));}
-const dur=Math.max(0.3,c.b-c.a),lt=T-c.a,st=s.style|0;
+const dur=Math.max(0.3,c.b-c.a),lt=T-c.a,st=this._ch("style");
 const boxIn=eo(seg(lt,0,0.18)),boxOut=1-eo(seg(lt,dur,dur+0.2));
 this.$.box.style.opacity=String(st===2?boxIn*boxOut:(s.plate?boxIn*boxOut:boxOut));
 this._words.forEach((w,i)=>{const [ws,we,str,hl]=this._wt[i],cur=lt>=ws&&lt<hl,P=str?1.1:1;

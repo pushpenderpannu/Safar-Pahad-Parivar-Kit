@@ -1,5 +1,6 @@
-const DEFAULTS={"startAltitude": 1500, "endAltitude": 2200, "countSeconds": 3.0, "labelHi": "ऊँचाई", "labelEn": "ALTITUDE", "place": "मुंस्यारी · MUNSIYARI", "showProfile": true, "position": "3", "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e", "rolling": true};
+const DEFAULTS={"startAltitude": 1500, "endAltitude": 2200, "countSeconds": 3.0, "labelHi": "ऊँचाई", "labelEn": "ALTITUDE", "place": "मुंस्यारी · MUNSIYARI", "showProfile": true, "position": "top-right", "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e", "rolling": true};
 const DURATION=8;
+const CHOICES={"position": ["bottom-left", "bottom-right", "top-left", "top-right", "centre"]};
 const CSS=`
 .box{position:absolute;padding:calc(var(--u)*22) calc(var(--u)*30);background:rgba(7,18,43,.6);border-radius:calc(var(--u)*18);box-shadow:0 calc(var(--u)*10) calc(var(--u)*40) rgba(0,0,0,.35)}
 .lab{display:flex;align-items:center;gap:calc(var(--u)*10);font-size:calc(var(--u)*22);font-weight:700;color:var(--snow);white-space:nowrap}
@@ -60,7 +61,7 @@ const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:non
 .roll{display:inline-flex;align-items:flex-end;white-space:pre;vertical-align:bottom;line-height:1.18em}
 .rw{display:inline-block;position:relative;height:1.18em;overflow:hidden;width:.64em;text-align:center;
   -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
-.rs{display:flex;flex-direction:column;will-change:transform}
+.rs{display:flex;flex-direction:column}
 .rs span{display:block;height:1.18em;line-height:1.18em;font-variant-numeric:tabular-nums}
 .rc{display:inline-block;height:1.18em;line-height:1.18em}`;
 function fileURL(p){p=(p||"").trim().replace(/^"|"$/g,"");if(!p)return "";if(/^(https?|file):/i.test(p))return p;
@@ -78,6 +79,10 @@ class SPPGraphic extends HTMLElement{
     const scene=document.createElement("div");scene.className="scene";root.append(st,scene);this.$.scene=scene;this._build(scene);}
   _setUnit(w,h){this._w=w;this._h=h;this._u=Math.min(w,h)/1080;this._vertical=h>w;this.style.setProperty("--u",this._u+"px");}
   px(n){return Math.round(n*this._u)+"px";}
+  _ch(k){const v=String(this._state[k]??"").trim().toLowerCase(),L=CHOICES[k]||[];if(/^\d+(\.\d+)?$/.test(v))return clamp(Math.round(+v),0,Math.max(0,L.length-1));
+    const n=x=>x.toLowerCase().replace(/[^a-z0-9\u0900-\u097f]/g,"").replace("center","centre");const q=n(v);if(!q)return 0;
+    let i=L.findIndex(o=>n(o)===q);if(i<0)i=L.findIndex(o=>n(o).startsWith(q));if(i<0)i=L.findIndex(o=>n(o).includes(q));
+    if(i<0){const d=DEFAULTS[k];i=Math.max(0,L.findIndex(o=>o===d));}return i;}
   async load(p){this._initialData=p?.data||{};this._state={...DEFAULTS,...this._initialData};this._schedule=[];
     const r=p?.renderCharacteristics?.resolution;
     this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);
@@ -140,11 +145,11 @@ const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e")
 setT(this.$.lab.querySelector(".lh"),s.labelHi||""); setT(this.$.lab.querySelector(".le"),s.labelEn||"");
 setT(this.$.pl,s.place||""); this.$.pl.style.display=s.place?"block":"none";
 this.$.prof.style.display=s.showProfile?"block":"none";
-this._side=this._corner(this.$.box,s.position|0,90,84,60,560,250);
-const p=s.position|0; this.$.box.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));
+this._side=this._corner(this.$.box,this._ch("position"),90,84,60,560,250);
+const p=this._ch("position"); this.$.box.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));
 }
 _frame(t,out){
-const s=this._state,sc=s.scale||1,p=s.position|0;
+const s=this._state,sc=s.scale||1,p=this._ch("position");
 const k=eo(seg(t,0,0.45)); this.$.box.style.opacity=String(k);
 const base=p===4?"translate(-50%,-50%) ":""; this.$.box.style.transform=`${base}translateY(${Math.round(24*this._u*(1-k))}px) scale(${sc*(0.96+0.04*k)})`;
 const c=eo(seg(t,0.45,0.45+(s.countSeconds||3)));

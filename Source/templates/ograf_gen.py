@@ -61,7 +61,7 @@ const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:non
 .roll{display:inline-flex;align-items:flex-end;white-space:pre;vertical-align:bottom;line-height:1.18em}
 .rw{display:inline-block;position:relative;height:1.18em;overflow:hidden;width:.64em;text-align:center;
   -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
-.rs{display:flex;flex-direction:column;will-change:transform}
+.rs{display:flex;flex-direction:column}
 .rs span{display:block;height:1.18em;line-height:1.18em;font-variant-numeric:tabular-nums}
 .rc{display:inline-block;height:1.18em;line-height:1.18em}`;
 function fileURL(p){p=(p||"").trim().replace(/^"|"$/g,"");if(!p)return "";if(/^(https?|file):/i.test(p))return p;
@@ -79,6 +79,10 @@ class SPPGraphic extends HTMLElement{
     const scene=document.createElement("div");scene.className="scene";root.append(st,scene);this.$.scene=scene;this._build(scene);}
   _setUnit(w,h){this._w=w;this._h=h;this._u=Math.min(w,h)/1080;this._vertical=h>w;this.style.setProperty("--u",this._u+"px");}
   px(n){return Math.round(n*this._u)+"px";}
+  _ch(k){const v=String(this._state[k]??"").trim().toLowerCase(),L=CHOICES[k]||[];if(/^\d+(\.\d+)?$/.test(v))return clamp(Math.round(+v),0,Math.max(0,L.length-1));
+    const n=x=>x.toLowerCase().replace(/[^a-z0-9\u0900-\u097f]/g,"").replace("center","centre");const q=n(v);if(!q)return 0;
+    let i=L.findIndex(o=>n(o)===q);if(i<0)i=L.findIndex(o=>n(o).startsWith(q));if(i<0)i=L.findIndex(o=>n(o).includes(q));
+    if(i<0){const d=DEFAULTS[k];i=Math.max(0,L.findIndex(o=>o===d));}return i;}
   async load(p){this._initialData=p?.data||{};this._state={...DEFAULTS,...this._initialData};this._schedule=[];
     const r=p?.renderCharacteristics?.resolution;
     this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);
@@ -144,10 +148,10 @@ ICONS = {
 }
 
 def select_prop(title, labels, default=0):
-    """Dropdown in Resolve's Inspector. Values are "0","1",... so template code can use (s.x|0)."""
-    keys = [str(i) for i in range(len(labels))]
-    return {"type": "string", "title": title, "enum": keys, "gddType": "select",
-            "gddOptions": {"labels": dict(zip(keys, labels))}, "default": str(default)}
+    """A choice typed as a word (Resolve 21 shows OGraf dropdowns as plain text boxes).
+    Accepts the word, its start ("top-r", "rain"), or the number 0,1,2... - see _ch() in the base class."""
+    return {"type": "string", "title": f"{title}: " + " / ".join(labels), "default": labels[default],
+            "x_choices": labels}
 
 def color_prop(title, default="#f4b03e"):
     return {"type": "string", "title": title, "gddType": "color-rrggbb", "pattern": "^#[0-9a-f]{6}$", "default": default}
@@ -170,9 +174,9 @@ TEMPLATES.append(dict(
         "date": {"type": "string", "title": "Date", "default": "26 जून 2026"},
         "showTime": {"type": "boolean", "title": "Show Time", "default": True},
         "time": {"type": "string", "title": "Time", "default": "09:58 AM"},
-        "weather": select_prop("Weather", ["None", "Sunny", "Partly cloudy", "Cloudy", "Rain", "Snow", "Fog", "Night"], 1),
+        "weather": select_prop("Weather", ["none", "sun", "part-cloud", "cloud", "rain", "snow", "fog", "night"], 1),
         "temperature": {"type": "string", "title": "Temperature (blank = hide)", "default": "14°C"},
-        "position": select_prop("Position", ["Bottom left", "Bottom right", "Top left", "Top right"], 0),
+        "position": select_prop("Position", ["bottom-left", "bottom-right", "top-left", "top-right"], 0),
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 8, "default": 0},
         "accentColor": color_prop("Accent Colour"),
@@ -206,10 +210,10 @@ this.$.alt.style.display=s.showAltitude?"inline-flex":"none"; this.$.date.style.
 this.$.time.style.display=(s.showTime&&s.time)?"inline-flex":"none"; this.$.temp.style.display=s.temperature?"inline-flex":"none";
 
 
-const w=this.WX[s.weather]; this.$.wx.style.display=w?"block":"none"; if(w&&this._wxk!==s.weather){this.$.wx.innerHTML=`<svg viewBox="0 0 64 64">${w}</svg>`;this._wxk=s.weather;}
+const w=this.WX[this._ch("weather")]; this.$.wx.style.display=w?"block":"none"; if(w&&this._wxk!==s.weather){this.$.wx.innerHTML=`<svg viewBox="0 0 64 64">${w}</svg>`;this._wxk=s.weather;}
 const anyMeta=s.showAltitude||(s.showDate&&s.date)||(s.showTime&&s.time)||s.temperature; this.$.meta.style.display=anyMeta?"flex":"none";
-this._side=this._corner(this.$.card,s.position|0,90,84,60,560,250);
-this.$.card.style.transformOrigin=(this._side==="right"?"100% ":"0% ")+((s.position|0)>=2?"0%":"100%");""",
+this._side=this._corner(this.$.card,this._ch("position"),90,84,60,560,250);
+this.$.card.style.transformOrigin=(this._side==="right"?"100% ":"0% ")+((this._ch("position"))>=2?"0%":"100%");""",
     frame="""
 const s=this._state,dir=this._side==="right"?1:-1,sc=s.scale||1;
 const k=eo(seg(t,0.05,0.5)); this.$.card.style.opacity=String(k);
@@ -239,7 +243,7 @@ TEMPLATES.append(dict(
         "labelEn": {"type": "string", "title": "Label (English)", "default": "ALTITUDE"},
         "place": {"type": "string", "title": "Place (optional)", "default": "मुंस्यारी · MUNSIYARI"},
         "showProfile": {"type": "boolean", "title": "Show Mountain Profile", "default": True},
-        "position": select_prop("Position", ["Bottom left", "Bottom right", "Top left", "Top right", "Centre"], 3),
+        "position": select_prop("Position", ["bottom-left", "bottom-right", "top-left", "top-right", "centre"], 3),
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.5, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 8, "default": 0},
         "accentColor": color_prop("Accent Colour"),
@@ -273,10 +277,10 @@ const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e")
 setT(this.$.lab.querySelector(".lh"),s.labelHi||""); setT(this.$.lab.querySelector(".le"),s.labelEn||"");
 setT(this.$.pl,s.place||""); this.$.pl.style.display=s.place?"block":"none";
 this.$.prof.style.display=s.showProfile?"block":"none";
-this._side=this._corner(this.$.box,s.position|0,90,84,60,560,250);
-const p=s.position|0; this.$.box.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));""",
+this._side=this._corner(this.$.box,this._ch("position"),90,84,60,560,250);
+const p=this._ch("position"); this.$.box.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));""",
     frame="""
-const s=this._state,sc=s.scale||1,p=s.position|0;
+const s=this._state,sc=s.scale||1,p=this._ch("position");
 const k=eo(seg(t,0,0.45)); this.$.box.style.opacity=String(k);
 const base=p===4?"translate(-50%,-50%) ":""; this.$.box.style.transform=`${base}translateY(${Math.round(24*this._u*(1-k))}px) scale(${sc*(0.96+0.04*k)})`;
 const c=eo(seg(t,0.45,0.45+(s.countSeconds||3)));
@@ -303,7 +307,7 @@ TEMPLATES.append(dict(
         "targetY": {"type": "number", "title": "Peak Y (% of height)", "minimum": 0, "maximum": 100, "default": 38},
         "labelDX": {"type": "number", "title": "Label Offset X (%)", "minimum": -60, "maximum": 60, "default": 12},
         "labelDY": {"type": "number", "title": "Label Offset Y (%)", "minimum": -60, "maximum": 60, "default": -16},
-        "marker": select_prop("Marker", ["Dot + line", "Arrow"], 0),
+        "marker": select_prop("Marker", ["dot", "arrow"], 0),
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 6, "default": 0},
         "accentColor": color_prop("Accent Colour"),
@@ -341,7 +345,7 @@ this.$.lbl.style.transform=`translateY(${Math.round(14*u*(1-lk))}px) scale(${s.s
 this.$.pm.style.opacity=String(eo(seg(t,1.0,1.4)));
 // marker
 const mk=eb(seg(t,0,0.35));
-if((s.marker|0)===0){
+if(this._ch("marker")===0){
   this.$.arrow.setAttribute("opacity","0"); this.$.dot.setAttribute("opacity","1");
   this.$.dot.setAttribute("cx",tx);this.$.dot.setAttribute("cy",ty);this.$.dot.setAttribute("r",String(Math.max(0,9*u*mk)));
   const ph=(t*0.9)%1; this.$.ring.setAttribute("cx",tx);this.$.ring.setAttribute("cy",ty);
@@ -371,7 +375,7 @@ TEMPLATES.append(dict(
         "kicker": {"type": "string", "title": "Kicker (small line, blank = hide)", "default": "अध्याय 2 · CHAPTER 2"},
         "titleHi": {"type": "string", "title": "Headline (Hindi)", "default": "दारमा वैली"},
         "titleEn": {"type": "string", "title": "English Line (blank = hide)", "default": "INTO THE DARMA VALLEY"},
-        "position": select_prop("Position", ["Bottom left", "Bottom right", "Top left", "Top right", "Centre"], 4),
+        "position": select_prop("Position", ["bottom-left", "bottom-right", "top-left", "top-right", "centre"], 4),
         "backdrop": {"type": "boolean", "title": "Darken Background", "default": True},
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 5, "default": 0},
@@ -394,13 +398,13 @@ const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e")
 setT(this.$.kt,s.kicker||""); this.$.kick.style.display=s.kicker?"flex":"none";
 setT(this.$.th,s.titleHi||""); setT(this.$.te,s.titleEn||""); this.$.te.style.display=s.titleEn?"block":"none";
 this.$.bd.style.display=s.backdrop?"block":"none";
-const p=s.position|0; this._side=this._corner(this.$.wrap,p,110,110,70,560,280);
+const p=this._ch("position"); this._side=this._corner(this.$.wrap,p,110,110,70,560,280);
 const al=p===4?"center":(this._side==="right"?"flex-end":"flex-start"); this.$.wrap.style.alignItems=al; this.$.wrap.style.textAlign=p===4?"center":this._side;
 this.$.kb2.style.display=p===4?"inline-block":"none";
 this.$.wrap.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));
 this.$.bd.style.background=p===4?"":`linear-gradient(${p>=2?"180deg":"0deg"}, rgba(7,18,43,.6), rgba(7,18,43,0) 45%)`;""",
     frame="""
-const s=this._state,p=s.position|0,sc=s.scale||1;
+const s=this._state,p=this._ch("position"),sc=s.scale||1;
 this.$.bd.style.opacity=String(eo(seg(t,0,0.5)));
 this.$.wrap.style.transform=(p===4?"translate(-50%,-50%) ":"")+`scale(${sc})`;
 const kb=eo(seg(t,0.05,0.45)); this.$.kb1.style.transform=this.$.kb2.style.transform=`scaleX(${kb})`;
@@ -472,8 +476,8 @@ TEMPLATES.append(dict(
     props={
         "srt": {"type": "string", "gddType": "multi-line", "title": "SRT text (paste subtitles here)", "default": SAMPLE_SRT},
         "clipStart": {"type": "number", "title": "This clip starts at timeline time (s)", "minimum": 0, "maximum": 7200, "default": 0},
-        "style": select_prop("Animation", ["Word pop + highlight", "Karaoke (colour sweep)", "Simple fade"], 0),
-        "position": select_prop("Position", ["Bottom", "Raised (Shorts)", "Centre", "Top"], 0),
+        "style": select_prop("Animation", ["pop", "karaoke", "fade"], 0),
+        "position": select_prop("Position", ["bottom", "raised", "centre", "top"], 0),
         "size": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
         "plate": {"type": "boolean", "title": "Dark plate behind text", "default": False},
         "textColor": color_prop("Text Colour", "#f5f8fc"),
@@ -494,7 +498,7 @@ this._cues=[]; this._srtKey=null; this._cueIdx=-2; this._words=[];""",
 const s=this._state; this.style.setProperty("--txt",s.textColor||"#f5f8fc"); this.style.setProperty("--hl",s.highlightColor||"#f4b03e");
 if(this._srtKey!==s.srt){this._srtKey=s.srt;this._cues=parseSRT(s.srt||"");this._cueIdx=-2;}
 this.$.box.classList.toggle("plate",!!s.plate);
-const v=this._vertical,p=s.position|0,sz=(s.size||1)*(v?60:54);
+const v=this._vertical,p=this._ch("position"),sz=(s.size||1)*(v?60:54);
 this.$.box.style.fontSize=Math.round(sz*this._u)+"px";
 this.$.cap.style.width=(v?88:80)+"%";
 this.$.cap.style.top=this.$.cap.style.bottom="auto";
@@ -518,7 +522,7 @@ if(idx!==this._cueIdx){this._cueIdx=idx;this.$.box.innerHTML="";this._words=[];
     this._wt=L.map(l=>{const f=acc/tot;acc+=l;return [d0*0.85*f,d0*0.85*acc/tot,0];});}
   this._wt.forEach((x,i)=>{x[3]=i<n-1?Math.max(x[1],this._wt[i+1][0]):x[1]+0.25;});
   this._words.forEach((w,i)=>w.classList.toggle("stress",!!this._wt[i][2]));}
-const dur=Math.max(0.3,c.b-c.a),lt=T-c.a,st=s.style|0;
+const dur=Math.max(0.3,c.b-c.a),lt=T-c.a,st=this._ch("style");
 const boxIn=eo(seg(lt,0,0.18)),boxOut=1-eo(seg(lt,dur,dur+0.2));
 this.$.box.style.opacity=String(st===2?boxIn*boxOut:(s.plate?boxIn*boxOut:boxOut));
 this._words.forEach((w,i)=>{const [ws,we,str,hl]=this._wt[i],cur=lt>=ws&&lt<hl,P=str?1.1:1;
@@ -544,7 +548,7 @@ TEMPLATES.append(dict(
         "drawStart": {"type": "number", "title": "Route starts drawing at (s)", "minimum": 0, "maximum": 20, "default": 1.2},
         "drawEnd": {"type": "number", "title": "Route finished at (s)", "minimum": 2, "maximum": 40, "default": 12},
         "pause": {"type": "number", "title": "Pause at each stop (s)", "minimum": 0, "maximum": 4, "default": 1.0},
-        "camera": select_prop("Camera", ["Whole route", "Follow the journey"], 1),
+        "camera": select_prop("Camera", ["whole", "follow"], 1),
         "zoom": {"type": "number", "title": "Follow zoom", "minimum": 1.2, "maximum": 4, "default": 2.0},
         "showTimes": {"type": "boolean", "title": "Show arrival / departure times", "default": True},
         "showClock": {"type": "boolean", "title": "Show running date & time", "default": True},
@@ -619,7 +623,7 @@ const move=Math.max(0.5,(a1-a0)-P*(n-1)); let f=0,k=0,arrived=0,clockT=null;
     tc=te; if(i<n-1){if(t<tc+P){f=st[i].f;arrived=i+1;clockT=(t-tc<P*0.5)?(st[i].arrive_t||null):(st[i].leave_t||null);break;} tc+=P;}}}}
 const hp=this._at(f);
 // ---- camera
-const cam=s.camera|0,Z=cam===1?clamp(+s.zoom||2,1.2,4):1;
+const cam=this._ch("camera"),Z=cam===1?clamp(+s.zoom||2,1.2,4):1;
 const zin=eo(seg(t,a0-0.6,a0+0.8)),zout=eo(seg(t,a1+0.2,a1+1.6)),zk=cam===1?zin*(1-zout):0,z=1+(Z-1)*zk;
 const sm=this._at(clamp(f-0.02,0,1)),sm2=this._at(clamp(f+0.02,0,1));
 let cx=(sm[0]+hp[0]+sm2[0])/3,cy=(sm[1]+hp[1]+sm2[1])/3;
@@ -712,9 +716,11 @@ _fmtClock(ep){const tz=(this._route.tz??5.5)*3600,d=new Date((ep+tz)*1000);
 ))
 
 for T in TEMPLATES:
+    choices = {k: v.pop("x_choices") for k, v in T["props"].items() if "x_choices" in v}
     defaults = {k: v["default"] for k, v in T["props"].items()}
     cls = "".join(w.capitalize() for w in T["file"].replace("SPP-", "").split("-")) + "Graphic"
     js = (f"const DEFAULTS={json.dumps(defaults, ensure_ascii=False)};\nconst DURATION={T['duration']};\n"
+          f"const CHOICES={json.dumps(choices, ensure_ascii=False)};\n"
           f"const CSS=`{T['css']}`;\n" + BASE +
           f"\nclass {cls} extends SPPGraphic{{\n_build(scene){{{T['build']}\n}}\n_apply(){{{T['apply']}\n}}\n_frame(t,out){{{T['frame']}\n}}\n{T.get('extra','')}\n}}\nexport default {cls};\n")
     manifest = {
