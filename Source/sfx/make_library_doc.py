@@ -13,6 +13,8 @@ Three styles:
   Recordings: *VSCO-2 Community Edition* by Versilian Studios (CC0 public domain — free for YouTube, no credit required).
 - **Grand** (folders 09–12 and `Grand_` stings) — deep, cinematic synth: sub-bass, taiko/dhol, braams, gongs, ransingha horn with valley echo, drones.
 - **Light** (folders 01–08) — playful UI sounds, ticks, pops, marimba, plus nature beds and phone sounds.
+- **Real world** (folders 20–24) — real CC0 field recordings: rain, thunder, car doors / engine / tyres, birds, streams,
+  rivers, waterfalls, conch, temple bells, town and dhol. Sources: `Docs/Field_Recordings_Credits.md`.
 - **Cinematic** (folders 16–19) — orchestral risers that land on a hit or open into a chord, sub drops and downers, impact drums,
   and music transitions matched to the keys of the SPP music.  **SFX - Land at Playhead** lines their landing moment up with a cut.
 
@@ -20,7 +22,7 @@ Three styles:
 - **LOOP_Ns** = seamless loop (the end joins the start) → use **SFX - Loop Fill (In to Out)** for any length.
 - Levels: one-shots peak −3 dBFS (title kits −5 to −8 so they sit under the VO); beds ~−24 dB RMS.
 - **Title Kits** (01, 09, 13) are timed to the SPP titles — **SFX - Auto Sound for Titles** places them (choose Strings / Grand / Light / Mix).
-- Listen: `Docs/SPP_SFX_Strings_Demo.mp3`, `Docs/SPP_SFX_Cinematic_Demo.mp3`, `Docs/SPP_SFX_Grand_Demo.mp3`, `Docs/SPP_SFX_Demo_Reel.mp3`.
+- Listen: `Docs/SPP_SFX_RealWorld_Demo.mp3`, `Docs/SPP_SFX_Strings_Demo.mp3`, `Docs/SPP_SFX_Cinematic_Demo.mp3`, `Docs/SPP_SFX_Grand_Demo.mp3`, `Docs/SPP_SFX_Demo_Reel.mp3`.
 """
 
 

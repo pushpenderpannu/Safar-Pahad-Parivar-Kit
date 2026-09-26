@@ -1970,76 +1970,119 @@ def _(v, r):
     return reverb(mountain_echo(hit_stack(r, [1, 3, 0][v]), r, delays=(0.4, 0.95, 1.6, 2.4)), r, 2.8, 0.22)
 
 
-# ---------------------------------------------------------------- 19 Music Transitions (key-matched to the SPP music)
-MKEYS = {"D": (62, "maj"), "E": (64, "maj"), "Bm": (59, "min"), "Dm": (62, "min")}
+# ---------------------------------------------------------------- 19 Music Transitions (every major / minor key)
+KEY_NAMES = ["C", "C#", "D", "Eb", "E", "F", "F#", "G", "Ab", "A", "Bb", "B"]
+ALLKEYS = {}
+for _pc, _nm in enumerate(KEY_NAMES):
+    _root = 57 + ((_pc - 9) % 12)                          # roots between A3 and G#4
+    ALLKEYS[_nm] = (_root, "maj")
+    ALLKEYS[_nm + "m"] = (_root, "min")
+MUSIC_KEYS = ["D", "E", "Bm", "Dm"]                        # keys of the SPP music (bridges between them are pre-built)
 
 
 def key_voicing(root, q):
     """Warm string voicing of a major/minor chord on 'root', every section in its comfortable range."""
     th = root + (3 if q == "min" else 4)
-    near_ = lambda ms, lo, hi: sorted(((m - lo) % 12) + lo for m in ms if True) if hi - lo >= 12 else ms
+    near_ = lambda ms, lo, hi: sorted(((m - lo) % 12) + lo for m in ms)
     return {"cb_sus": near_([root], 28, 40), "vc_sus": near_([root], 38, 50) + near_([root + 7], 45, 57),
             "vla_sus": near_([th, root + 7], 55, 67), "vln_sus": near_([th, root + 7, root + 12], 64, 76)}
 
 
-for _k, (_root, _q) in MKEYS.items():
-    def _mk(k=_k, root=_root, q=_q):
-        @sfx("19 Music Transitions", f"Swell_Into_{k}", 2, desc=f"Swell that lands (at 3.0 s) on the {k} chord - put its peak on the first beat of a track in {k}", land=3.0)
-        @need_lib
-        def _(v, r):
-            y = canvas(6.5)
-            ch = key_voicing(root, q)
-            x = string_chord(r, ch, 3.0, vel=1, attack=2.6, release=0.1)[: n_(3.0)]
-            put(y, x * np.linspace(0, 1, len(x))[:, None] ** 2, 0)
-            cx, st = cymbal_to(r, 3.0)
-            put(y, cx * 0.4, st)
-            if v == 1:
-                gl = [m for m in range(root, root + 31) if (m - root) % 12 in ((0, 2, 3, 7, 10) if q == "min" else (0, 2, 4, 7, 9))]
-                put(y, harp_run(r, gl, 0.05, 4, 0.45), 3.0 - len(gl) * 0.05)
-            put(y, string_chord(r, ch, 2.5, vel=2, attack=0.06, release=1.2) * 0.8, 3.0)
-            put(y, timp(r, 2, 0.4), 3.0)
-            return reverb(y, r, 2.8, 0.25)
+def _scale(q):
+    return (0, 2, 3, 7, 10) if q == "min" else (0, 2, 4, 7, 9)
 
-        @sfx("19 Music Transitions", f"Tail_{k}", 2, desc=f"Ringing {k} chord with harp / bell - covers the cut when a track in {k} stops early", land=0.0)
+
+def t_swell(r, root, q, v):
+    """Swell that lands on the chord at 3.0 s.  v0 strings + cymbal, v1 + harp run, v2 soft (harp + pad, no cymbal)."""
+    y = canvas(6.5)
+    ch = key_voicing(root, q)
+    x = string_chord(r, ch, 3.0, vel=1, attack=2.6, release=0.1)[: n_(3.0)]
+    put(y, x * np.linspace(0, 1, len(x))[:, None] ** 2 * (0.6 if v == 2 else 1.0), 0)
+    if v < 2:
+        cx, st = cymbal_to(r, 3.0)
+        put(y, cx * 0.4, st)
+    if v >= 1:
+        gl = [m for m in range(root, root + 31) if (m - root) % 12 in _scale(q)]
+        put(y, harp_run(r, gl, 0.05, 4 if v == 1 else 3, 0.45), 3.0 - len(gl) * 0.05)
+    put(y, string_chord(r, ch, 2.5, vel=2 if v < 2 else 1, attack=0.06, release=1.2) * 0.8, 3.0)
+    if v < 2:
+        put(y, timp(r, 2, 0.4), 3.0)
+    else:
+        put(y, Lb().note("glock", max(m for m in ch["vln_sus"]) + 12, r) * 0.15, 3.05)
+    return reverb(y, r, 2.8, 0.25)
+
+
+def t_tail(r, root, q, v):
+    y = canvas(8.0)
+    ch = key_voicing(root, q)
+    put(y, string_chord(r, ch, 4.0, vel=1, attack=0.2, release=3.0) * 0.8, 0)
+    tones = sorted(set(m for ms in ch.values() for m in ms if m > 55))
+    if v == 0:
+        put(y, harp_run(r, tones + [tones[0] + 12], 0.09, 3, 0.5), 0.1)
+    else:
+        put(y, Lb().raw("nepal_bells", r) * 0.4, 0.1)
+        put(y, Lb().note("glock", tones[-1] + 12, r) * 0.2, 0.6)
+    return reverb(y, r, 3.4, 0.3)
+
+
+def t_bridge(r, ra, qa, rb, qb, v=0):
+    """5 s bridge: chord of the old key -> dominant of the new key -> new key's chord at 4.0 s."""
+    y = canvas(8.0)
+    A = key_voicing(ra, qa)
+    V = key_voicing(rb + 7, "maj")
+    B = key_voicing(rb, qb)
+    put(y, string_chord(r, A, 2.0, vel=1, attack=0.4, release=0.5) * 0.7, 0)
+    vx = string_chord(r, V, 1.75, vel=2, attack=0.3, release=0.2) * 0.8
+    put(y, vx[: n_(1.97)] * np.linspace(1, 0.3, len(vx[: n_(1.97)]))[:, None], 2.0)
+    gl = [m for m in range(rb, rb + 25) if (m - rb) % 12 in _scale(qb)]
+    put(y, harp_run(r, gl, 0.06, 4, 0.4), 4.0 - len(gl) * 0.06)
+    if v == 0:
+        cx, st = cymbal_to(r, 4.0)
+        put(y, cx * 0.3, st)
+    put(y, string_chord(r, B, 2.5, vel=2, attack=0.05, release=1.5) * 1.15, 4.0)
+    put(y, timp(r, 2, 0.4), 4.0)
+    return reverb(y, r, 2.4, 0.18)
+
+
+for _k, (_root, _q) in ALLKEYS.items():
+    def _mk(k=_k, root=_root, q=_q):
+        @sfx("19 Music Transitions", f"Swell_Into_{k}", 3, desc=f"Swell that lands (at 3.0 s) on the {k} chord - v01 strings+cymbal, v02 +harp, v03 soft", land=3.0)
         @need_lib
         def _(v, r):
-            y = canvas(8.0)
-            ch = key_voicing(root, q)
-            put(y, string_chord(r, ch, 4.0, vel=1, attack=0.2, release=3.0) * 0.8, 0)
-            tones = sorted(set(m for ms in ch.values() for m in ms if m > 55))
-            if v == 0:
-                put(y, harp_run(r, tones + [tones[0] + 12], 0.09, 3, 0.5), 0.1)
-            else:
-                put(y, Lb().raw("nepal_bells", r) * 0.4, 0.1)
-                put(y, Lb().note("glock", tones[-1] + 12, r) * 0.2, 0.6)
-            return reverb(y, r, 3.4, 0.3)
+            return t_swell(r, root, q, v)
+
+        @sfx("19 Music Transitions", f"Tail_{k}", 2, desc=f"Ringing {k} chord with harp / bells - covers the cut when music in {k} stops early", land=0.0)
+        @need_lib
+        def _(v, r):
+            return t_tail(r, root, q, v)
     _mk()
 
-for _a, (_ra, _qa) in MKEYS.items():
-    for _b, (_rb, _qb) in MKEYS.items():
+for _a in MUSIC_KEYS:
+    for _b in MUSIC_KEYS:
         if _a == _b:
             continue
 
-        def _mk(a=_a, ra=_ra, qa=_qa, b=_b, rb=_rb, qb=_qb):
-            @sfx("19 Music Transitions", f"Bridge_{a}_to_{b}", 1, desc=f"5 s musical bridge: starts on {a}, passes through the dominant of {b}, lands on {b} at 4.0 s - joins a track in {a} to one in {b}", land=4.0)
+        def _mk(a=_a, b=_b):
+            @sfx("19 Music Transitions", f"Bridge_{a}_to_{b}", 1, desc=f"5 s musical bridge from {a} to {b} (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand", land=4.0)
             @need_lib
             def _(v, r):
-                y = canvas(8.0)
-                A = key_voicing(ra, qa)
-                V = key_voicing(rb + 7, "maj")                   # dominant of the new key
-                B = key_voicing(rb, qb)
-                put(y, string_chord(r, A, 2.0, vel=1, attack=0.4, release=0.5) * 0.7, 0)
-                vx = string_chord(r, V, 1.75, vel=2, attack=0.3, release=0.2) * 0.8
-                put(y, vx[: n_(1.97)] * np.linspace(1, 0.3, len(vx[: n_(1.97)]))[:, None], 2.0)
-                sc = (0, 2, 3, 7, 10) if qb == "min" else (0, 2, 4, 7, 9)
-                gl = [m for m in range(rb, rb + 25) if (m - rb) % 12 in sc]
-                put(y, harp_run(r, gl, 0.06, 4, 0.4), 4.0 - len(gl) * 0.06)
-                cx, st = cymbal_to(r, 4.0)
-                put(y, cx * 0.3, st)
-                put(y, string_chord(r, B, 2.5, vel=2, attack=0.05, release=1.5) * 1.15, 4.0)
-                put(y, timp(r, 2, 0.4), 4.0)
-                return reverb(y, r, 2.4, 0.18)
+                return t_bridge(r, *ALLKEYS[a], *ALLKEYS[b])
         _mk()
+
+
+def render_transition(kind, a=None, b=None, v=0, samples=None, seed=0):
+    """On-demand transition (used by Tools/spp_key.py): kind 'swell' (into b), 'tail' (of a) or 'bridge' (a -> b)."""
+    if LIB[0] is None:
+        LIB[0] = _smp.Lib(samples or str(KIT / "Source" / "_vsco"))
+    r = rng("transition", kind, a, b, v, seed)
+    if kind == "swell":
+        x, land = t_swell(r, *ALLKEYS[b], v), 3.0
+    elif kind == "tail":
+        x, land = t_tail(r, *ALLKEYS[a], v), 0.0
+    else:
+        x, land = t_bridge(r, *ALLKEYS[a], *ALLKEYS[b], v), 4.0
+    x = fade(trim_silence(stereo(np.asarray(x, float))), 0.0005, 0.02)
+    return peak_norm(x, -3.0), land
 
 
 # ================================================================ run

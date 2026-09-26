@@ -24,6 +24,7 @@ Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles l
 15a. [Sound effects](#15a-sound-effects)
 15b. [Phone-call voice](#15b-phone-call-voice)
 15c. [Background music](#15c-background-music)
+15d. [Moment finder](#15d-moment-finder)
 16. [Render (Deliver)](#16-render-deliver)
 17. [Backup with git](#17-backup-with-git)
 18. [Troubleshooting](#18-troubleshooting)
@@ -220,11 +221,11 @@ On the **VO** track (Fairlight): Voice Isolation 60–70 → EQ (high-pass 80 Hz
 De-esser → Dialogue Leveler / compressor 3:1 → final mix **−14 LUFS**, music 15–20 dB under the voice.
 
 ## 15a. Sound effects
-A brand sound library made for the SPP titles — **180 sounds, ~575 files** in three styles plus cinematic risers, impacts and music transitions, several variations each, seamless loops for any length.
+A brand sound library made for the SPP titles — **~270 sounds, ~850 files** (incl. real field recordings) in three styles plus cinematic risers, impacts and music transitions, several variations each, seamless loops for any length.
 **Strings** (default): real recorded orchestra — violin, viola and cello sections, solo violin, harp, timpani, gong, Nepalese bells; warm
 and emotional, all in D major so the sounds fit together. **Grand**: deep cinematic synth — sub-bass hits, taiko/dhol, braams, gongs,
 ransingha-style horn with valley echo, drone beds. **Light**: playful UI ticks, pops and marimba.
-Full list: [`SFX_Library.md`](SFX_Library.md). Listen first: `SPP_SFX_Strings_Demo.mp3`, `SPP_SFX_Cinematic_Demo.mp3`, `SPP_SFX_Grand_Demo.mp3`, `SPP_SFX_Demo_Reel.mp3`.
+Full list: [`SFX_Library.md`](SFX_Library.md). Listen first: `SPP_SFX_RealWorld_Demo.mp3`, `SPP_SFX_Strings_Demo.mp3`, `SPP_SFX_Cinematic_Demo.mp3`, `SPP_SFX_Grand_Demo.mp3`, `SPP_SFX_Demo_Reel.mp3`.
 
 **Build it once per PC:** `.\Tools\make_sfx.ps1` → `<kit>\SFX\`. The first run downloads the recorded strings
 (*VSCO-2 Community Edition*, public domain / CC0 — free for YouTube, no credit needed; ~1.1 GB into `Source\_vsco` incl. the music instruments, not in git) and takes ≈10 min;
@@ -251,7 +252,12 @@ The sounds are built from code + those recordings, so they are identical on ever
 | 16 Cinematic Risers | **Riser_Epic** 3/5/8/12 s (tremolo strings, timpani + snare roll, cymbal → BIG HIT exactly at 3/5/8/12 s) · **Riser_Awe** 3/5/8/12 s (for waterfalls and big mountains: strings bloom, harp sweep, opens into a warm chord) · **Riser_Tension** 3/5/8 s (suspense, cuts to silence) |
 | 17 Downers & Sub Drops | sub drops, boom + sub drop (with valley echo), downers (strings slide down, energy drains), power-down / tape-stop |
 | 18 Impact Drums | big hits (taiko + timpani + bass drum + strings/crash/gong/boom), drum fills that run into a hit, soft hits, valley-echo hits |
-| 19 Music Transitions | key-matched to the SPP music: `Swell_Into_<key>` (lands on the new track), `Tail_<key>` (covers an early music cut), `Bridge_<a>_to_<b>` (joins two tracks in different keys) — keys D, E, Bm, Dm; each track's key is in `Music_Library.md` |
+| 19 Music Transitions | for **all 24 keys**: `Swell_Into_<key>` ×3 (strings+cymbal / +harp / soft — lands on the new music), `Tail_<key>` ×2 (covers an early music cut); `Bridge_<a>_to_<b>` between the SPP music keys (D, E, Bm, Dm) — any other pair is made on demand by **Music - Key Transition** |
+| 20 Rain & Weather | REAL recordings: light / heavy rain, rain on roof / tin roof / the car (inside), forest rain, thunder, strong wind |
+| 21 Car & Road | REAL: car doors open / close / handle / lock / boot, engine start, horn, pass-bys (dry and wet), wet-road traffic, tyres on gravel, footsteps on gravel |
+| 22 Birds | REAL: cuckoo calls + morning beds, songbird whistles, crows, raven, pheasant, kite / buzzard, dawn chorus, Indian forest birds |
+| 23 Water | REAL: close streams (one from Nepal), rivers, riverside with birds, waterfall close / distant, night river with crickets, drips, splashes |
+| 24 Temple & Town | REAL: conch (shankh), temple bells, mountain horn, monastery chant, Indian crowd / town, wedding and street dhol |
 
 **One click for all titles — SFX - Auto Sound for Titles.** Pick a style — **Strings** (default), **Grand**, **Light** or **Mix**
 (grand for chapter titles, altitude, route map, intro/end; light for small cards). It finds every SPP title (and the SPP intro / end-card clips) on the timeline and
@@ -263,6 +269,13 @@ Keep a tweaked sound by changing its clip colour. **SFX - Remove Auto Sounds** c
 **Land it on the cut — SFX - Land at Playhead.** Put the playhead on the reveal / title / first beat of the next track, select a sound
 in the Media Pool (a riser, `Swell_Into_*`, `Bridge_*`, drum fill…) and run it: the sound is placed so its big moment lands exactly
 on the playhead (a `Riser_Epic_8s` starts 8 s earlier). Every sound's landing time is stored in the library.
+
+**Changing music — Music - Key Transition.** Select the two music clips on the timeline (the one ending and the one starting)
+and run it. It listens to the end of the first and the start of the second, shows their keys (e.g. *D → E*, with the runner-up —
+relative keys like D / Bm share their notes, either works), lets you change them, then places a **Bridge** (old key → new key),
+a **Swell into** the new key, or **Tail + Swell** on a free SFX track so its big moment lands exactly on the first frame of the new music.
+One clip selected: swell into it, or tail at its end. Works on any music (Epidemic Sound too). Command line:
+`Tools\spp_key.py <file> --start 60 --dur 20` (find a key) · `Tools\spp_key.py render bridge Ab Em --out x.wav` (make a transition).
 
 **Near or far — Distance - Selected Clips.** You don't need separate near/far files. Select audio clip(s) on the timeline, run it, pick
 *Near (~10 m) · Mid (~50 m) · Far (~200 m) · Very far (~600 m) · Across the valley (echoes)*. It makes a processed copy on a free track and
@@ -311,6 +324,18 @@ Tracks start soft and end on a proper final chord / bell, so you can cut from th
 **Rights:** everything is original (our code) or public domain (CC0 recordings), so it is free to use on monetised YouTube with no
 credit needed. Don't register these tracks with a Content-ID service — that could cause claims on your own videos.
 (The upright-piano recordings are by Simon Dalzell / Ivy Audio via Versilian Studios; credit is welcome, not required.)
+
+## 15d. Moment finder
+Finds the family moments in a whole trip's footage — laughter, kids shouting or cheering, singing, "wow / papa dekho" reactions,
+names being called (Pihu, Oju, Meenakshi, Brijesh, Alka, Pushpender) — and writes a Hindi transcript of everything that was said.
+1. **Moments - Analyse Trip** (runs in the background; a 2-hour trip takes ~20–40 min the first time, later only new clips).
+2. Read `<trip>\_spp_moments\Moments.md`: **3 opening candidates** for the cold open, the top 40 moments, and a day-by-day list.
+   `Transcript.md` has every sentence with clip name and time (Ctrl+F for पानी, बर्फ, पिहू…).
+3. **Moments - Add Markers**: coloured markers on the source clips — Yellow laughter, Pink kids talking, Red shouts, Fuchsia cheering,
+   Purple singing, Green reaction words (the marker note holds what was said).
+4. **Moments - Best Moments Timeline**: a new timeline of the top 20 / 40 / 80 moments, only laughter, only kids, or the 3 openers, in the order they happened.
+5. **Moments - Search Transcript**: type words (comma-separated) → a timeline of every clip where they were said.
+Engines: faster-whisper large-v3 (speech, on the GPU) and PANNs (AudioSet sound events). Automatic Hindi transcripts have mistakes — use them to *find*, not to quote.
 
 ## 16. Render (Deliver)
 Pick a preset: **SPP YouTube 4K**, **SPP YouTube 1080p**, **SPP Shorts 9x16**.

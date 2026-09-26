@@ -95,7 +95,8 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - **SFX - Auto Sound for Titles**: pick Strings / Grand / Light / Mix → beat-timed sounds for every SPP title on SFX 1–3 (Lime clips; re-run after edits).
 - **SFX - Land at Playhead**: playhead on the cut → select a riser / swell / bridge in the Media Pool → run: its hit lands on the playhead.
 - **Distance - Selected Clips**: selected audio → near / mid / far / very far / across the valley (echoes); original switched off.
-- Music change: `Swell_Into_<key>` onto the new track, `Tail_<key>` to end early, `Bridge_<a>_to_<b>` between keys (keys in `Docs\Music_Library.md`).
+- **Music - Key Transition**: select the ending + starting music clips → detects both keys → bridge / swell / tail lands on the cut (all 24 keys).
+- **Moments**: Analyse Trip → read `_spp_moments\Moments.md` → Add Markers / Best Moments Timeline / Search Transcript.
 - **SFX - Loop Fill (In to Out)**: select a `_LOOP_` sound, set I/O, run — any length, seamless.
 - Music: `.\Tools\make_music.ps1` → **Music - Import Library** (bin *SPP Music*, 12 tracks: Slow Build / Temple Bells / Wind / Flute; preview `Docs\SPP_Music_Preview.mp3`).
 - **Phone Voice - Selected Clips**: selected audio → mobile / landline / speaker / walkie; original is switched off (D to restore).

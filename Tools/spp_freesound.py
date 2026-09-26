@@ -22,8 +22,8 @@ WISHES = [
     # ---------------------------------------------------------------- Rain
     ("Rain", "Rain_Light", "light rain", (30, 900), 4),
     ("Rain", "Rain_Heavy", "heavy rain downpour", (30, 900), 4),
-    ("Rain", "Rain_On_Roof", "rain on roof", (30, 900), 3),
-    ("Rain", "Rain_On_Tin_Roof", "rain tin roof", (20, 900), 3),
+    ("Rain", "Rain_On_Roof", ["rain on roof", "rain roof", "rain window", "rain gutter"], (20, 900), 3),
+    ("Rain", "Rain_On_Tin_Roof", ["rain tin roof", "rain metal roof", "rain corrugated", "rain tent"], (20, 900), 3),
     ("Rain", "Rain_In_Car", "rain car interior", (20, 900), 3),
     ("Rain", "Rain_Forest", "rain forest leaves", (30, 900), 3),
     ("Rain", "Thunder", "thunder rumble", (4, 60), 5),
@@ -39,8 +39,8 @@ WISHES = [
     ("Car", "Car_Pass_By", "car pass by", (3, 30), 5),
     ("Car", "Footsteps_Gravel", "footsteps gravel", (3, 120), 3),
     # ---------------------------------------------------------------- Birds (Himalaya / India)
-    ("Birds", "Whistling_Thrush", "whistling thrush", (2, 300), 4),
-    ("Birds", "Himalayan_Monal", "monal", (1, 300), 3),
+    ("Birds", "Whistling_Thrush", ["whistling thrush", "thrush song", "blackbird song", "song thrush"], (2, 300), 4),
+    ("Birds", "Himalayan_Monal", ["monal", "pheasant call", "pheasant"], (1, 300), 3),
     ("Birds", "Cuckoo", "cuckoo call", (2, 300), 4),
     ("Birds", "Barbet", "barbet", (2, 300), 3),
     ("Birds", "Laughing_Thrush", "laughingthrush", (2, 300), 3),
@@ -48,7 +48,7 @@ WISHES = [
     ("Birds", "Crows_India", "house crow india", (2, 300), 3),
     ("Birds", "Dawn_Chorus", "dawn chorus forest birds", (30, 900), 4),
     ("Birds", "Forest_Birds_India", "india forest birds ambience", (30, 900), 4),
-    ("Birds", "Eagle_Kite", "black kite call", (1, 120), 3),
+    ("Birds", "Eagle_Kite", ["black kite call", "kite bird", "buzzard call", "eagle call", "hawk call"], (1, 120), 3),
     # ---------------------------------------------------------------- Water
     ("Water", "Stream_Close", "mountain stream close", (30, 900), 4),
     ("Water", "River_Rapids", "river rapids", (30, 900), 4),
@@ -63,13 +63,43 @@ WISHES = [
     ("Temple", "Temple_Crowd", "temple india ambience", (30, 900), 3),
     # ---------------------------------------------------------------- South Indian instruments (music pack)
     ("SouthIndian", "Mridangam", "mridangam", (1, 600), 6),
-    ("SouthIndian", "Thavil", "thavil", (1, 600), 4),
+    ("SouthIndian", "Thavil", ["thavil", "tavil", "dhol", "indian drum"], (1, 600), 4),
     ("SouthIndian", "Ghatam", "ghatam", (1, 600), 4),
-    ("SouthIndian", "Kanjira", "kanjira", (1, 600), 3),
+    ("SouthIndian", "Kanjira", ["kanjira", "frame drum", "tambourine india", "daf"], (1, 600), 3),
     ("SouthIndian", "Veena", "veena", (1, 600), 5),
-    ("SouthIndian", "Nadaswaram", "nadaswaram", (1, 600), 4),
-    ("SouthIndian", "Konnakol", "konnakol", (1, 600), 3),
+    ("SouthIndian", "Nadaswaram", ["nadaswaram", "nagaswaram", "shehnai", "shenai"], (1, 600), 4),
+    ("SouthIndian", "Konnakol", ["konnakol", "indian rhythm syllables", "bol tabla"], (1, 600), 3),
 ]
+
+
+# a download only counts if its name / tags really mention the thing (search ranking alone pulls in misfits)
+MUST = {
+    "Rain_Light": [["rain"]], "Rain_Heavy": [["rain", "downpour", "storm"]], "Rain_On_Roof": [["rain"], ["roof", "window", "gutter"]],
+    "Rain_On_Tin_Roof": [["rain"], ["tin", "metal", "roof", "tent", "corrugated"]], "Rain_In_Car": [["rain"], ["car", "vehicle"]],
+    "Rain_Forest": [["rain"]], "Thunder": [["thunder"]],
+    "Car_Door_Open": [["door"], ["car", "vehicle", "truck", "van"]], "Car_Door_Close": [["door"], ["car", "vehicle", "truck", "van"]],
+    "Car_Trunk": [["trunk", "boot", "tailgate"]], "Car_Engine_Start": [["engine", "ignition", "start"]], "Car_Horn": [["horn", "honk"]],
+    "Tyres_Tarmac": [["road", "asphalt", "tarmac", "driving", "interior", "highway"]], "Tyres_Gravel": [["gravel"]],
+    "Tyres_Wet_Road": [["wet", "rain"]], "Car_Pass_By": [["pass", "passing", "passby", "drive", "drives"]],
+    "Footsteps_Gravel": [["footstep", "footsteps", "walk", "walking", "steps"]],
+    "Whistling_Thrush": [["thrush", "blackbird"]], "Himalayan_Monal": [["monal", "pheasant"]], "Cuckoo": [["cuckoo", "coucou"]],
+    "Barbet": [["barbet"]], "Laughing_Thrush": [["laughingthrush", "laughing"]], "Raven_Crow": [["raven", "crow", "caw", "croak"]],
+    "Crows_India": [["crow", "kaak", "caw"]], "Dawn_Chorus": [["dawn", "chorus", "birdsong", "birds"]],
+    "Forest_Birds_India": [["bird", "birds", "jungle", "forest"]], "Eagle_Kite": [["kite", "buzzard", "eagle", "hawk", "raptor"]],
+    "Stream_Close": [["stream", "brook", "creek", "river"]], "River_Rapids": [["river", "rapids"]],
+    "River_Distant": [["river", "stream"]], "Waterfall_Close": [["waterfall", "falls", "cascade"]],
+    "Waterfall_Distant": [["waterfall", "falls"]], "Water_Drips": [["drip", "drips", "dripping", "drop", "drops"]],
+    "Splash": [["splash"]], "Conch_Shankh": [["conch", "shankh", "shell"]], "Temple_Bell_Real": [["bell", "bells"]],
+    "Temple_Crowd": [["temple", "india", "indian", "crowd", "prayer"]],
+    "Mridangam": [["mridangam", "mrdangam", "mridanga"]], "Thavil": [["thavil", "tavil", "dhol", "drum"]], "Ghatam": [["ghatam"]],
+    "Kanjira": [["kanjira", "frame", "daf", "tambourine"]], "Veena": [["veena", "vina"]],
+    "Nadaswaram": [["nadaswaram", "nagaswaram", "shehnai", "shenai"]], "Konnakol": [["konnakol", "solkattu", "bol"]],
+}
+
+
+def relevant(wish, name, tags):
+    words = set(re.findall(r"[a-z]+", (name + " " + " ".join(tags or [])).lower().replace("_", " ")))
+    return all(any(w in words or any(x.startswith(w) for x in words) for w in grp) for grp in MUST.get(wish, []))
 
 
 def key():
@@ -93,7 +123,7 @@ def get(url, params=None, tries=3):
 
 
 def search(tok, q, dur, n):
-    params = {"query": q, "token": tok, "page_size": 40, "sort": "rating_desc",
+    params = {"query": q, "token": tok, "page_size": 80, "sort": "rating_desc",
               "filter": 'license:"Creative Commons 0" duration:[%g TO %g]' % dur,
               "fields": "id,name,username,license,duration,previews,avg_rating,num_ratings,num_downloads,tags,url,samplerate,channels"}
     res = json.loads(get(API, params))["results"]
@@ -115,7 +145,7 @@ def main():
     a = ap.parse_args()
     if a.list:
         for g, w, q, d, n in WISHES:
-            print(f"{g:12s} {w:22s} x{n}  '{q}'  {d[0]}-{d[1]} s")
+            print(f"{g:12s} {w:22s} x{n}  {q}  {d[0]}-{d[1]} s")
         return
     tok = key()
     manp = OUT / "manifest.json"
@@ -125,20 +155,25 @@ def main():
             continue
         folder = OUT / g / w
         folder.mkdir(parents=True, exist_ok=True)
-        have = [k for k, v in man.items() if v["wish"] == w]
+        have = [k for k, v in man.items() if v["wish"] == w and relevant(w, v["name"], v.get("tags"))]
         if len(have) >= n:
             print(f"  {g}/{w}: already {len(have)}")
             continue
-        try:
-            hits = search(tok, q, d, n)
-        except Exception as e:
-            print(f"  {g}/{w}: search failed ({e})")
-            continue
+        hits = []
+        for qq in (q if isinstance(q, list) else [q]):
+            try:
+                hits += [h for h in search(tok, qq, d, n) if h["id"] not in {x["id"] for x in hits}]
+            except Exception as e:
+                print(f"  {g}/{w}: search '{qq}' failed ({e})")
+            if len(hits) >= n * 2:
+                break
         got = len(have)
         for s in hits:
             if got >= n:
                 break
             if str(s["id"]) in man or s.get("license", "").find("publicdomain/zero") < 0 and "Creative Commons 0" not in s.get("license", ""):
+                continue
+            if not relevant(w, s["name"], s.get("tags")):
                 continue
             url = s["previews"].get("preview-hq-ogg") or s["previews"].get("preview-hq-mp3")
             ext = ".ogg" if url.endswith(".ogg") else ".mp3"
@@ -153,9 +188,10 @@ def main():
                                  "rating": s.get("avg_rating"), "downloads": s.get("num_downloads"), "tags": s.get("tags", [])[:12]}
             got += 1
             time.sleep(0.3)
-        print(f"  {g}/{w}: {got} files  ('{q}')", flush=True)
+        print(f"  {g}/{w}: {got} files  ({q})", flush=True)
         json.dump(man, open(manp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(f"{len(man)} CC0 recordings in {OUT}")
+    ok = sum(1 for v in man.values() if relevant(v["wish"], v["name"], v.get("tags")))
+    print(f"{len(man)} CC0 recordings in {OUT} ({ok} relevant, the rest are ignored)")
 
 
 if __name__ == "__main__":

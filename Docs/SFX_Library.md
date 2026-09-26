@@ -10,6 +10,8 @@ Three styles:
   Recordings: *VSCO-2 Community Edition* by Versilian Studios (CC0 public domain — free for YouTube, no credit required).
 - **Grand** (folders 09–12 and `Grand_` stings) — deep, cinematic synth: sub-bass, taiko/dhol, braams, gongs, ransingha horn with valley echo, drones.
 - **Light** (folders 01–08) — playful UI sounds, ticks, pops, marimba, plus nature beds and phone sounds.
+- **Real world** (folders 20–24) — real CC0 field recordings: rain, thunder, car doors / engine / tyres, birds, streams,
+  rivers, waterfalls, conch, temple bells, town and dhol. Sources: `Docs/Field_Recordings_Credits.md`.
 - **Cinematic** (folders 16–19) — orchestral risers that land on a hit or open into a chord, sub drops and downers, impact drums,
   and music transitions matched to the keys of the SPP music.  **SFX - Land at Playhead** lines their landing moment up with a cut.
 
@@ -17,7 +19,7 @@ Three styles:
 - **LOOP_Ns** = seamless loop (the end joins the start) → use **SFX - Loop Fill (In to Out)** for any length.
 - Levels: one-shots peak −3 dBFS (title kits −5 to −8 so they sit under the VO); beds ~−24 dB RMS.
 - **Title Kits** (01, 09, 13) are timed to the SPP titles — **SFX - Auto Sound for Titles** places them (choose Strings / Grand / Light / Mix).
-- Listen: `Docs/SPP_SFX_Strings_Demo.mp3`, `Docs/SPP_SFX_Cinematic_Demo.mp3`, `Docs/SPP_SFX_Grand_Demo.mp3`, `Docs/SPP_SFX_Demo_Reel.mp3`.
+- Listen: `Docs/SPP_SFX_RealWorld_Demo.mp3`, `Docs/SPP_SFX_Strings_Demo.mp3`, `Docs/SPP_SFX_Cinematic_Demo.mp3`, `Docs/SPP_SFX_Grand_Demo.mp3`, `Docs/SPP_SFX_Demo_Reel.mp3`.
 
 
 ## 01 Title Kits
@@ -275,25 +277,138 @@ Three styles:
 
 | Sound | Variations | Length | Use |
 |---|---|---|---|
-| `SPP_Swell_Into_D` | 2 | 8.3 s | Swell that lands (at 3.0 s) on the D chord - put its peak on the first beat of a track in D |
-| `SPP_Tail_D` | 2 | 7.5 s | Ringing D chord with harp / bell - covers the cut when a track in D stops early |
-| `SPP_Swell_Into_E` | 2 | 8.1 s | Swell that lands (at 3.0 s) on the E chord - put its peak on the first beat of a track in E |
-| `SPP_Tail_E` | 2 | 7.6 s | Ringing E chord with harp / bell - covers the cut when a track in E stops early |
-| `SPP_Swell_Into_Bm` | 2 | 8.3 s | Swell that lands (at 3.0 s) on the Bm chord - put its peak on the first beat of a track in Bm |
-| `SPP_Tail_Bm` | 2 | 7.4 s | Ringing Bm chord with harp / bell - covers the cut when a track in Bm stops early |
-| `SPP_Swell_Into_Dm` | 2 | 8.1 s | Swell that lands (at 3.0 s) on the Dm chord - put its peak on the first beat of a track in Dm |
-| `SPP_Tail_Dm` | 2 | 7.4 s | Ringing Dm chord with harp / bell - covers the cut when a track in Dm stops early |
-| `SPP_Bridge_D_to_E` | 1 | 9.0 s | 5 s musical bridge: starts on D, passes through the dominant of E, lands on E at 4.0 s - joins a track in D to one in E |
-| `SPP_Bridge_D_to_Bm` | 1 | 9.1 s | 5 s musical bridge: starts on D, passes through the dominant of Bm, lands on Bm at 4.0 s - joins a track in D to one in Bm |
-| `SPP_Bridge_D_to_Dm` | 1 | 9.0 s | 5 s musical bridge: starts on D, passes through the dominant of Dm, lands on Dm at 4.0 s - joins a track in D to one in Dm |
-| `SPP_Bridge_E_to_D` | 1 | 9.1 s | 5 s musical bridge: starts on E, passes through the dominant of D, lands on D at 4.0 s - joins a track in E to one in D |
-| `SPP_Bridge_E_to_Bm` | 1 | 9.0 s | 5 s musical bridge: starts on E, passes through the dominant of Bm, lands on Bm at 4.0 s - joins a track in E to one in Bm |
-| `SPP_Bridge_E_to_Dm` | 1 | 9.1 s | 5 s musical bridge: starts on E, passes through the dominant of Dm, lands on Dm at 4.0 s - joins a track in E to one in Dm |
-| `SPP_Bridge_Bm_to_D` | 1 | 9.0 s | 5 s musical bridge: starts on Bm, passes through the dominant of D, lands on D at 4.0 s - joins a track in Bm to one in D |
-| `SPP_Bridge_Bm_to_E` | 1 | 9.0 s | 5 s musical bridge: starts on Bm, passes through the dominant of E, lands on E at 4.0 s - joins a track in Bm to one in E |
-| `SPP_Bridge_Bm_to_Dm` | 1 | 9.2 s | 5 s musical bridge: starts on Bm, passes through the dominant of Dm, lands on Dm at 4.0 s - joins a track in Bm to one in Dm |
-| `SPP_Bridge_Dm_to_D` | 1 | 9.0 s | 5 s musical bridge: starts on Dm, passes through the dominant of D, lands on D at 4.0 s - joins a track in Dm to one in D |
-| `SPP_Bridge_Dm_to_E` | 1 | 9.0 s | 5 s musical bridge: starts on Dm, passes through the dominant of E, lands on E at 4.0 s - joins a track in Dm to one in E |
-| `SPP_Bridge_Dm_to_Bm` | 1 | 9.1 s | 5 s musical bridge: starts on Dm, passes through the dominant of Bm, lands on Bm at 4.0 s - joins a track in Dm to one in Bm |
+| `SPP_Swell_Into_C` | 3 | 8.1 s | Swell that lands (at 3.0 s) on the C chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_C` | 2 | 7.6 s | Ringing C chord with harp / bells - covers the cut when music in C stops early |
+| `SPP_Swell_Into_Cm` | 3 | 8.1 s | Swell that lands (at 3.0 s) on the Cm chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Cm` | 2 | 7.5 s | Ringing Cm chord with harp / bells - covers the cut when music in Cm stops early |
+| `SPP_Swell_Into_C#` | 3 | 8.3 s | Swell that lands (at 3.0 s) on the C# chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_C#` | 2 | 7.5 s | Ringing C# chord with harp / bells - covers the cut when music in C# stops early |
+| `SPP_Swell_Into_C#m` | 3 | 8.2 s | Swell that lands (at 3.0 s) on the C#m chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_C#m` | 2 | 7.6 s | Ringing C#m chord with harp / bells - covers the cut when music in C#m stops early |
+| `SPP_Swell_Into_D` | 3 | 8.3 s | Swell that lands (at 3.0 s) on the D chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_D` | 2 | 7.5 s | Ringing D chord with harp / bells - covers the cut when music in D stops early |
+| `SPP_Swell_Into_Dm` | 3 | 8.1 s | Swell that lands (at 3.0 s) on the Dm chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Dm` | 2 | 7.4 s | Ringing Dm chord with harp / bells - covers the cut when music in Dm stops early |
+| `SPP_Swell_Into_Eb` | 3 | 8.2 s | Swell that lands (at 3.0 s) on the Eb chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Eb` | 2 | 7.5 s | Ringing Eb chord with harp / bells - covers the cut when music in Eb stops early |
+| `SPP_Swell_Into_Ebm` | 3 | 8.3 s | Swell that lands (at 3.0 s) on the Ebm chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Ebm` | 2 | 7.5 s | Ringing Ebm chord with harp / bells - covers the cut when music in Ebm stops early |
+| `SPP_Swell_Into_E` | 3 | 8.1 s | Swell that lands (at 3.0 s) on the E chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_E` | 2 | 7.6 s | Ringing E chord with harp / bells - covers the cut when music in E stops early |
+| `SPP_Swell_Into_Em` | 3 | 8.2 s | Swell that lands (at 3.0 s) on the Em chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Em` | 2 | 7.5 s | Ringing Em chord with harp / bells - covers the cut when music in Em stops early |
+| `SPP_Swell_Into_F` | 3 | 8.1 s | Swell that lands (at 3.0 s) on the F chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_F` | 2 | 7.5 s | Ringing F chord with harp / bells - covers the cut when music in F stops early |
+| `SPP_Swell_Into_Fm` | 3 | 8.1 s | Swell that lands (at 3.0 s) on the Fm chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Fm` | 2 | 7.7 s | Ringing Fm chord with harp / bells - covers the cut when music in Fm stops early |
+| `SPP_Swell_Into_F#` | 3 | 8.3 s | Swell that lands (at 3.0 s) on the F# chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_F#` | 2 | 7.6 s | Ringing F# chord with harp / bells - covers the cut when music in F# stops early |
+| `SPP_Swell_Into_F#m` | 3 | 8.4 s | Swell that lands (at 3.0 s) on the F#m chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_F#m` | 2 | 7.6 s | Ringing F#m chord with harp / bells - covers the cut when music in F#m stops early |
+| `SPP_Swell_Into_G` | 3 | 8.1 s | Swell that lands (at 3.0 s) on the G chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_G` | 2 | 7.7 s | Ringing G chord with harp / bells - covers the cut when music in G stops early |
+| `SPP_Swell_Into_Gm` | 3 | 8.0 s | Swell that lands (at 3.0 s) on the Gm chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Gm` | 2 | 7.6 s | Ringing Gm chord with harp / bells - covers the cut when music in Gm stops early |
+| `SPP_Swell_Into_Ab` | 3 | 8.2 s | Swell that lands (at 3.0 s) on the Ab chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Ab` | 2 | 7.6 s | Ringing Ab chord with harp / bells - covers the cut when music in Ab stops early |
+| `SPP_Swell_Into_Abm` | 3 | 8.0 s | Swell that lands (at 3.0 s) on the Abm chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Abm` | 2 | 7.6 s | Ringing Abm chord with harp / bells - covers the cut when music in Abm stops early |
+| `SPP_Swell_Into_A` | 3 | 8.2 s | Swell that lands (at 3.0 s) on the A chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_A` | 2 | 7.5 s | Ringing A chord with harp / bells - covers the cut when music in A stops early |
+| `SPP_Swell_Into_Am` | 3 | 8.2 s | Swell that lands (at 3.0 s) on the Am chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Am` | 2 | 7.6 s | Ringing Am chord with harp / bells - covers the cut when music in Am stops early |
+| `SPP_Swell_Into_Bb` | 3 | 8.0 s | Swell that lands (at 3.0 s) on the Bb chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Bb` | 2 | 7.7 s | Ringing Bb chord with harp / bells - covers the cut when music in Bb stops early |
+| `SPP_Swell_Into_Bbm` | 3 | 8.0 s | Swell that lands (at 3.0 s) on the Bbm chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Bbm` | 2 | 7.6 s | Ringing Bbm chord with harp / bells - covers the cut when music in Bbm stops early |
+| `SPP_Swell_Into_B` | 3 | 8.2 s | Swell that lands (at 3.0 s) on the B chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_B` | 2 | 7.5 s | Ringing B chord with harp / bells - covers the cut when music in B stops early |
+| `SPP_Swell_Into_Bm` | 3 | 8.3 s | Swell that lands (at 3.0 s) on the Bm chord - v01 strings+cymbal, v02 +harp, v03 soft |
+| `SPP_Tail_Bm` | 2 | 7.4 s | Ringing Bm chord with harp / bells - covers the cut when music in Bm stops early |
+| `SPP_Bridge_D_to_E` | 1 | 9.0 s | 5 s musical bridge from D to E (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_D_to_Bm` | 1 | 9.1 s | 5 s musical bridge from D to Bm (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_D_to_Dm` | 1 | 9.0 s | 5 s musical bridge from D to Dm (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_E_to_D` | 1 | 9.1 s | 5 s musical bridge from E to D (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_E_to_Bm` | 1 | 9.0 s | 5 s musical bridge from E to Bm (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_E_to_Dm` | 1 | 9.1 s | 5 s musical bridge from E to Dm (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_Bm_to_D` | 1 | 9.0 s | 5 s musical bridge from Bm to D (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_Bm_to_E` | 1 | 9.0 s | 5 s musical bridge from Bm to E (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_Bm_to_Dm` | 1 | 9.2 s | 5 s musical bridge from Bm to Dm (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_Dm_to_D` | 1 | 9.0 s | 5 s musical bridge from Dm to D (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_Dm_to_E` | 1 | 9.0 s | 5 s musical bridge from Dm to E (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
+| `SPP_Bridge_Dm_to_Bm` | 1 | 9.1 s | 5 s musical bridge from Dm to Bm (lands at 4.0 s). Any other pair: 'Music - Key Transition' makes it on demand |
 
-**574 files, 181 sounds.**
+## 20 Rain & Weather
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Rain_Light` | 4 | loop 30.0 s | REAL recording: light rain, end of a storm |
+| `SPP_Rain_Heavy` | 6 | loop 30.0 s | REAL recording: heavy rain |
+| `SPP_Rain_On_Roof` | 5 | loop 30.0 s | REAL recording: raindrops on an open roof window |
+| `SPP_Rain_On_Tin_Roof` | 5 | loop 30.0 s | REAL recording: light rain on a tin roof |
+| `SPP_Rain_In_Car` | 5 | loop 30.0 s | REAL recording: rain on the car, heard inside |
+| `SPP_Rain_Forest` | 4 | loop 30.0 s | REAL recording: rain shower in a forest |
+| `SPP_Thunder` | 6 | 15.7 s | REAL recording: big thunder |
+| `SPP_Wind_Strong` | 1 | loop 30.0 s | REAL recording: strong wind gusts (real) |
+
+## 21 Car & Road
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Car_Door_Close` | 8 | 0.5 s | REAL recording: car door closing |
+| `SPP_Car_Door_Open` | 5 | 0.8 s | REAL recording: driver's door opening |
+| `SPP_Car_Door_Handle` | 4 | 0.9 s | REAL recording: door handle clicks |
+| `SPP_Car_Lock` | 1 | 0.5 s | REAL recording: central locking |
+| `SPP_Car_Trunk_Close` | 1 | 0.8 s | REAL recording: boot / dickey closing |
+| `SPP_Car_Engine_Start` | 3 | 2.5 s | REAL recording: engine start, heard inside |
+| `SPP_Car_Horn` | 3 | 0.5 s | REAL recording: horn |
+| `SPP_Car_Pass_By` | 5 | 9.9 s | REAL recording: car passing by |
+| `SPP_Car_Pass_By_Wet` | 2 | 5.7 s | REAL recording: car passing on a wet road |
+| `SPP_Traffic_Wet_Road` | 2 | loop 30.0 s | REAL recording: cars and trucks on a wet road |
+| `SPP_Tyres_Gravel` | 3 | loop 9.3 s | REAL recording: tyres on a gravel road |
+| `SPP_Footsteps_Gravel` | 2 | loop 30.0 s | REAL recording: walking on a gravel forest road |
+| `SPP_Footsteps_Gravel_Steps` | 4 | 0.3 s | REAL recording: mountain boots on gravel, single steps |
+
+## 22 Birds
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Cuckoo_Call` | 5 | 3.5 s | REAL recording: cuckoo |
+| `SPP_Cuckoo_Morning` | 2 | loop 30.0 s | REAL recording: cuckoo at dawn from a balcony |
+| `SPP_Dawn_Chorus` | 8 | loop 30.0 s | REAL recording: dawn chorus |
+| `SPP_Forest_Birds_India` | 3 | loop 30.0 s | REAL recording: Nagarhole forest, India |
+| `SPP_Laughing_Thrush_Call` | 2 | 3.5 s | REAL recording: laughingthrush calls |
+| `SPP_Crow_Caw` | 9 | 3.5 s | REAL recording: crow 'kaa kaa' |
+| `SPP_Raven_Croak` | 3 | 2.3 s | REAL recording: raven croak |
+| `SPP_Crows_Town` | 1 | loop 30.0 s | REAL recording: crows in an Indian city |
+| `SPP_Thrush_Song` | 9 | 2.4 s | REAL recording: songbird whistle |
+| `SPP_Pheasant_Call` | 5 | 0.4 s | REAL recording: pheasant call (stand-in for monal) |
+| `SPP_Raptor_Call` | 7 | 1.3 s | REAL recording: buzzard / kite mewing call |
+
+## 23 Water
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Stream_Close` | 5 | loop 30.0 s | REAL recording: rapid mountain stream, close |
+| `SPP_River` | 7 | loop 30.0 s | REAL recording: river with small rapids |
+| `SPP_River_India_Birds` | 3 | loop 30.0 s | REAL recording: riverside in India, water and birds |
+| `SPP_Waterfall_Close` | 2 | loop 30.0 s | REAL recording: waterfall, close |
+| `SPP_Waterfall_Distant` | 2 | loop 26.7 s | REAL recording: waterfall in the distance |
+| `SPP_Night_River_Crickets` | 2 | loop 30.0 s | REAL recording: night by a river: crickets and frogs |
+| `SPP_Water_Drips` | 1 | loop 30.0 s | REAL recording: water dripping in a large echoey space |
+| `SPP_Splash` | 3 | 1.1 s | REAL recording: splash |
+
+## 24 Temple & Town
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Conch_Shankh` | 1 | 10.4 s | REAL recording: conch (shankh) blown |
+| `SPP_Mountain_Horn` | 1 | 5.1 s | REAL recording: alphorn - long mountain horn call |
+| `SPP_Temple_Bells_Real` | 2 | 30.0 s | REAL recording: Shiva temple bells |
+| `SPP_Monastery_Chant` | 1 | 30.0 s | REAL recording: monks chanting / monastery music |
+| `SPP_Crowd_India` | 2 | loop 30.0 s | REAL recording: outdoor crowd, India |
+| `SPP_Town_India` | 1 | loop 30.0 s | REAL recording: busy Indian town |
+| `SPP_Dhol_Wedding` | 1 | 30.0 s | REAL recording: wedding dhols |
+| `SPP_Dhol_Street` | 1 | 30.0 s | REAL recording: dhol in the street with singing |
+
+**846 files, 269 sounds.**

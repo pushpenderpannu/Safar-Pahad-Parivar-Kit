@@ -13,4 +13,10 @@ if (-not (Test-Path $py)) { throw "Run .\Tools\setup_word_timing.ps1 first (inst
 & (Join-Path $PSScriptRoot "get_samples.ps1")
 $vs = Join-Path $Kit "Source\_vsco"
 & $py (Join-Path $Kit "Source\sfx\sfx_gen.py") --out (Join-Path $Kit "SFX") --samples $vs
+# real field recordings (rain, car, birds, water, temple) - CC0 from freesound, fetched once with Tools\spp_freesound.py
+if (-not (Test-Path (Join-Path $Kit "Source\_cc0\manifest.json")) -and (Test-Path (Join-Path $PSScriptRoot "freesound_key.txt"))) {
+  & $py (Join-Path $PSScriptRoot "spp_freesound.py")
+}
+& $py (Join-Path $Kit "Source\sfx\field_gen.py") --out (Join-Path $Kit "SFX")
+& $py (Join-Path $Kit "Source\sfx\make_library_doc.py") (Join-Path $Kit "SFX\sfx_catalog.json") (Join-Path $Kit "Docs\SFX_Library.md")
 Write-Host "`nDone. In Resolve: Workspace > Scripts > Safar Pahad Parivar > SFX - Import Library"

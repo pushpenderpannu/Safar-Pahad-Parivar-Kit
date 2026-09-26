@@ -51,12 +51,15 @@ def tokens(text):
 
 
 # ------------------------------------------------------------------ recognition
+_DLL = []
+
+
 def cuda_dll_dirs():
     if os.name != "nt":
         return
     for d in glob.glob(os.path.join(sys.prefix, "Lib", "site-packages", "nvidia", "*", "bin")):
         try:
-            os.add_dll_directory(d)
+            _DLL.append(os.add_dll_directory(d))
         except Exception:
             pass
         os.environ["PATH"] = d + os.pathsep + os.environ.get("PATH", "")
