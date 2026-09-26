@@ -10,8 +10,10 @@ This folder is the **single source of truth** — Resolve gets its copies from h
 1. Install DaVinci Resolve Studio, Git (+ Git LFS), Python 3, ffmpeg (`choco install ffmpeg`).
 2. `git clone <your-remote> "F:\Video Editing\_Safar Pahad Parivar Kit"` then `git lfs pull`
 3. In PowerShell inside the kit: `.\install.ps1`
-4. Python tools (captions timing, GPS, route maps, sound): `.\Tools\setup_word_timing.ps1`, then `.\Tools\make_sfx.ps1` and `.\Tools\make_music.ps1`
-5. Restart Resolve, then once: **Workspace → Scripts → Safar Pahad Parivar → Setup Render Presets**
+4. Python engines (captions, GPS, route maps, sound, music, moments): `.\Tools\setup_word_timing.ps1`; optional `Tools\freesound_key.txt` for the real-world sounds; then `.\Tools\make_sfx.ps1` and `.\Tools\make_music.ps1` (~5 GB, not in git)
+5. Restart Resolve, then once: **Workspace → Scripts → Safar Pahad Parivar → Setup Render Presets**, **SFX - Import Library**, **Music - Import Library**
+
+Everything else is used **inside Resolve** from that menu; the guide's §0 lists every tool, where it runs and when.
 
 ## What's inside
 | Folder | Contents |
@@ -20,9 +22,9 @@ This folder is the **single source of truth** — Resolve gets its copies from h
 | `Resolve\Templates\Edit\Titles\Safar Pahad Parivar` | OGraf titles: Info Card, Altitude Counter, Peak Callout, Pop-up Title, Credits, Captions (animated Hindi subtitles), Route Map (+ bundled fonts) |
 | `Graphics` | Intro (5s), End card (15s), Watermarks (16x9 and Shorts) — 4K, transparent |
 | `Brand` | Logo lock-ups, brand board, mock-ups |
-| `Tools` | `spp_sort_media.py` (sort footage by true orientation, with undo log), `new_video.ps1` (trip + video folders), `spp_word_timing.py` (word-timed captions), `spp_gps.py` (GPS lookup, stops, route maps, GPX, local API), `spp_phone_voice.py` (phone-call voice), `spp_distance.py` (make a sound near / far / across the valley), `spp_key.py` (find a music key, make key-matched transitions), `spp_moments.py` (moment finder + trip transcript), `spp_freesound.py` (fetch CC0 field recordings), `setup_word_timing.ps1` (installs the Python tools), `make_sfx.ps1` (builds the SFX library), `make_music.ps1` (builds the music library), `get_samples.ps1` (downloads the CC0 instrument recordings once) |
+| `Tools` | `spp_sort_media.py` (sort footage by true orientation, with undo log), `new_video.ps1` (trip + video folders), `spp_word_timing.py` (word-timed captions), `spp_gps.py` (GPS lookup, stops, route maps, GPX, local API), `spp_phone_voice.py` (phone-call voice), `spp_distance.py` (make a sound near / far / across the valley), `spp_key.py` (find a music key, make key-matched transitions), `spp_moments.py` (moment finder + trip transcript), `spp_freesound.py` (fetch CC0 field recordings), `setup_word_timing.ps1` (installs the Python tools), `make_sfx.ps1` (builds the SFX library), `make_music.ps1` (builds the music library), `get_samples.ps1` (downloads the CC0 instrument recordings once), `spp_moments_resolve.py` / `spp_sfx_resolve.py` / `spp_resolve_common.py` (helpers for the menu scripts) |
 | `Docs` | User guide, cheat sheet, SFX library list, music library list + preview, VO scripts, Maps/GPS/terrain guide |
-| `SFX` *(generated, not in git)* | ~575 sound effects (Strings + Grand + Light, cinematic risers / impacts / music transitions) — `.\Tools\make_sfx.ps1`; the Strings set uses recorded instruments from VSCO-2 Community Edition (CC0), downloaded once into `Source\_vsco` |
+| `SFX` *(generated, not in git)* | 846 sound files / 269 sounds (Strings + Grand + Light, cinematic risers / impacts / key-matched music transitions, real CC0 field recordings) — `.\Tools\make_sfx.ps1`; the Strings set uses recorded instruments from VSCO-2 Community Edition (CC0), downloaded once into `Source\_vsco` |
 | `Music` *(generated, not in git)* | 12 original background-music tracks (Slow Build, Temple Bells, Wind, Flute) — `.\Tools\make_music.ps1` |
 | `Source` | Generators for every graphic/template, fonts, reference images |
 

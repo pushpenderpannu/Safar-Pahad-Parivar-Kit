@@ -6,6 +6,7 @@ Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles l
 ![Menu scripts](guide_img/tag_menu.jpg)
 
 **Contents**
+0. [Where each tool runs — inside Resolve or outside](#0-where-each-tool-runs--inside-resolve-or-outside)
 1. [One-time setup](#1-one-time-setup)
 2. [Start a new trip / video](#2-start-a-new-trip--video)
 3. [New timeline](#3-new-timeline)
@@ -31,19 +32,84 @@ Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles l
 
 ---
 
+## 0. Where each tool runs — inside Resolve or outside
+**Almost everything is used inside DaVinci Resolve.** Outside Resolve you only run a few PowerShell commands —
+once per PC to install/build things, and at the start of each trip to make folders and sort footage — and you read
+two text reports the moment finder writes.
+
+### Inside Resolve — menu scripts (Workspace → Scripts → Safar Pahad Parivar → …)
+| When | Menu script | What you select first | What it does |
+|---|---|---|---|
+| Once per PC | **Setup Render Presets** | — | adds the SPP YouTube 4K / 1080p / Shorts render presets |
+| New video | **New Timeline - YouTube 16x9** / **Shorts 9x16** | — | named tracks (Main, B-Roll, GFX, Nat Sound, VO, Music, SFX, Subtitles) |
+| New video | **Import Brand Graphics** | — | intro, end card, watermarks into a bin |
+| New trip | **Moments - Analyse Trip** | trip footage in the project | finds laughter / kids / reactions + Hindi transcript (runs in the background) |
+| Finding shots | **Moments - Add Markers** · **Best Moments Timeline** · **Search Transcript** | — | markers on clips · a selects timeline · a timeline of every clip where a word was said |
+| Logging | **Tag Shot Type → 0–9** | timeline or media-pool clips | colour + keyword (Hero, Family talk, Scenery, Road, Drone, Timelapse, Kids, Stay/Food, Reject) |
+| Titles | **Info Cards - Fill from GPS** | — (works on all empty SPP Info Cards) | place, altitude, date, time, weather from the GPS of the shot underneath |
+| Titles | **Route Map - Build from Timeline** | an SPP Route Map clip on the timeline | real-road route, stops, times for the trip |
+| Captions | **Captions - Sync Words to VO** | subtitles + a track named **VO** | word-by-word timing + stress into SPP Captions |
+| Sound | **SFX - Import Library** · **Music - Import Library** | — | puts the libraries into the *SPP SFX* / *SPP Music* bins |
+| Sound | **SFX - Auto Sound for Titles** | — | beat-timed sounds for every SPP title (Strings / Grand / Light / Mix) |
+| Sound | **SFX - Land at Playhead** | one sound in the Media Pool | its hit / swell lands exactly on the playhead |
+| Sound | **SFX - Loop Fill (In to Out)** | one `_LOOP_` sound in the Media Pool + In/Out | repeats it seamlessly for any length |
+| Sound | **SFX - Remove Auto Sounds** | — | clears the Lime auto-sound clips |
+| Music | **Music - Key Transition** | 1 or 2 music clips on the timeline | detects the keys, places a bridge / swell / tail on the cut |
+| Voices | **Phone Voice - Selected Clips** | audio clips | phone / walkie-talkie voice |
+| Voices / SFX | **Distance - Selected Clips** | audio clips | near / mid / far / very far / across the valley |
+Titles (Info Card, Altitude Counter, Peak Callout, Pop-up Title, Credits, Captions, Route Map) are in **Effects → Titles → Safar Pahad Parivar**.
+Script output and progress show in **Workspace → Console**.
+
+### Outside Resolve — PowerShell in the kit folder (`F:\Video Editing\_Safar Pahad Parivar Kit`)
+| When | Command | Time |
+|---|---|---|
+| New PC / after `git pull` of kit changes | `.\install.ps1` then restart Resolve | seconds |
+| New PC (once) | `.\Tools\setup_word_timing.ps1` — installs all Python engines (speech, sound events, GPU) | 10–20 min |
+| New PC (once) or when the guide says the library changed | `.\Tools\make_sfx.ps1` — builds `SFX\` (downloads the instruments + real recordings the first time) | 15–25 min first time, ~10 min later |
+| New PC (once) or when the music changed | `.\Tools\make_music.ps1` (one track: `.\Tools\make_music.ps1 Pahadi`) | ~10 min |
+| New trip / video | `.\Tools\new_video.ps1 -Trip "2026-10 Chopta Tungnath" -Video "01 Main Film"` | seconds |
+| New trip | `python Tools\spp_sort_media.py "<trip>\Footage" --apply` (sort by orientation) | a minute |
+| Only to fetch more real recordings | `Tools\.venv\Scripts\python.exe Tools\spp_freesound.py` (needs `Tools\freesound_key.txt`) | minutes |
+
+### Outside Resolve — files you read
+| File | What |
+|---|---|
+| `<trip>\_spp_moments\Moments.md` | 3 opening candidates, top 40 moments, day-by-day list (after *Moments - Analyse Trip*) |
+| `<trip>\_spp_moments\Transcript.md` | everything said on the trip, clip by clip (Ctrl+F) |
+| `<trip>\stops.csv` | route-map stops — edit names/times, then run *Route Map - Build from Timeline* again |
+| `Docs\SFX_Library.md` · `Docs\Music_Library.md` | every sound / track, what it's for, length, key |
+| `Docs\*.mp3` | demo reels: listen before choosing |
+
+### Optional command-line tools (the menu scripts call these for you)
+`spp_gps.py` (GPS lookup, stops, route, GPX, local API) · `spp_key.py` (find a song's key / make a transition) ·
+`spp_distance.py` · `spp_phone_voice.py` · `spp_moments.py --search "बर्फ"` — all run with `Tools\.venv\Scripts\python.exe`.
+
+### A video, start to finish
+1. **PowerShell:** `new_video.ps1` → copy footage into `<trip>\Footage` → `spp_sort_media.py --apply`.
+2. **Resolve:** new project → import footage → **New Timeline** → **Import Brand Graphics** → **Moments - Analyse Trip**.
+3. Read `Moments.md`; **Moments - Add Markers** / **Best Moments Timeline**; **Tag Shot Type** while you watch.
+4. Edit. Add SPP titles → **Info Cards - Fill from GPS**, **Route Map - Build from Timeline**.
+5. Record the VO onto the **VO** track → subtitles → **Captions - Sync Words to VO**.
+6. Music from *SPP Music* → **Music - Key Transition** where tracks change. **SFX - Auto Sound for Titles**, real sounds from
+   folders 20–24 (use **Loop Fill** for beds, **Distance** for far-away sounds, **Land at Playhead** for risers).
+7. Mix (VO recipe, §15) → render with an SPP preset → save to `<video>\Exports`.
+
 ## 1. One-time setup
 Do this on a new or rebuilt PC (or after pulling kit changes).
 
 | Step | What to do |
 |---|---|
-| 1 | Install DaVinci Resolve Studio, **Git + Git LFS**, **Python 3.13 from python.org** (not the Microsoft Store one), ffmpeg (`choco install ffmpeg`). |
+| 1 | Install DaVinci Resolve Studio, **Git + Git LFS**, **Python 3.13 from python.org** (not the Microsoft Store one), ffmpeg (`choco install ffmpeg`). An NVIDIA GPU is used for speech (captions, moments). |
 | 2 | `git clone https://github.com/pushpenderpannu/Safar-Pahad-Parivar-Kit.git "F:\Video Editing\_Safar Pahad Parivar Kit"` then `git lfs pull` |
 | 3 | PowerShell in the kit folder: `.\install.ps1` — copies menu scripts + titles into Resolve. |
-| 4 | `.\Tools\setup_word_timing.ps1` — installs the Python tools (caption timing, GPS, route maps, sound). First caption sync downloads a 3 GB speech model. |
-| 4b | `.\Tools\make_sfx.ps1` — builds the sound-effects library (≈1 min). |
-| 5 | Restart Resolve, then once: **Setup Render Presets** (menu script). |
+| 4 | `.\Tools\setup_word_timing.ps1` — installs **all** Python engines: caption timing, GPS, route maps, sound, music, key finder, moment finder (incl. its 312 MB sound-event model; the 3 GB speech model downloads on first use). |
+| 5 | Optional, for the real-world sounds: create a free key at freesound.org/apiv2/apply and save it as `Tools\freesound_key.txt` (git ignores it). Without it the SFX library is built without folders 20–24. |
+| 6 | `.\Tools\make_sfx.ps1` — builds the sound-effects library (first time 15–25 min: downloads ~1.1 GB of CC0 instrument recordings and the real-world recordings). |
+| 7 | `.\Tools\make_music.ps1` — builds the 12 background-music tracks (~10 min). |
+| 8 | Restart Resolve, then once: **Setup Render Presets**, **SFX - Import Library**, **Music - Import Library** (menu scripts). |
+Disk space: ~5 GB for the generated libraries and the instrument recordings (`SFX` 2 GB, `Music` 0.5 GB, `Source\_vsco` 2 GB, `Source\_cc0` 0.3 GB) — none of it is in git.
 
-> After any kit update: `git pull` → `.\install.ps1` → restart Resolve.
+> After any kit update: `git pull` → `.\install.ps1` → restart Resolve. Re-run `make_sfx.ps1` / `make_music.ps1` only when the update changed the sounds or music (the commit message says so).
 
 ## 2. Start a new trip / video
 One folder per **trip** (footage stored once), one sub-folder + one Resolve project per **video**.
@@ -57,6 +123,7 @@ python Tools\spp_sort_media.py "<trip>\Footage" --apply   # -> Horizontal / Vert
 python Tools\spp_sort_media.py --undo "<trip>\Footage\_spp_sort_log_<date>.csv"
 ```
 In Resolve: new project → *Project Settings → Master Settings → Working Folders → Project media location* = `<video>\Resolve Media`.
+Import the footage, then run **Moments - Analyse Trip** once per trip (it works in the background — see §15d).
 
 ## 3. New timeline
 **New Timeline - YouTube 16x9** (3840×2160, scale-to-fit) or **New Timeline - Shorts 9x16** (1080×1920, scale-to-crop).
@@ -221,7 +288,7 @@ On the **VO** track (Fairlight): Voice Isolation 60–70 → EQ (high-pass 80 Hz
 De-esser → Dialogue Leveler / compressor 3:1 → final mix **−14 LUFS**, music 15–20 dB under the voice.
 
 ## 15a. Sound effects
-A brand sound library made for the SPP titles — **~270 sounds, ~850 files** (incl. real field recordings) in three styles plus cinematic risers, impacts and music transitions, several variations each, seamless loops for any length.
+A brand sound library made for the SPP titles — **269 sounds, 846 files** (incl. real field recordings) in three styles plus cinematic risers, impacts and music transitions, several variations each, seamless loops for any length.
 **Strings** (default): real recorded orchestra — violin, viola and cello sections, solo violin, harp, timpani, gong, Nepalese bells; warm
 and emotional, all in D major so the sounds fit together. **Grand**: deep cinematic synth — sub-bass hits, taiko/dhol, braams, gongs,
 ransingha-style horn with valley echo, drone beds. **Light**: playful UI ticks, pops and marimba.
@@ -362,4 +429,10 @@ Save the final file into `<video>\Exports`. Then *File → Export Project* (.drp
 | Info Card not filled | Its *Place (Hindi)* wasn't empty, or the shot has no GPS near that time (add Timeline export). |
 | "The SFX library isn't built yet" | `.\Tools\make_sfx.ps1`, then **SFX - Import Library**. |
 | Auto sounds in the wrong place | Titles moved after running it — just run **SFX - Auto Sound for Titles** again. |
-| Resolve froze while a script ran | Normal for caption sync / route map — wait; the Console (Workspace → Console) shows progress. |
+| Resolve froze while a script ran | Normal for caption sync / route map / key detection — wait; the Console (Workspace → Console) shows progress. |
+| "Couldn't find the trip folder" (Moments) | Import some of the trip's footage (from `<trip>\Footage`) into the project first. |
+| Moments: only speech, no laughter / cheering | The sound-event model isn't downloaded — run `.\Tools\setup_word_timing.ps1` again, then **Moments - Analyse Trip** (it only adds what's missing). |
+| Moment analysis is very slow | It fell back to the CPU — check `<trip>\_spp_moments\analyse_log.txt` for "GPU not available"; re-run `setup_word_timing.ps1`. |
+| Key Transition picked the wrong key | Change it in the window before placing. Relative keys (D / Bm) share notes — either sounds right. |
+| No folders 20–24 in the SFX library | `Tools\freesound_key.txt` missing when `make_sfx.ps1` ran — add the key and run it again. |
+| A sound is missing in the bin after a rebuild | Run **SFX - Import Library** / **Music - Import Library** again (only new files are added). |

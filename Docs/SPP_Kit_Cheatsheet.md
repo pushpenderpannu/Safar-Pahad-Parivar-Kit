@@ -1,4 +1,10 @@
-# Safar Pahad Parivar — Editing Kit (Phase 1)
+# Safar Pahad Parivar — Editing Kit (cheat sheet)
+
+**Inside Resolve** (Workspace → Scripts → Safar Pahad Parivar): everything you do while editing — timelines, tags, titles, GPS fill,
+route map, captions sync, moments, sound effects, music, key transitions, phone voice, distance.
+**Outside Resolve** (PowerShell in the kit folder): once per PC `.\install.ps1`, `.\Tools\setup_word_timing.ps1`, `.\Tools\make_sfx.ps1`,
+`.\Tools\make_music.ps1`; per trip `.\Tools\new_video.ps1` and `spp_sort_media.py`. Read: `<trip>\_spp_moments\Moments.md`.
+Full map with every tool: `Docs\SPP_Kit_Guide.md` §0.
 
 ## 1. New timeline (one click)
 Resolve → **Workspace → Scripts → Safar Pahad Parivar →**
@@ -90,13 +96,24 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - Numbers roll like a dial (odometer altitude, spinning date/time digits) — *Rolling-dial numbers* in the Inspector.
 - Better paths: export Google Maps Timeline (`Timeline.json`) into the trip folder. Full guide: `Docs\Maps_GPS_and_Terrain.md`.
 
-## 9. Sound effects & phone voice
-- Build once: `.\Tools\make_sfx.ps1` → **SFX - Import Library** (bin *SPP SFX*, 180 sounds / ~575 files: Strings + Grand + Light styles, cinematic risers / sub drops / impacts, music transitions, see `Docs\SFX_Library.md`).
-- **SFX - Auto Sound for Titles**: pick Strings / Grand / Light / Mix → beat-timed sounds for every SPP title on SFX 1–3 (Lime clips; re-run after edits).
-- **SFX - Land at Playhead**: playhead on the cut → select a riser / swell / bridge in the Media Pool → run: its hit lands on the playhead.
-- **Distance - Selected Clips**: selected audio → near / mid / far / very far / across the valley (echoes); original switched off.
-- **Music - Key Transition**: select the ending + starting music clips → detects both keys → bridge / swell / tail lands on the cut (all 24 keys).
-- **Moments**: Analyse Trip → read `_spp_moments\Moments.md` → Add Markers / Best Moments Timeline / Search Transcript.
+## 9. Moments (find the family moments)
+- **Moments - Analyse Trip** once per trip (background, ~15 min for 2 h of footage) → open `<trip>\_spp_moments\Moments.md`
+  (3 cold-open candidates, top 40, by day) and `Transcript.md` (everything said).
+- **Moments - Add Markers**: Yellow laughter · Pink kids · Red shouts · Fuchsia cheering · Purple singing · Green reactions.
+- **Moments - Best Moments Timeline** (top 20/40/80, laughter, kids, openers) · **Moments - Search Transcript** (e.g. `बर्फ, पानी`).
+
+## 10. Sound effects (bin *SPP SFX*, 269 sounds / 846 files — `Docs\SFX_Library.md`)
+- Build once: `.\Tools\make_sfx.ps1` → **SFX - Import Library**.
+- Styles for titles: Strings · Grand · Light · Mix → **SFX - Auto Sound for Titles** (Lime clips; re-run after edits; **Remove Auto Sounds** clears).
+- Cinematic (16–19): risers Epic / Awe (waterfalls, big mountains) / Tension, sub drops, downers, impact drums, music transitions.
+- Real recordings (20–24): rain, thunder, car doors / engine / gravel, birds, streams, rivers, waterfalls, conch, temple bells, dhol.
+- **SFX - Land at Playhead**: playhead on the cut → select a riser / swell / bridge in the Media Pool → run: its hit lands there.
 - **SFX - Loop Fill (In to Out)**: select a `_LOOP_` sound, set I/O, run — any length, seamless.
-- Music: `.\Tools\make_music.ps1` → **Music - Import Library** (bin *SPP Music*, 12 tracks: Slow Build / Temple Bells / Wind / Flute; preview `Docs\SPP_Music_Preview.mp3`).
-- **Phone Voice - Selected Clips**: selected audio → mobile / landline / speaker / walkie; original is switched off (D to restore).
+- **Distance - Selected Clips**: near / mid / far / very far / across the valley (echoes); original switched off (D to restore).
+- **Phone Voice - Selected Clips**: mobile / landline / speaker / walkie.
+
+## 11. Music (bin *SPP Music*, 12 tracks — `Docs\Music_Library.md`)
+- Build once: `.\Tools\make_music.ps1` → **Music - Import Library**. Themes: Slow Build · Temple Bells · Wind · Flute.
+- **Music - Key Transition**: select the ending + starting music clips → it detects both keys (change them if you like) → bridge / swell /
+  tail lands on the cut. Works for any music and all 24 keys. One clip selected → swell into it or tail at its end.
+- Mix: music −18 to −24 dB under the VO, −10 to −12 dB alone.
