@@ -94,4 +94,5 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - Build once: `.\Tools\make_sfx.ps1` → **SFX - Import Library** (bin *SPP SFX*, 142 sounds / 480 files, Strings + Grand + Light styles, see `Docs\SFX_Library.md`).
 - **SFX - Auto Sound for Titles**: pick Strings / Grand / Light / Mix → beat-timed sounds for every SPP title on SFX 1–3 (Lime clips; re-run after edits).
 - **SFX - Loop Fill (In to Out)**: select a `_LOOP_` sound, set I/O, run — any length, seamless.
+- Music: `.\Tools\make_music.ps1` → **Music - Import Library** (bin *SPP Music*, 12 tracks: Slow Build / Temple Bells / Wind / Flute; preview `Docs\SPP_Music_Preview.mp3`).
 - **Phone Voice - Selected Clips**: selected audio → mobile / landline / speaker / walkie; original is switched off (D to restore).

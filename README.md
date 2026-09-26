@@ -10,19 +10,20 @@ This folder is the **single source of truth** — Resolve gets its copies from h
 1. Install DaVinci Resolve Studio, Git (+ Git LFS), Python 3, ffmpeg (`choco install ffmpeg`).
 2. `git clone <your-remote> "F:\Video Editing\_Safar Pahad Parivar Kit"` then `git lfs pull`
 3. In PowerShell inside the kit: `.\install.ps1`
-4. Python tools (captions timing, GPS, route maps, sound): `.\Tools\setup_word_timing.ps1`, then `.\Tools\make_sfx.ps1`
+4. Python tools (captions timing, GPS, route maps, sound): `.\Tools\setup_word_timing.ps1`, then `.\Tools\make_sfx.ps1` and `.\Tools\make_music.ps1`
 5. Restart Resolve, then once: **Workspace → Scripts → Safar Pahad Parivar → Setup Render Presets**
 
 ## What's inside
 | Folder | Contents |
 |---|---|
-| `Resolve\Scripts\Utility\Safar Pahad Parivar` | Menu scripts: New Timeline (YouTube 16x9 / Shorts 9x16), Tag Shot Type (9 colours), Import Brand Graphics, Setup Render Presets, Captions - Sync Words to VO, Info Cards - Fill from GPS, Route Map - Build from Timeline, SFX - Import Library / Auto Sound for Titles / Loop Fill / Remove Auto Sounds, Phone Voice - Selected Clips |
+| `Resolve\Scripts\Utility\Safar Pahad Parivar` | Menu scripts: New Timeline (YouTube 16x9 / Shorts 9x16), Tag Shot Type (9 colours), Import Brand Graphics, Setup Render Presets, Captions - Sync Words to VO, Info Cards - Fill from GPS, Route Map - Build from Timeline, SFX - Import Library / Auto Sound for Titles / Loop Fill / Remove Auto Sounds, Music - Import Library, Phone Voice - Selected Clips |
 | `Resolve\Templates\Edit\Titles\Safar Pahad Parivar` | OGraf titles: Info Card, Altitude Counter, Peak Callout, Pop-up Title, Credits, Captions (animated Hindi subtitles), Route Map (+ bundled fonts) |
 | `Graphics` | Intro (5s), End card (15s), Watermarks (16x9 and Shorts) — 4K, transparent |
 | `Brand` | Logo lock-ups, brand board, mock-ups |
-| `Tools` | `spp_sort_media.py` (sort footage by true orientation, with undo log), `new_video.ps1` (trip + video folders), `spp_word_timing.py` (word-timed captions), `spp_gps.py` (GPS lookup, stops, route maps, GPX, local API), `spp_phone_voice.py` (phone-call voice), `setup_word_timing.ps1` (installs the Python tools), `make_sfx.ps1` (builds the SFX library) |
-| `Docs` | User guide, cheat sheet, SFX library list, VO scripts, Maps/GPS/terrain guide |
+| `Tools` | `spp_sort_media.py` (sort footage by true orientation, with undo log), `new_video.ps1` (trip + video folders), `spp_word_timing.py` (word-timed captions), `spp_gps.py` (GPS lookup, stops, route maps, GPX, local API), `spp_phone_voice.py` (phone-call voice), `setup_word_timing.ps1` (installs the Python tools), `make_sfx.ps1` (builds the SFX library), `make_music.ps1` (builds the music library), `get_samples.ps1` (downloads the CC0 instrument recordings once) |
+| `Docs` | User guide, cheat sheet, SFX library list, music library list + preview, VO scripts, Maps/GPS/terrain guide |
 | `SFX` *(generated, not in git)* | 480 sound effects (Strings + Grand + Light) — `.\Tools\make_sfx.ps1`; the Strings set uses recorded instruments from VSCO-2 Community Edition (CC0), downloaded once into `Source\_vsco` |
+| `Music` *(generated, not in git)* | 12 original background-music tracks (Slow Build, Temple Bells, Wind, Flute) — `.\Tools\make_music.ps1` |
 | `Source` | Generators for every graphic/template, fonts, reference images |
 
 ## Folder layout: one trip, many videos — one Resolve project per video

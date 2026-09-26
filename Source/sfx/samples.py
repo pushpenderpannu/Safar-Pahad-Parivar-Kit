@@ -18,7 +18,10 @@ REPO = "https://github.com/sgossner/VSCO-2-CE.git"
 SPARSE = ["/Strings/Violin Section/", "/Strings/Solo Violin/", "/Strings/Viola Section/", "/Strings/Cello Section/",
           "/Strings/Solo Contrabass/", "/Strings/Harp/", "/Percussion/Timpani/", "/Percussion/gongHit_*",
           "/Percussion/susCymb1-cresc-*", "/Percussion/susCymb1-bow-*", "/Percussion/BDrumNewhit_*",
-          "/Percussion/Triangle3-Hit_*", "/Miscellania Raw/Misc 2/NepaleseBells/", "/LICENSE"]
+          "/Percussion/Triangle3-Hit_*", "/Miscellania Raw/Misc 2/NepaleseBells/", "/LICENSE",
+          # background music (Tools/make_music.ps1): flute, upright piano (2 softer layers), glockenspiel, marimba
+          "/Woodwinds/Flute/", "/Keys/Upright Piano/Player_dyn1_*", "/Keys/Upright Piano/Player_dyn2_*",
+          "/Keys/Upright Piano/MappingChart.txt", "/Keys/Upright Piano/Info.txt", "/Percussion/Glock/", "/Percussion/Marimba/"]
 
 # instrument key -> folder (relative), pitched?
 INSTR = {
@@ -37,9 +40,13 @@ INSTR = {
     "gong": ("Percussion", False), "cymb_cresc": ("Percussion", False), "cymb_bow": ("Percussion", False),
     "bdrum": ("Percussion", False), "triangle": ("Percussion", False),
     "nepal_bells": ("Miscellania Raw/Misc 2/NepaleseBells", False),
+    "fl_sus": ("Woodwinds/Flute/susvib", True), "fl_exp": ("Woodwinds/Flute/expvib", True),
+    "fl_nv": ("Woodwinds/Flute/susNV", True), "fl_stac": ("Woodwinds/Flute/stac", True),
+    "piano": ("Keys/Upright Piano", True), "glock": ("Percussion/Glock", True), "marimba": ("Percussion/Marimba", True),
 }
 UNPITCHED_PAT = {"gong": "gongHit_", "cymb_cresc": "susCymb1-cresc-", "cymb_bow": "susCymb1-bow-", "bdrum": "BDrumNewhit_",
                  "triangle": "Triangle3-Hit_", "timp_hit": "Timpani", "timp_roll": "Timpani", "nepal_bells": ""}
+WIDTH = 0.35   # stereo width kept from the recordings (0 = mono, 1 = as recorded)
 NOTE = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
 DYN = {"ppp": 0, "pp": 1, "p": 2, "mp": 3, "mf": 4, "f": 5, "ff": 6, "fff": 7}
 
@@ -52,6 +59,11 @@ def _read(path):
         x = (x - 128) / 128.0
     x = x.astype(float)
     x = stereo(x) if x.ndim == 1 else x[:, :2]
+    if x.ndim == 2:
+        # the section recordings use spaced mics (L/R almost uncorrelated, some even inverted) -> narrow to a
+        # mono-safe image (phones play in mono); panning in the mix spreads the instruments instead
+        mid, side = (x[:, 0] + x[:, 1]) / 2, (x[:, 0] - x[:, 1]) / 2
+        x = np.stack([mid + WIDTH * side, mid - WIDTH * side], axis=1)
     if sr != SR:
         g = np.gcd(SR, sr)
         x = signal.resample_poly(x, SR // g, sr // g, axis=0)
@@ -73,6 +85,9 @@ def _f0(x):
 
 
 def _name_midi(fn):
+    p = re.match(r"Player_dyn\d_rr\d_(\d{3})\.wav", fn)
+    if p:
+        return PIANO_MAP.get(p.group(1))
     m = re.search(r"_([A-G])(#|b)?(-?\d)(?=[_.])", fn)
     if not m:
         return None
@@ -80,8 +95,11 @@ def _name_midi(fn):
     return 12 * (int(m.group(3)) + 1) + n
 
 
+PIANO_MAP = {}
+
+
 def _vel(fn):
-    m = re.search(r"_v(\d)", fn)
+    m = re.search(r"_dyn(\d)", fn) or re.search(r"_v(\d)", fn)
     if m:
         return int(m.group(1))
     for k in sorted(DYN, key=len, reverse=True):
@@ -92,6 +110,12 @@ def _vel(fn):
 
 def build_index(root):
     idx = {}
+    mc = os.path.join(root, "Keys", "Upright Piano", "MappingChart.txt")
+    if os.path.exists(mc):
+        for ln in open(mc):
+            if re.match(r"\d{3}=\d+", ln.strip()):
+                k, v = ln.strip().split("=")
+                PIANO_MAP[k] = int(v)
     for key, (folder, pitched) in INSTR.items():
         d = os.path.join(root, folder)
         files = sorted(glob.glob(os.path.join(d, "*.wav")))
@@ -106,6 +130,12 @@ def build_index(root):
             if pitched:
                 nm = _name_midi(os.path.basename(f))
                 if nm is None:
+                    continue
+                if key in ("piano", "glock") or key.startswith("fl_"):
+                    # piano: mapping chart is exact.  glock + flute: names are written an octave low, and
+                    # autocorrelation octave-jumps on bell tones / the almost pure flute tone -> trust the names
+                    e["midi"] = nm + (0 if key == "piano" else 12)
+                    items.append(e)
                     continue
                 try:
                     fr = _f0(_read(f))
@@ -123,19 +153,55 @@ def build_index(root):
     return idx
 
 
+def _extend(x, n, X=0.5):
+    """Lengthen a sustained note: loop its steady middle with equal-power crossfades."""
+    a, b = int(len(x) * 0.35), int(len(x) * 0.8)
+    if b - a < 2 * n_(X):
+        return x
+    seg = x[a:b]
+    Xs = n_(X)
+    out = x[:b].copy()
+    ramp = np.linspace(0, np.pi / 2, Xs)[:, None]
+    while len(out) < n:
+        out[-Xs:] = out[-Xs:] * np.cos(ramp) + seg[:Xs] * np.sin(ramp)
+        out = np.concatenate([out, seg[Xs:]])
+    return out[:n]
+
+
+def _bend(x, semis, bend):
+    """Variable-rate resampling: base shift 'semis' plus a time-varying bend curve (semitones)."""
+    n0 = len(x)
+    t_out = np.arange(int(n0 / 2 ** (semis / 12)) + n_(1.0)) / SR
+    rate = 2 ** ((semis + np.asarray(bend(t_out), float)) / 12)
+    pos = np.cumsum(rate)
+    pos = pos[pos < n0 - 1]
+    return np.stack([np.interp(pos, np.arange(n0), x[:, c]) for c in range(2)], axis=1)
+
+
 class Lib:
     def __init__(self, root):
         self.root = root
         p = os.path.join(root, "_spp_index.json")
-        self.idx = json.load(open(p)) if os.path.exists(p) else build_index(root)
+        self.idx = json.load(open(p)) if os.path.exists(p) else None
+        if self.idx is None or any(k not in self.idx or (not self.idx[k] and os.path.isdir(os.path.join(root, INSTR[k][0])))
+                                   for k in INSTR):
+            self.idx = build_index(root)
         self.cache = {}
+        self.shift = {}
+
+    def has(self, key):
+        return bool(self.idx.get(key))
 
     def ok(self):
         return any(self.idx.get(k) for k in self.idx)
 
     def _load(self, rel):
-        if rel not in self.cache:
-            self.cache[rel] = _read(os.path.join(self.root, rel))
+        if rel in self.cache:
+            self.cache[rel] = self.cache.pop(rel)            # most recently used goes to the end
+        else:
+            self.cache[rel] = _read(os.path.join(self.root, rel)).astype(np.float32)
+            while len(self.cache) > 60:                   # keep memory bounded (~1 GB worst case)
+                self.cache.pop(next(iter(self.cache)))
         return self.cache[rel]
 
     def raw(self, key, r, vel=None):
@@ -143,9 +209,9 @@ class Lib:
         if vel is not None:
             best = min(abs(i["vel"] - vel) for i in items)
             items = [i for i in items if abs(i["vel"] - vel) == best]
-        return self._load(items[r.integers(len(items))]["file"]).copy()
+        return self._load(items[r.integers(len(items))]["file"]).astype(float)
 
-    def note(self, key, midi, r, dur=None, vel=None, release=0.35, attack=None, gain=1.0):
+    def note(self, key, midi, r, dur=None, vel=None, release=0.35, attack=None, gain=1.0, sustain=True, bend=None):
         """One note: nearest sample, pitch-shifted by resampling; optional length with a natural release."""
         items = self.idx[key]
         near = min(abs(i["midi"] - midi) for i in items)
@@ -156,13 +222,20 @@ class Lib:
         e = c[r.integers(len(c))]
         x = self._load(e["file"])
         semis = midi - e["midi"]
-        if abs(semis) > 0.01:
-            ratio = 2 ** (semis / 12)
-            n = int(len(x) / ratio)
-            x = signal.resample(x, n, axis=0) if n < 400000 else np.stack(
-                [np.interp(np.arange(n) * ratio, np.arange(len(x)), x[:, ch]) for ch in range(2)], axis=1)
+        if bend is not None:                       # bend(t_seconds) -> extra semitones (meend / glide)
+            x = _bend(x, semis, bend)
+        elif abs(semis) > 0.01:
+            ck = (e["file"], round(semis, 3))
+            if ck not in self.shift:
+                ratio = 2 ** (semis / 12)
+                n = int(len(x) / ratio)
+                self.shift[ck] = (signal.resample(x, n, axis=0) if n < 400000 else np.stack(
+                    [np.interp(np.arange(n) * ratio, np.arange(len(x)), x[:, ch]) for ch in range(2)], axis=1)).astype(np.float32)
+                while len(self.shift) > 40:
+                    self.shift.pop(next(iter(self.shift)))
+            x = self.shift[ck].astype(float)
         else:
-            x = x.copy()
+            x = x.astype(float)
         # skip leading silence
         a = np.nonzero(np.max(np.abs(x), axis=1) > 0.003)[0]
         if len(a):
@@ -170,6 +243,8 @@ class Lib:
         if attack:
             k = min(len(x), n_(attack))
             x[:k] *= np.linspace(0, 1, k)[:, None] ** 1.5
+        if dur is not None and len(x) < n_(dur + release) and sustain:
+            x = _extend(x, n_(dur + release))
         if dur is not None:
             L = min(len(x), n_(dur + release))
             x = x[:L]

@@ -23,6 +23,7 @@ Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles l
 15. [VO sound recipe](#15-vo-sound-recipe)
 15a. [Sound effects](#15a-sound-effects)
 15b. [Phone-call voice](#15b-phone-call-voice)
+15c. [Background music](#15c-background-music)
 16. [Render (Deliver)](#16-render-deliver)
 17. [Backup with git](#17-backup-with-git)
 18. [Troubleshooting](#18-troubleshooting)
@@ -226,7 +227,7 @@ ransingha-style horn with valley echo, drone beds. **Light**: playful UI ticks, 
 Full list: [`SFX_Library.md`](SFX_Library.md). Listen first: `SPP_SFX_Strings_Demo.mp3`, `SPP_SFX_Grand_Demo.mp3`, `SPP_SFX_Demo_Reel.mp3`.
 
 **Build it once per PC:** `.\Tools\make_sfx.ps1` → `<kit>\SFX\`. The first run downloads the recorded strings
-(*VSCO-2 Community Edition*, public domain / CC0 — free for YouTube, no credit needed; ~850 MB into `Source\_vsco`, not in git) and takes ≈10 min;
+(*VSCO-2 Community Edition*, public domain / CC0 — free for YouTube, no credit needed; ~1.1 GB into `Source\_vsco` incl. the music instruments, not in git) and takes ≈10 min;
 later runs ≈3 min. Then **SFX - Import Library** puts it in an **SPP SFX** bin.
 The sounds are built from code + those recordings, so they are identical on every PC and don't need backing up.
 
@@ -273,6 +274,28 @@ Command line (any audio/video file): `& $py Tools\spp_phone_voice.py "<file>" --
 **Live alternative inside Resolve (Fairlight, adjustable):** on a track holding only the phone lines add
 **EQ**: high-pass 300 Hz (steep), low-pass 3.4 kHz (steep), bell +4 dB at 1.8 kHz → **Dynamics**: compressor 4:1, threshold ≈ −25 dB →
 optional **Distortion** (small amount) for a cheap handset. Speakerphone: add a short small-room **Reverb**.
+
+## 15c. Background music
+Twelve original background tracks (2–3 min each) composed in code and played with recorded instruments — real strings, flute,
+upright piano, harp, glockenspiel, timpani, gong and Nepalese bells (VSCO-2 Community Edition, CC0) — plus a synthesised
+tanpura, temple bells, manjira and mountain wind. Listen first: `Docs\SPP_Music_Preview.mp3` (32 s of each). Full list: [`Music_Library.md`](Music_Library.md).
+
+| Theme | Tracks |
+|---|---|
+| 01 Slow Build | **First Light** (piano → full strings, sunrise/openings) · **Long Road Up** (driving ostinato, drives/climbs) · **Summit Rise** (slow epic rise, peaks/reveals) |
+| 02 Temple Bells | **Mandir Dawn** (tanpura, bells, low bansuri) · **Aarti Glow** (manjira, hand bells, devotional tune) · **Himalayan Gongs** (no rhythm: gongs, bowls, drone) |
+| 03 Wind | **High Pass** (wind + airy strings) · **Prayer Flags** (fluttering harp/glock + bright flute) · **Snowline** (cold wind, lonely viola) |
+| 04 Flute | **Bansuri Valley** (alaap then Bhupali tune) · **Pahadi Dhun** (6/8 folk tune) · **Evening Raag** (Raag Yaman, sunsets) |
+
+**Build it once per PC:** `.\Tools\make_music.ps1` (≈10–15 min; uses the same instrument download as the sound effects) → `<kit>\Music\`.
+Then **Music - Import Library** puts the tracks in an **SPP Music** bin (Purple clips). Rebuild one track: `.\Tools\make_music.ps1 Pahadi`.
+
+**Using it:** put music on the *Music* track, duck it under the VO (−18 to −24 dB while the voice talks, −10 to −12 dB alone).
+Tracks start soft and end on a proper final chord / bell, so you can cut from the middle and let the ending ring out.
+
+**Rights:** everything is original (our code) or public domain (CC0 recordings), so it is free to use on monetised YouTube with no
+credit needed. Don't register these tracks with a Content-ID service — that could cause claims on your own videos.
+(The upright-piano recordings are by Simon Dalzell / Ivy Audio via Versilian Studios; credit is welcome, not required.)
 
 ## 16. Render (Deliver)
 Pick a preset: **SPP YouTube 4K**, **SPP YouTube 1080p**, **SPP Shorts 9x16**.

@@ -1,7 +1,7 @@
 # SFX Library — Safar Pahad Parivar
 
 All sounds are built by `Source/sfx/sfx_gen.py` — identical on every PC, so they are **not stored in git**.
-Build or rebuild them with `.\Tools\make_sfx.ps1` (first run ≈10 min incl. a one-time ~850 MB download of recorded strings) → `<kit>\SFX\`.
+Build or rebuild them with `.\Tools\make_sfx.ps1` (first run ≈10 min incl. a one-time ~1.1 GB download of recorded instruments) → `<kit>\SFX\`.
 48 kHz / 24-bit stereo WAV.
 
 Three styles:
