@@ -9,5 +9,5 @@ $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 $py = Join-Path $env:LOCALAPPDATA "Programs\Python\Python313\python.exe"; if (-not (Test-Path $py)) { $py = "python" }
 if (-not (Test-Path ".venv\Scripts\python.exe")) { & $py -m venv .venv }
-.\.venv\Scripts\python.exe -m pip install --no-cache-dir faster-whisper numpy pillow pillow-heif nvidia-cublas-cu12 "nvidia-cudnn-cu12==9.*"
+.\.venv\Scripts\python.exe -m pip install --no-cache-dir faster-whisper numpy scipy pillow pillow-heif nvidia-cublas-cu12 "nvidia-cudnn-cu12==9.*"
 Write-Host "`nKit Python tools ready (captions timing, GPS, route maps). In Resolve: Workspace > Scripts > Safar Pahad Parivar > Captions - Sync Words to VO"

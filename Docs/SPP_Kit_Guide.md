@@ -21,6 +21,8 @@ Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles l
 13. [Route Map](#13-route-map)
 14. [GPS lookup tool](#14-gps-lookup-tool)
 15. [VO sound recipe](#15-vo-sound-recipe)
+15a. [Sound effects](#15a-sound-effects)
+15b. [Phone-call voice](#15b-phone-call-voice)
 16. [Render (Deliver)](#16-render-deliver)
 17. [Backup with git](#17-backup-with-git)
 18. [Troubleshooting](#18-troubleshooting)
@@ -35,7 +37,8 @@ Do this on a new or rebuilt PC (or after pulling kit changes).
 | 1 | Install DaVinci Resolve Studio, **Git + Git LFS**, **Python 3.13 from python.org** (not the Microsoft Store one), ffmpeg (`choco install ffmpeg`). |
 | 2 | `git clone https://github.com/pushpenderpannu/Safar-Pahad-Parivar-Kit.git "F:\Video Editing\_Safar Pahad Parivar Kit"` then `git lfs pull` |
 | 3 | PowerShell in the kit folder: `.\install.ps1` — copies menu scripts + titles into Resolve. |
-| 4 | `.\Tools\setup_word_timing.ps1` — installs the Python tools (caption timing, GPS, route maps). First caption sync downloads a 3 GB speech model. |
+| 4 | `.\Tools\setup_word_timing.ps1` — installs the Python tools (caption timing, GPS, route maps, sound). First caption sync downloads a 3 GB speech model. |
+| 4b | `.\Tools\make_sfx.ps1` — builds the sound-effects library (≈1 min). |
 | 5 | Restart Resolve, then once: **Setup Render Presets** (menu script). |
 
 > After any kit update: `git pull` → `.\install.ps1` → restart Resolve.
@@ -215,6 +218,49 @@ Example answer: `Sela · 2,378 m · 22°C · drizzle`. Full details: [`Maps_GPS_
 On the **VO** track (Fairlight): Voice Isolation 60–70 → EQ (high-pass 80 Hz, small cut 250–350 Hz, lift 3–5 kHz) →
 De-esser → Dialogue Leveler / compressor 3:1 → final mix **−14 LUFS**, music 15–20 dB under the voice.
 
+## 15a. Sound effects
+A brand sound library made for the SPP titles — **78 sounds, 249 files**, several variations each, seamless loops for any length.
+Full list: [`SFX_Library.md`](SFX_Library.md). Listen first: `SPP_SFX_Demo_Reel.mp3`.
+
+**Build it once per PC:** `.\Tools\make_sfx.ps1` (≈1 min) → `<kit>\SFX\`. Then **SFX - Import Library** puts it in an **SPP SFX** bin.
+The sounds are generated from code, so they are identical on every PC and don't need backing up.
+
+| Folder | What's in it |
+|---|---|
+| 01 Title Kits | sounds timed to each SPP title (Info Card, Altitude 1.5–6 s, Peak, Pop-up, Credits, Route Map, title-out, caption tick) |
+| 02 UI | pops, soft ticks, mouse click, notification bell, arrival chimes, shimmer, swipes |
+| 03 Motion | whooshes (short/medium/long, in/out), swish pans, risers 2/4/6 s, reverse swell, soft impact, cinematic boom |
+| 04 Dial & Mechanics | dial ticks, **odometer rolls 1–6 s** (slow down and settle like the rolling numbers), digit spin-stop, **gear loop**, clock tick-tock loop, time-lapse clock loop, ratchet |
+| 05 Map & Travel | map unfold/fold, pencil-drawing loop, dotted-trail loop, pin drop, map zoom in/out, travel-motion loop, camera shutter |
+| 06 Bells & Brand | mandir bell, hand ghanti, wind chime, **intro sting** and **end-card sting** timed to the SPP intro / end card |
+| 07 Nature Beds | 30 s seamless: mountain wind (calm/gusty/high whistle), prayer flags, mountain stream, light rain, night crickets |
+| 08 Phone | Indian ringback / dial / busy tones, ringtones, vibrate, keypad dialing, pickup, hang-up, call-ended beeps, message ping, line noise |
+
+**One click for all titles — SFX - Auto Sound for Titles.** It finds every SPP title (and the SPP intro / end-card clips) on the timeline and
+lays the matching sounds on the **SFX 1–3** tracks, exactly on the animation beats: card whoosh, row pops, odometer roll that slows with
+the numbers, pin drop + chime at each route stop (times read from the route file), dotted-trail loop while the path draws, out-whoosh.
+Variations rotate so repeats never sound the same. Auto clips are **Lime**; run again after editing — it replaces the old Lime clips.
+Keep a tweaked sound by changing its clip colour. **SFX - Remove Auto Sounds** clears them.
+
+**Any length — SFX - Loop Fill (In to Out).** Select one `_LOOP_` sound in the media pool, set In/Out on the timeline (I / O), run it:
+the loop is laid end-to-end with seamless joins (last copy trimmed). Great for wind, stream, gear, clock, dotted trail.
+
+Mixing tips: title sounds sit around −6 dB under the VO already; ride the SFX tracks down (−6 to −12 dB) when the voice is on.
+Beds (wind, stream) at −18 to −24 dB under dialogue.
+
+## 15b. Phone-call voice
+Select one or more **audio** clips (a VO line, or someone's dialogue) → **Phone Voice - Selected Clips** → choose a style
+(`mobile`, `landline`, `speaker`, `walkie`, optional line hiss / tiny network glitches). A processed copy is placed at exactly the same spot on a free
+audio track and the original clip is switched off (select it and press **D** to switch it back on).
+Add the phone sounds around it: `SPP_Ringtone` / `SPP_Vibrate` → `SPP_Pickup` → *(phone voice)* → `SPP_Hangup` + `SPP_Call_Ended_Beeps`;
+for the caller's side, `SPP_Keypad_Dialing` → `SPP_Ringback_India`.
+
+Command line (any audio/video file): `& $py Tools\spp_phone_voice.py "<file>" --style mobile --noise`
+
+**Live alternative inside Resolve (Fairlight, adjustable):** on a track holding only the phone lines add
+**EQ**: high-pass 300 Hz (steep), low-pass 3.4 kHz (steep), bell +4 dB at 1.8 kHz → **Dynamics**: compressor 4:1, threshold ≈ −25 dB →
+optional **Distortion** (small amount) for a cheap handset. Speakerphone: add a short small-room **Reverb**.
+
 ## 16. Render (Deliver)
 Pick a preset: **SPP YouTube 4K**, **SPP YouTube 1080p**, **SPP Shorts 9x16**.
 
@@ -238,4 +284,6 @@ Save the final file into `<video>\Exports`. Then *File → Export Project* (.drp
 | Route map shows "Choose route.json" | Run **Route Map - Build from Timeline**, or pick `route.json` in the Inspector. |
 | Route has few stops / straight lines | Add stops in `stops.csv`; add a Google Timeline export. |
 | Info Card not filled | Its *Place (Hindi)* wasn't empty, or the shot has no GPS near that time (add Timeline export). |
+| "The SFX library isn't built yet" | `.\Tools\make_sfx.ps1`, then **SFX - Import Library**. |
+| Auto sounds in the wrong place | Titles moved after running it — just run **SFX - Auto Sound for Titles** again. |
 | Resolve froze while a script ran | Normal for caption sync / route map — wait; the Console (Workspace → Console) shows progress. |
