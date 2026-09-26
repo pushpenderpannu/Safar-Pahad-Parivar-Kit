@@ -91,7 +91,7 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - Better paths: export Google Maps Timeline (`Timeline.json`) into the trip folder. Full guide: `Docs\Maps_GPS_and_Terrain.md`.
 
 ## 9. Sound effects & phone voice
-- Build once: `.\Tools\make_sfx.ps1` → **SFX - Import Library** (bin *SPP SFX*, 78 sounds / 249 files, see `Docs\SFX_Library.md`).
-- **SFX - Auto Sound for Titles**: matching, beat-timed sounds for every SPP title on SFX 1–3 (Lime clips; re-run after edits).
+- Build once: `.\Tools\make_sfx.ps1` → **SFX - Import Library** (bin *SPP SFX*, 111 sounds / 364 files, Grand + Light styles, see `Docs\SFX_Library.md`).
+- **SFX - Auto Sound for Titles**: pick Grand / Light / Mix → beat-timed sounds for every SPP title on SFX 1–3 (Lime clips; re-run after edits).
 - **SFX - Loop Fill (In to Out)**: select a `_LOOP_` sound, set I/O, run — any length, seamless.
 - **Phone Voice - Selected Clips**: selected audio → mobile / landline / speaker / walkie; original is switched off (D to restore).

@@ -1,15 +1,21 @@
 # SFX Library — Safar Pahad Parivar
 
 All sounds are generated from code (`Source/sfx/sfx_gen.py`) — identical on every PC, so they are **not stored in git**.
-Build or rebuild them with `.\Tools\make_sfx.ps1` (≈1 min, ~300 MB) → `<kit>\SFX\`.  48 kHz / 24-bit stereo WAV.
+Build or rebuild them with `.\Tools\make_sfx.ps1` (≈2 min, ~450 MB) → `<kit>\SFX\`.  48 kHz / 24-bit stereo WAV.
+
+Two styles:
+- **Grand** (folders 09–12 and `Grand_` stings) — deep, cinematic, mountain-scale: sub-bass, taiko/dhol, braams, gongs, ransingha horn with valley echo, drones.
+  The bass is built so it still carries on phone/laptop speakers (body at 100 Hz–2 kHz, not only sub).
+- **Light** (folders 01–08) — playful UI sounds, ticks, pops, marimba.
 
 - **vNN** = variations of the same idea, so repeated moments don't sound identical.
 - **LOOP_Ns** = seamless loop (the end joins the start) → use **SFX - Loop Fill (In to Out)** for any length.
-- Levels: one-shots peak −3 dBFS (title kits −6 to −8 so they sit under the VO); beds are ~−24 dB RMS.
-- **01 Title Kits** are timed to the SPP titles — **SFX - Auto Sound for Titles** places them for you.
+- Levels: one-shots peak −3 dBFS (title kits −5 to −8 so they sit under the VO); beds ~−24 dB RMS.
+- **Title Kits** (01 and 09) are timed to the SPP titles — **SFX - Auto Sound for Titles** places them (choose Grand / Light / Mix).
+- Listen: `Docs/SPP_SFX_Grand_Demo.mp3`, `Docs/SPP_SFX_Demo_Reel.mp3`.
 
 
-## Title Kits
+## 01 Title Kits
 
 | Sound | Variations | Length | Use |
 |---|---|---|---|
@@ -28,7 +34,7 @@ Build or rebuild them with `.\Tools\make_sfx.ps1` (≈1 min, ~300 MB) → `<kit>
 | `SPP_RouteMap_Open` | 3 | 1.6 s | SPP Route Map start: map unfolds + title |
 | `SPP_Caption_Word` | 4 | 0.1 s | Barely-there tick per caption word (optional) |
 
-## UI
+## 02 UI
 
 | Sound | Variations | Length | Use |
 |---|---|---|---|
@@ -40,7 +46,7 @@ Build or rebuild them with `.\Tools\make_sfx.ps1` (≈1 min, ~300 MB) → `<kit>
 | `SPP_Shimmer` | 4 | 2.2 s | Sparkle for reveals (snow, logo, weather icon) |
 | `SPP_Swipe` | 5 | 0.2 s | Short UI swipe (text sliding in) |
 
-## Motion
+## 03 Motion
 
 | Sound | Variations | Length | Use |
 |---|---|---|---|
@@ -58,7 +64,7 @@ Build or rebuild them with `.\Tools\make_sfx.ps1` (≈1 min, ~300 MB) → `<kit>
 | `SPP_Impact_Soft` | 4 | 3.7 s | Warm soft impact for a title / logo landing |
 | `SPP_Boom_Cinematic` | 2 | 6.4 s | Deep cinematic boom (use sparingly - chapter starts) |
 
-## Dial & Mechanics
+## 04 Dial & Mechanics
 
 | Sound | Variations | Length | Use |
 |---|---|---|---|
@@ -77,7 +83,7 @@ Build or rebuild them with `.\Tools\make_sfx.ps1` (≈1 min, ~300 MB) → `<kit>
 | `SPP_Clock_Timelapse` | 3 | loop 10.0 s | Fast clock loop for time-lapses / running clock |
 | `SPP_Ratchet` | 4 | 0.6 s | Short ratchet / crank (map pin set, dial lock) |
 
-## Map & Travel
+## 05 Map & Travel
 
 | Sound | Variations | Length | Use |
 |---|---|---|---|
@@ -91,7 +97,7 @@ Build or rebuild them with `.\Tools\make_sfx.ps1` (≈1 min, ~300 MB) → `<kit>
 | `SPP_Travel_Motion` | 3 | loop 10.0 s | Gentle moving-air bed while the route draws |
 | `SPP_Camera_Shutter` | 3 | 0.3 s | Camera shutter (photo moments, freeze frames) |
 
-## Bells & Brand
+## 06 Bells & Brand
 
 | Sound | Variations | Length | Use |
 |---|---|---|---|
@@ -100,8 +106,10 @@ Build or rebuild them with `.\Tools\make_sfx.ps1` (≈1 min, ~300 MB) → `<kit>
 | `SPP_Wind_Chime` | 3 | 5.4 s | Gentle wind chime (calm scenic moments) |
 | `SPP_Intro_Sting` | 3 | 6.0 s | Logo sound timed to the SPP intro (put at the intro's first frame) |
 | `SPP_EndCard_Sting` | 3 | 3.8 s | End-card sound timed to the SPP end card (first frame) |
+| `SPP_Grand_Intro_Sting` | 3 | 8.5 s | GRAND logo sound for the SPP intro (drone rise, dots, bell, braam/horn on the name) |
+| `SPP_Grand_EndCard_Sting` | 3 | 8.2 s | GRAND end-card sound (deep swell, bowl, warm low notes) |
 
-## Nature Beds
+## 07 Nature Beds
 
 | Sound | Variations | Length | Use |
 |---|---|---|---|
@@ -111,7 +119,7 @@ Build or rebuild them with `.\Tools\make_sfx.ps1` (≈1 min, ~300 MB) → `<kit>
 | `SPP_Light_Rain` | 2 | loop 30.0 s | Light rain |
 | `SPP_Night_Crickets` | 2 | loop 30.0 s | Night crickets (camp, village at night) |
 
-## Phone
+## 08 Phone
 
 | Sound | Variations | Length | Use |
 |---|---|---|---|
@@ -127,4 +135,55 @@ Build or rebuild them with `.\Tools\make_sfx.ps1` (≈1 min, ~300 MB) → `<kit>
 | `SPP_Message_Ping` | 4 | 0.9 s | Incoming message ping (original) |
 | `SPP_Line_Noise` | 2 | loop 10.0 s | Phone line hiss / static bed under a phone voice |
 
-**249 files, 78 sounds.**
+## 09 Grand Title Kits
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Grand_InfoCard_In` | 4 | 6.2 s | GRAND Info Card: deep whoosh, low tom, warm rows, heavy counter, soft boom |
+| `SPP_Grand_Title_Out` | 4 | 2.2 s | GRAND title leaving: deep air + sub tail |
+| `SPP_Grand_Altitude_In_1_5s` | 3 | 7.2 s | GRAND Altitude Counter (1.5 s count): rising drone, heavy counter, landing hit |
+| `SPP_Grand_Altitude_In_2_0s` | 3 | 7.4 s | GRAND Altitude Counter (2.0 s count): rising drone, heavy counter, landing hit |
+| `SPP_Grand_Altitude_In_2_5s` | 3 | 8.2 s | GRAND Altitude Counter (2.5 s count): rising drone, heavy counter, landing hit |
+| `SPP_Grand_Altitude_In_3_0s` | 3 | 8.7 s | GRAND Altitude Counter (3.0 s count): rising drone, heavy counter, landing hit |
+| `SPP_Grand_Altitude_In_4_0s` | 3 | 9.7 s | GRAND Altitude Counter (4.0 s count): rising drone, heavy counter, landing hit |
+| `SPP_Grand_Altitude_In_5_0s` | 3 | 10.9 s | GRAND Altitude Counter (5.0 s count): rising drone, heavy counter, landing hit |
+| `SPP_Grand_Altitude_In_6_0s` | 3 | 11.7 s | GRAND Altitude Counter (6.0 s count): rising drone, heavy counter, landing hit |
+| `SPP_Grand_PeakCallout_In` | 4 | 6.9 s | GRAND Peak Callout: deep bell, low sweep along the line, soft drum on the label |
+| `SPP_Grand_PopupTitle_In` | 5 | 6.8 s | GRAND chapter title: braam / taiko+boom / ransingha horn / gong swell / echo hit |
+| `SPP_Grand_Credits_In` | 3 | 8.7 s | GRAND credits: slow drone swell with a singing bowl |
+| `SPP_Grand_RouteMap_Open` | 3 | 4.0 s | GRAND route map start: deep whoosh, drum, map paper, drone swell |
+| `SPP_Grand_Stop_Hit` | 5 | 4.4 s | GRAND route stop: low drum + deep bell (instead of pin pop) |
+| `SPP_Grand_Journey_Pulse` | 3 | loop 10.0 s | GRAND loop under the route drawing: slow drum pulse on a low drone |
+
+## 10 Grand Impacts & Swells
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Grand_Braam` | 5 | 7.9 s | Low brass braam (big reveals, a massive peak on screen) |
+| `SPP_Grand_Taiko_Hit` | 5 | 3.9 s | Big taiko-style drum hit |
+| `SPP_Grand_Sub_Boom` | 4 | 7.7 s | Deep sub boom (cut to a wide mountain shot) |
+| `SPP_Grand_Echo_Boom` | 3 | 6.8 s | Boom that echoes across the valley |
+| `SPP_Grand_Whoosh_In` | 4 | 4.1 s | Deep, slow whoosh into a moment (1.5-3 s) |
+| `SPP_Grand_Whoosh_Out` | 4 | 3.2 s | Deep whoosh leaving |
+| `SPP_Grand_Riser_Hit` | 3 | 10.3 s | Low riser that lands on a big hit (hit at 4.0 s) |
+| `SPP_Grand_Reverse_Swell` | 3 | 2.5 s | Deep reverse swell (lands at the end, 2.5 s) |
+
+## 11 Grand Bells & Horns
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Grand_Gong` | 3 | 13.6 s | Big gong / tam-tam swell (10 s) |
+| `SPP_Grand_Temple_Bell_Deep` | 3 | 13.2 s | Very deep mandir bell (10 s tail) |
+| `SPP_Grand_Singing_Bowl` | 3 | 12.7 s | Singing bowl, long and calm (monastery, sunrise) |
+| `SPP_Grand_Ransingha_Call` | 4 | 6.3 s | Himalayan copper horn call with valley echo (Kumaoni ransingha style) |
+
+## 12 Grand Drones & Drums
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Grand_Drone` | 4 | loop 30.0 s | Cinematic low drone bed: warm D / hopeful Dmaj9 / dark / airy fifths |
+| `SPP_Grand_Dhol_Pulse` | 3 | loop 10.7 s | Slow dhol-damau style drum pattern (journey, festival, procession) |
+| `SPP_Grand_Heavy_Gears` | 3 | loop 10.0 s | Heavy, slow mechanism loop (big dial turning) |
+| `SPP_Grand_Mountain_Air` | 3 | loop 30.0 s | Vast mountain air: deep wind with a low sub presence |
+
+**364 files, 111 sounds.**

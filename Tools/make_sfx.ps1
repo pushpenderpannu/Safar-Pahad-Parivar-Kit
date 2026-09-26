@@ -1,5 +1,5 @@
 <#
-  Safar Pahad Parivar - (re)build the sound-effects library into <kit>\SFX  (~1-2 minutes, ~300 MB).
+  Safar Pahad Parivar - (re)build the sound-effects library into <kit>\SFX  (~2 minutes, ~450 MB).
   The sounds are generated from code (Source\sfx), so they are identical on every PC and not stored in git.
   Usage (PowerShell, kit folder):   .\Tools\make_sfx.ps1
 #>

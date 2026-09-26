@@ -848,6 +848,462 @@ def _(v, r):
     return pan(tick(r, ["soft", "wood", "plastic", "soft"][v], 0.6, [1, 1, 1.2, 0.85][v]), 0)
 
 
+# ================================================================ GRAND (cinematic, bass-heavy, mountain scale)
+D1, A1, D2, F2, A2, E2, D3, A3 = 26, 33, 38, 41, 45, 40, 50, 57
+
+
+def mx(*xs):
+    """Mix signals of different lengths / channel counts (pads with silence)."""
+    st = any(np.asarray(x).ndim == 2 for x in xs)
+    xs = [stereo(np.asarray(x)) if st else np.asarray(x) for x in xs]
+    n = max(len(x) for x in xs)
+    out = np.zeros((n, 2)) if st else np.zeros(n)
+    for x in xs:
+        out[: len(x)] += x
+    return out
+
+
+def sub_clean(x):
+    """Keep the real sub (35-60 Hz) but drop useless rumble below 28 Hz."""
+    return hp(x, 28, 2)
+
+
+def mountain_echo(x, r, delays=(0.34, 0.78, 1.35, 2.1), gains=(0.42, 0.28, 0.17, 0.09), dark=2600):
+    """Valley echo: a few distinct, darker-each-time repeats (sound bouncing off far ridges)."""
+    x = stereo(x)
+    tail = n_(max(delays) + 0.1)
+    y = np.concatenate([x, np.zeros((tail, 2))])
+    src = x
+    for k, (dl, g) in enumerate(zip(delays, gains)):
+        src = lp(src, dark / (1 + 0.5 * k))
+        i = n_(dl)
+        p = [-0.5, 0.45, -0.3, 0.25][k % 4]
+        y[i:i + len(src), 0] += src[:, 0] * g * (1 - p) / 1.3
+        y[i:i + len(src), 1] += src[:, 1] * g * (1 + p) / 1.3
+    return y
+
+
+def taiko(r, f0=58, d=2.2, body=1.0):
+    t = tt(d)
+    f = f0 * (1 + 0.9 * np.exp(-t / 0.025))
+    tone = osc(f, d) * env_exp(d, 0.45, 0.002)
+    tone2 = osc(f * 1.52, d) * env_exp(d, 0.18, 0.002) * 0.45
+    shell = osc(f * 2.3 * (1 + 0.3 * np.exp(-t / 0.02)), d) * env_exp(d, 0.14, 0.001) * 0.55   # the "thud" you hear on small speakers
+    skin = bp(white(d, r), 100, 900) * env_exp(d, 0.09, 0.001) * 0.9 * body
+    attack = bp(white(d, r), 300, 1600) * env_exp(d, 0.035, 0.0005) * 1.4 * body     # the hit you hear on a phone
+    stick = click(r, 1800, 0.004) * 0.5
+    y = np.tanh((tone + tone2 + shell + skin) * 2.2) + attack
+    y[: len(stick)] += stick
+    return sub_clean(fade(y, 0.0005, 0.2))
+
+
+def tom_low(r, f0=90, d=1.2):
+    return taiko(r, f0, d, 0.6)
+
+
+def braam(r, root=D1, chord=(0, 12, 19, 24), d=4.5, bright=1800):
+    t = tt(d)
+    y = np.zeros_like(t)
+    for iv in chord:
+        f = hz(root + iv)
+        for det in (-0.006, 0.0, 0.007):
+            y += osc(f * (1 + det), d, "saw") / (1 + iv / 24)
+    cut = 140 + bright * env_curve(d, [(0, 0), (0.07, 1), (0.6, 0.35), (d, 0.15)])
+    y = sweep(y, cut, bw_oct=2.2, fmin=40, fmax=8000)
+    y = np.tanh(y * 1.8)
+    y = y * env_curve(d, [(0, 0), (0.03, 1), (0.8, 0.75), (d, 0)])
+    y += osc(hz(root), d) * env_curve(d, [(0, 0), (0.02, 0.9), (d, 0)]) * 0.9
+    return sub_clean(fade(y, 0.001, 0.3))
+
+
+def gong(r, f0=85, d=10.0, swell=True):
+    ratios = sorted(set([1.0, 1.51, 2.02, 2.49, 2.93, 3.46, 4.07, 4.58, 5.21, 5.94, 6.73, 7.6] + list(r.uniform(1.2, 8, 14))))
+    t = tt(d)
+    y = np.zeros_like(t)
+    for k, ra in enumerate(ratios):
+        f = f0 * ra
+        dec = 7.0 / (1 + 0.25 * ra)
+        att = (0.004 if not swell else 0.02 + 0.35 * (ra / 8) ** 1.5)
+        a = np.clip(t / att, 0, 1) ** 1.5
+        y += np.sin(2 * np.pi * f * t * (1 + 0.0007 * np.sin(2 * np.pi * 0.3 * t + k))) * np.exp(-t / dec) * a / (1 + 0.3 * ra)
+    strike = lp(white(0.05, r) * env_exp(0.05, 0.01), 1200) * 1.5
+    y[: len(strike)] += strike
+    return sub_clean(fade(y, 0.0005, 0.5))
+
+
+def singing_bowl(r, f0=196, d=9.0):
+    y = partials(f0, [1, 2.76, 5.40, 8.93], [1, 0.45, 0.22, 0.1], [5.5, 3.5, 2.0, 1.2], d, detune=0.004, r=r)
+    y *= 1 + 0.25 * np.sin(2 * np.pi * 0.9 * tt(d))
+    return fade(y, 0.002, 0.5)
+
+
+def horn(r, notes, d_note=1.4, base=None):
+    """Ransingha / narsingha-style copper horn call: brassy, breathy, slightly bending up into each note."""
+    parts = []
+    for m, dur in notes:
+        t = tt(dur)
+        f = hz(m) * (1 - 0.035 * np.exp(-t / 0.12)) * (1 + 0.006 * np.sin(2 * np.pi * 5.2 * t) * np.clip((t - 0.3) / 0.4, 0, 1))
+        s = osc(f, dur, "saw") * 0.8 + osc(f * 2, dur, "saw") * 0.2
+        s = reson(s, 520, 3) * 0.9 + reson(s, 1150, 4) * 0.6 + reson(s, 2400, 5) * 0.25 + lp(s, 900) * 0.4
+        br = bp(white(dur, r), 600, 2500) * 0.05
+        env = env_curve(dur, [(0, 0), (0.12, 0.8), (0.3, 1), (dur - 0.25, 0.9), (dur, 0)])
+        parts.append(np.tanh((s + br) * env * 1.8))
+    return np.concatenate(parts)
+
+
+def drone(r, L, midis, dark=500, move=0.08, X=3.0):
+    d = L + X + 0.3
+    chans = []
+    for ch in range(2):
+        y = np.zeros(n_(d))
+        for m in midis:
+            for det in (-0.004, 0.003):
+                y += osc(hz(m) * (1 + det + r.uniform(-0.001, 0.001)), d, "saw") / (1 + (m - midis[0]) / 12)
+        lfo = 0.5 + 0.5 * smooth_noise(d, r, move)
+        y = sweep(y, dark * (0.6 + 0.9 * lfo), bw_oct=2.5, fmin=40, fmax=6000)
+        y += osc(hz(midis[0]) / 2, d) * 0.5
+        y += lp(pink(d, r), 300) * 0.15 * lfo
+        chans.append(sub_clean(y * (0.8 + 0.2 * lfo)))
+    return seamless(np.stack(chans, 1), L, X)
+
+
+def grand_whoosh(r, d=1.6, direction="in"):
+    n = brown(d, r) * 0.6 + pink(d, r) * 0.4
+    u = np.linspace(0, 1, len(n))
+    if direction == "in":
+        shape = u ** 2.5 * (1 - np.clip((u - 0.9) / 0.1, 0, 1))
+        fc = 90 + 1400 * u ** 2
+    else:
+        shape = (1 - u) ** 1.6 * (1 - np.exp(-u / 0.03))
+        fc = 1500 - 1400 * u ** 0.6
+    y = sweep(n, fc, 1.3, fmin=50) * shape
+    sub = osc(hz(D1) * (1 + (0.3 * u if direction == "in" else -0.2 * u)), d) * shape * 0.6
+    y = y / (np.max(np.abs(y)) + 1e-9) + sub
+    return sub_clean(pan(y, np.linspace(-0.5, 0.5, len(y)) * r.choice([-1, 1])))
+
+
+def boom(r, f0=42, d=5.0, drop=1.7):
+    t = tt(d)
+    s_ = osc(f0 * (1 + (drop - 1) * np.exp(-t / 0.09)), d) * env_exp(d, 1.3, 0.003)
+    b = lp(brown(d, r), 180) * env_exp(d, 1.0, 0.01) * 0.6
+    y = np.tanh((s_ + b) * 2.2) * 0.8
+    harm = bp(np.tanh(s_ * 5), 90, 420) * 0.55                                     # audible weight on phones
+    thump = osc(120 * (1 - 0.4 * np.clip(t / 0.1, 0, 1)), d) * env_exp(d, 0.14, 0.002) * 0.6
+    y = y + harm + thump + bp(white(d, r), 150, 1500) * env_exp(d, 0.08, 0.001) * 0.7
+    y[: n_(0.004)] += click(r, 1200, 0.004)[: n_(0.004)] * 0.5
+    return sub_clean(y)
+
+
+def heavy_tick(r, gain=1.0, pitch=1.0):
+    t = tick(r, "wood", gain * 0.8, 0.55 * pitch)
+    th = osc(95 * pitch, 0.09) * env_exp(0.09, 0.025, 0.001) * 0.6 * gain
+    n = max(len(t), len(th))
+    y = np.zeros(n)
+    y[: len(t)] += t
+    y[: len(th)] += th
+    return y
+
+
+def heavy_roll(r, d, rate=10):
+    tot = d + 0.4
+    y = canvas(tot)
+    K = max(5, int(rate * d))
+    for k in range(1, K):
+        t0 = d * (1 - (1 - k / K) ** (1 / 3))
+        put(y, pan(heavy_tick(r, 0.5 + 0.4 * r.random()), r.uniform(-0.2, 0.2)), t0)
+    u = tt(tot)
+    speed = np.where(u < d, (1 - np.clip(u / d, 0, 1)) ** 2, 0)
+    y += pan(bp(brown(tot, r), 120, 900) * speed * 0.35, 0)
+    put(y, pan(heavy_tick(r, 1.4, 0.85), 0), d)
+    return y
+
+
+# ---------------------------------------------------------------- 09 Grand Title Kits
+def _grand_info(v, r):
+    y = canvas(4.2)
+    put(y, grand_whoosh(r, 0.55, "in") * 0.55, 0.0)
+    put(y, pan(tom_low(r, [92, 80, 100, 86][v]) * 0.6, 0), 0.45)
+    for i, m in enumerate([D3, D3 + 4, A2 + 12, D3 + 12] if v % 2 == 0 else [D3, A2 + 12, D3 + 7, D3 + 12]):
+        put(y, pan(marimba(r, m, 1.2, 0.4) * 0.3, -0.25 + 0.16 * i), 0.55 + 0.1 * i)
+    put(y, heavy_roll(r, 1.5) * 0.7, 0.6)
+    put(y, boom(r, 46, 2.2, 1.4) * 0.35, 2.1)
+    if v in (1, 3):
+        put(y, pan(temple_bell(r, [110, 131, 98, 123][v], 2.0) * 0.3, 0.1), 2.1)
+    return reverb(y, r, 2.4, 0.22)
+
+
+@sfx("09 Grand Title Kits", "Grand_InfoCard_In", 4, db=-6, desc="GRAND Info Card: deep whoosh, low tom, warm rows, heavy counter, soft boom")
+def _(v, r):
+    return _grand_info(v, r)
+
+
+@sfx("09 Grand Title Kits", "Grand_Title_Out", 4, db=-8, desc="GRAND title leaving: deep air + sub tail")
+def _(v, r):
+    return reverb(grand_whoosh(r, [0.8, 1.0, 0.7, 0.9][v], "out") * 0.8, r, 1.8, 0.2)
+
+
+for _c in (1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0):
+    def _mk(c=_c):
+        @sfx("09 Grand Title Kits", f"Grand_Altitude_In_{str(c).replace('.', '_')}s", 3, db=-6,
+             desc=f"GRAND Altitude Counter ({c} s count): rising drone, heavy counter, landing hit")
+        def _(v, r):
+            tot = 0.45 + c + 4.0
+            y = canvas(tot)
+            put(y, grand_whoosh(r, 0.5, "in") * 0.5, 0)
+            u = np.linspace(0, 1, n_(c))
+            ris = sum(osc(hz(m) * 2 ** (eo(u) * [5, 7, 12][v] / 12), c, "saw") for m in (D2, A2)) / 2
+            ris = sweep(ris, 200 + 1600 * eo(u), 2.0, fmin=40) * (0.2 + 0.8 * eo(u)) * 0.35
+            put(y, pan(ris, 0), 0.45)
+            put(y, heavy_roll(r, c) * 0.6, 0.45)
+            land = [mx(taiko(r, 55), boom(r, 44, 3.0) * 0.5), braam(r, D1, (0, 12, 19), 3.5) * 0.8, mx(pan(temple_bell(r, 110, 3.5), 0) * 0.6, boom(r, 44, 3.0) * 0.4)][v]
+            put(y, stereo(land), 0.45 + c)
+            return reverb(y, r, 2.8, 0.22)
+    _mk()
+
+
+@sfx("09 Grand Title Kits", "Grand_PeakCallout_In", 4, db=-6, desc="GRAND Peak Callout: deep bell, low sweep along the line, soft drum on the label")
+def _(v, r):
+    y = canvas(5.0)
+    b = [gong(r, 80, 4.5), temple_bell(r, 110, 4.5), singing_bowl(r, 147, 4.5), temple_bell(r, 98, 4.5)][v]
+    put(y, pan(b * 0.45, 0), 0.15)
+    put(y, grand_whoosh(r, 0.6, "in") * 0.35, 0.2)
+    put(y, pan(tom_low(r, 96) * 0.45, 0.2), 0.72)
+    return mountain_echo(reverb(y, r, 2.5, 0.2), r) if v == 3 else reverb(y, r, 2.5, 0.2)
+
+
+@sfx("09 Grand Title Kits", "Grand_PopupTitle_In", 5, db=-5, desc="GRAND chapter title: braam / taiko+boom / ransingha horn / gong swell / echo hit")
+def _(v, r):
+    y = canvas(6.5)
+    put(y, grand_whoosh(r, 0.5, "in") * 0.4, 0.0)
+    if v == 0:
+        put(y, stereo(braam(r, D1, (0, 12, 15, 19, 24), 4.5)) * 0.8, 0.0)
+    elif v == 1:
+        put(y, stereo(mx(taiko(r, 52) * 0.9, boom(r, 40, 4.0) * 0.6)), 0.0)
+    elif v == 2:
+        put(y, pan(horn(r, [(A2, 0.9), (D3, 2.0)]) * 0.55, 0), 0.0)
+        put(y, stereo(boom(r, 44, 3.0) * 0.4), 0.0)
+        return mountain_echo(reverb(y, r, 2.5, 0.2), r)
+    elif v == 3:
+        put(y, pan(gong(r, 75, 6.0, True) * 0.6, 0), 0.0)
+    else:
+        put(y, stereo(taiko(r, 60) * 0.9), 0.0)
+        return mountain_echo(reverb(y, r, 2.0, 0.2), r)
+    return reverb(y, r, 3.0, 0.25)
+
+
+@sfx("09 Grand Title Kits", "Grand_Credits_In", 3, db=-8, desc="GRAND credits: slow drone swell with a singing bowl")
+def _(v, r):
+    y = canvas(8.0)
+    dr = drone(r, 6.0, [D2, A2, D3] if v != 1 else [D2, A2, E2 + 12], 450, 0.1, 1.0)
+    put(y, dr * env_curve(6.0, [(0, 0), (1.2, 1), (4.5, 0.8), (6.0, 0)])[:, None] * 0.6, 0)
+    put(y, pan(singing_bowl(r, [196, 147, 220][v], 6.0) * 0.5, 0.1), 0.25)
+    return reverb(y, r, 3.0, 0.25)
+
+
+@sfx("09 Grand Title Kits", "Grand_RouteMap_Open", 3, db=-6, desc="GRAND route map start: deep whoosh, drum, map paper, drone swell")
+def _(v, r):
+    y = canvas(4.5)
+    put(y, grand_whoosh(r, 0.9, "in") * 0.5, 0.0)
+    put(y, stereo(taiko(r, [56, 50, 62][v]) * 0.7), 0.35)
+    dd = 1.3
+    env = env_curve(dd, [(0, 0), (0.1, 1), (0.4, 0.3), (0.6, 0.8), (dd, 0)])
+    put(y, widen(crinkle(r, dd, 160, env=env) * 0.35, r, 0.6), 0.4)
+    return reverb(y, r, 2.6, 0.22)
+
+
+@sfx("09 Grand Title Kits", "Grand_Stop_Hit", 5, db=-6, desc="GRAND route stop: low drum + deep bell (instead of pin pop)")
+def _(v, r):
+    y = canvas(3.5)
+    put(y, pan(tom_low(r, [84, 92, 78, 100, 88][v]) * 0.8, 0), 0)
+    put(y, pan(marimba(r, [D3, D3 + 7, A2 + 12, D3 + 4, D3 + 12][v], 1.5, 0.5) * 0.4, 0.15), 0.05)
+    put(y, pan(temple_bell(r, [220, 196, 247, 262, 175][v], 2.8) * 0.2, -0.1), 0.05)
+    return reverb(y, r, 2.4, 0.22)
+
+
+@sfx("09 Grand Title Kits", "Grand_Journey_Pulse", 3, loop=10, level="rms", db=-26,
+     desc="GRAND loop under the route drawing: slow drum pulse on a low drone")
+def _(v, r):
+    L, X = 10.0, 1.0
+    d = L + X + 1.0
+    y = canvas(d)
+    bpm = [72, 84, 66][v]
+    beat = 60 / bpm
+    k = 0
+    while k * beat < d - 0.5:
+        g = 0.9 if k % 4 == 0 else 0.5
+        put(y, pan(tom_low(r, 70 if k % 4 == 0 else 95, 0.9) * g, 0), k * beat)
+        k += 1
+    dr = drone(r, d - X - 0.4, [D2, A2], 380, 0.12, X)
+    y[: len(dr)] += dr * 0.35
+    return seamless(reverb(y, r, 2.0, 0.2), L, X)
+
+
+# ---------------------------------------------------------------- 10 Grand Impacts & Swells
+@sfx("10 Grand Impacts & Swells", "Grand_Braam", 5, desc="Low brass braam (big reveals, a massive peak on screen)")
+def _(v, r):
+    ch = [(0, 12, 19, 24), (0, 12, 15, 19), (0, 7, 12, 19), (0, 12, 17, 24), (0, 12, 19, 22)][v]
+    return reverb(stereo(braam(r, [D1, D1, E2 - 12, A1, D1][v], ch, 5.0)), r, 3.5, 0.28)
+
+
+@sfx("10 Grand Impacts & Swells", "Grand_Taiko_Hit", 5, desc="Big taiko-style drum hit")
+def _(v, r):
+    return reverb(stereo(taiko(r, [52, 58, 48, 64, 55][v], 3.0)), r, 2.8, 0.25)
+
+
+@sfx("10 Grand Impacts & Swells", "Grand_Sub_Boom", 4, desc="Deep sub boom (cut to a wide mountain shot)")
+def _(v, r):
+    return reverb(stereo(boom(r, [42, 38, 46, 50][v], 6.0)), r, 3.5, 0.25)
+
+
+@sfx("10 Grand Impacts & Swells", "Grand_Echo_Boom", 3, desc="Boom that echoes across the valley")
+def _(v, r):
+    return mountain_echo(reverb(stereo(mx(boom(r, [44, 40, 48][v], 4.0), taiko(r, 56, 4.0) * 0.4)), r, 2.0, 0.2), r)
+
+
+@sfx("10 Grand Impacts & Swells", "Grand_Whoosh_In", 4, desc="Deep, slow whoosh into a moment (1.5-3 s)")
+def _(v, r):
+    return reverb(grand_whoosh(r, [1.5, 2.0, 2.5, 3.0][v], "in"), r, 2.5, 0.2)
+
+
+@sfx("10 Grand Impacts & Swells", "Grand_Whoosh_Out", 4, desc="Deep whoosh leaving")
+def _(v, r):
+    return reverb(grand_whoosh(r, [1.2, 1.6, 2.0, 2.5][v], "out"), r, 2.5, 0.2)
+
+
+@sfx("10 Grand Impacts & Swells", "Grand_Riser_Hit", 3, desc="Low riser that lands on a big hit (hit at 4.0 s)")
+def _(v, r):
+    y = canvas(9.0)
+    d = 4.0
+    u = np.linspace(0, 1, n_(d))
+    ris = sum(osc(hz(m) * 2 ** (u ** 2 * [12, 7, 5][v] / 12), d, "saw") for m in (D2, A2, D3)) / 3
+    ris = sweep(ris, 150 + 3000 * u ** 2, 2.0, fmin=40) * u ** 2 * 0.6
+    ris += sweep(pink(d, r), 150 + 6000 * u ** 3, 1.0) * u ** 3 * 0.4
+    put(y, widen(ris, r, 0.8), 0)
+    put(y, stereo([mx(taiko(r, 52, 4.0), boom(r, 42, 4.0) * 0.6), braam(r, D1, (0, 12, 19, 24), 4.5), mx(gong(r, 80, 5.0) * 0.7, boom(r, 44, 4.0) * 0.5)][v]), d)
+    return reverb(y, r, 3.2, 0.25)
+
+
+@sfx("10 Grand Impacts & Swells", "Grand_Reverse_Swell", 3, desc="Deep reverse swell (lands at the end, 2.5 s)")
+def _(v, r):
+    d = 2.5
+    x = stereo([gong(r, 80, d), boom(r, 44, d), temple_bell(r, 110, d)][v])
+    x = reverb(x, r, 2.0, 0.5)[: n_(d)]
+    return fade(x[::-1].copy(), 0.3, 0.005)
+
+
+# ---------------------------------------------------------------- 11 Grand Bells & Horns
+@sfx("11 Grand Bells & Horns", "Grand_Gong", 3, desc="Big gong / tam-tam swell (10 s)")
+def _(v, r):
+    return reverb(widen(gong(r, [70, 85, 60][v], 10.0, v != 1), r, 0.7), r, 4.0, 0.25)
+
+
+@sfx("11 Grand Bells & Horns", "Grand_Temple_Bell_Deep", 3, desc="Very deep mandir bell (10 s tail)")
+def _(v, r):
+    return reverb(widen(temple_bell(r, [110, 98, 131][v], 10.0), r, 0.6), r, 4.5, 0.3)
+
+
+@sfx("11 Grand Bells & Horns", "Grand_Singing_Bowl", 3, desc="Singing bowl, long and calm (monastery, sunrise)")
+def _(v, r):
+    return reverb(widen(singing_bowl(r, [196, 147, 262][v], 10.0), r, 0.5), r, 3.5, 0.25)
+
+
+@sfx("11 Grand Bells & Horns", "Grand_Ransingha_Call", 4, desc="Himalayan copper horn call with valley echo (Kumaoni ransingha style)")
+def _(v, r):
+    calls = [[(A2, 0.8), (D3, 2.2)], [(D3, 0.7), (A2, 0.5), (D3, 2.4)], [(A2, 2.6)], [(E2 + 12, 0.6), (A2 + 12, 0.6), (D3, 2.2)]]
+    return mountain_echo(reverb(pan(horn(r, calls[v]), 0), r, 2.2, 0.22), r)
+
+
+# ---------------------------------------------------------------- 12 Grand Drones & Drums (seamless loops)
+@sfx("12 Grand Drones & Drums", "Grand_Drone", 4, loop=30, level="rms", db=-24,
+     desc="Cinematic low drone bed: warm D / hopeful Dmaj9 / dark / airy fifths")
+def _(v, r):
+    ch = [[D2, A2, D3], [D2, A2, E2 + 12, F2 + 13], [D1 + 12, A1 + 12, D2 + 3], [D2, A2, A3]][v]
+    return drone(r, 30, ch, [520, 700, 330, 900][v], [0.08, 0.1, 0.06, 0.12][v])
+
+
+@sfx("12 Grand Drones & Drums", "Grand_Dhol_Pulse", 3, loop=16, level="rms", db=-22,
+     desc="Slow dhol-damau style drum pattern (journey, festival, procession)")
+def _(v, r):
+    bpm = [90, 100, 80][v]
+    beat = 60 / bpm
+    bars = 4
+    L = bars * 4 * beat
+    X = 0.5
+    y = canvas(L + X + 1.5)
+    pat = [(0, "low"), (1.5, "high"), (2, "low"), (2.5, "high"), (3, "high"), (3.5, "high")]
+    for b in range(bars + 1):
+        for pos, kind in pat:
+            t = (b * 4 + pos) * beat
+            if kind == "low":
+                put(y, pan(taiko(r, 68, 1.0) * 0.8, -0.1), t)
+            else:
+                slap = bp(white(0.12, r), 300, 3000) * env_exp(0.12, 0.03, 0.001) + osc(330, 0.12) * env_exp(0.12, 0.05) * 0.5
+                put(y, pan(slap * 0.8, 0.2), t)
+    y = reverb(y, r, 1.6, 0.18)
+    return seamless(y, L, X)
+
+
+@sfx("12 Grand Drones & Drums", "Grand_Heavy_Gears", 3, loop=10, level="rms", db=-25,
+     desc="Heavy, slow mechanism loop (big dial turning)")
+def _(v, r):
+    L, X = 10, 0.5
+    y = canvas(L + X + 0.5)
+    rate = [3, 4, 2.5][v]
+    t, k = 0.0, 0
+    while t < L + X + 0.3:
+        put(y, pan(heavy_tick(r, 1.0 if k % 4 == 0 else 0.7), r.uniform(-0.2, 0.2)), t)
+        t += 1 / rate
+        k += 1
+    y += pan(bp(brown(L + X + 0.5, r), 60, 300) * 0.08, 0)
+    return seamless(reverb(y, r, 1.5, 0.2), L, X)
+
+
+@sfx("12 Grand Drones & Drums", "Grand_Mountain_Air", 3, loop=30, level="rms", db=-24,
+     desc="Vast mountain air: deep wind with a low sub presence")
+def _(v, r):
+    L, X = 30, 3.0
+    d = L + X + 0.5
+    chans = []
+    for ch in range(2):
+        g = 0.7 + 0.3 * smooth_noise(d, r, 0.12)
+        base = lp(brown(d, r), [320, 420, 260][v]) * 0.9 + lp(pink(d, r), 900) * 0.15
+        whistle = sweep(pink(d, r), 350 + 400 * g, 0.3) * 0.08
+        sub = osc(hz(D1), d) * 0.12 * g
+        chans.append(sub_clean((base + whistle) * g + sub))
+    return seamless(np.stack(chans, 1), L, X)
+
+
+# ---------------------------------------------------------------- brand stings, grand
+@sfx("06 Bells & Brand", "Grand_Intro_Sting", 3, desc="GRAND logo sound for the SPP intro (drone rise, dots, bell, braam/horn on the name)")
+def _(v, r):
+    d = 6.5
+    y = canvas(d)
+    put(y, grand_whoosh(r, 0.6, "in") * 0.5, 0.0)
+    dr = drone(r, 4.3, [D2, A2, D3], 300, 0.2, 0.5)
+    put(y, dr * env_curve(4.3, [(0, 0), (1.5, 0.6), (2.3, 1), (4.0, 0.7), (4.3, 0)])[:, None] * 0.45, 0.3)
+    for i in range(8):
+        put(y, pan(marimba(r, [D3, D3 + 2, D3 + 4, D3 + 7, D3 + 9, D3 + 12, D3 + 14, D3 + 16][i], 0.9, 0.4) * 0.3, -0.3 + 0.08 * i), 1.6 + i * 0.08)
+    put(y, pan([temple_bell(r, 220, 3.5), singing_bowl(r, 294, 3.5), gong(r, 110, 3.5)][v] * 0.5, 0.2), 1.9)
+    hit = [braam(r, D1, (0, 12, 19, 24), 3.5), mx(taiko(r, 54, 3.5), boom(r, 42, 3.5) * 0.5), mx(horn(r, [(A2, 0.7), (D3, 1.8)]) * 0.6, boom(r, 44, 2.5) * 0.4)][v]
+    put(y, stereo(hit) * 0.8, 2.3)
+    put(y, grand_whoosh(r, 0.9, "out") * 0.35, 4.3)
+    y = reverb(y, r, 3.0, 0.25)
+    return mountain_echo(y, r) if v == 2 else y
+
+
+@sfx("06 Bells & Brand", "Grand_EndCard_Sting", 3, desc="GRAND end-card sound (deep swell, bowl, warm low notes)")
+def _(v, r):
+    y = canvas(7.0)
+    put(y, grand_whoosh(r, 0.6, "in") * 0.45, 0)
+    put(y, pan(singing_bowl(r, [196, 147, 220][v], 5.0) * 0.45, 0), 0.3)
+    for i, t0 in enumerate((0.8, 0.95, 1.2)):
+        put(y, pan(marimba(r, [D3, A2 + 12, D3 + 7][i], 1.2, 0.4) * 0.35, -0.3 + 0.3 * i), t0)
+    dr = drone(r, 4.5, [D2, A2], 400, 0.1, 0.5)
+    put(y, dr * env_curve(4.5, [(0, 0), (1.0, 1), (3.5, 0.7), (4.5, 0)])[:, None] * 0.4, 1.3)
+    return reverb(y, r, 3.0, 0.25)
+
+
+
 # ================================================================ run
 def main():
     ap = argparse.ArgumentParser()
@@ -877,10 +1333,14 @@ def main():
                 x = rms_norm(x, s["db"])
             else:
                 x = peak_norm(x, s["db"])
-            fn = f"SPP_{s['name']}" + (f"_LOOP_{int(s['loop'])}s" if s["loop"] else "") + f"_v{v + 1:02d}.wav"
+            fn = f"SPP_{s['name']}" + (f"_LOOP_{round(len(x) / SR)}s" if s["loop"] else "") + f"_v{v + 1:02d}.wav"
             write_wav(d / fn, x)
+            m = np.abs(x).max(axis=1)
+            w = n_(0.05)
+            env = np.convolve(m ** 2, np.ones(w) / w, "same")
             cat.append({"file": f"{s['cat']}/{fn}", "category": s["cat"], "name": s["name"], "variant": v + 1,
-                        "seconds": round(len(x) / SR, 3), "loop": bool(s["loop"]), "use": s["desc"]})
+                        "seconds": round(len(x) / SR, 3), "peak": round(int(np.argmax(env)) / SR, 3),
+                        "loop": bool(s["loop"]), "use": s["desc"]})
         print(f"  {key}  x{s['variants']}", flush=True)
     if not a.list:
         json.dump(cat, open(out / "sfx_catalog.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)

@@ -22,7 +22,7 @@ This folder is the **single source of truth** — Resolve gets its copies from h
 | `Brand` | Logo lock-ups, brand board, mock-ups |
 | `Tools` | `spp_sort_media.py` (sort footage by true orientation, with undo log), `new_video.ps1` (trip + video folders), `spp_word_timing.py` (word-timed captions), `spp_gps.py` (GPS lookup, stops, route maps, GPX, local API), `spp_phone_voice.py` (phone-call voice), `setup_word_timing.ps1` (installs the Python tools), `make_sfx.ps1` (builds the SFX library) |
 | `Docs` | User guide, cheat sheet, SFX library list, VO scripts, Maps/GPS/terrain guide |
-| `SFX` *(generated, not in git)* | 249 sound effects — `.\Tools\make_sfx.ps1` |
+| `SFX` *(generated, not in git)* | 364 sound effects (Grand + Light) — `.\Tools\make_sfx.ps1` |
 | `Source` | Generators for every graphic/template, fonts, reference images |
 
 ## Folder layout: one trip, many videos — one Resolve project per video

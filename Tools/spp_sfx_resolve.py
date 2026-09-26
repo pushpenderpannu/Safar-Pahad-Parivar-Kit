@@ -114,3 +114,35 @@ def loop_fill(proj, tl, mpi, track, a, b, fps):
         out += append(proj, tl, mpi, track, t, 0, ln, fps)
         t += ln
     return out
+
+
+def ask_choice(resolve, title, label, options, default=0, bmd_=None):
+    """Small window with one drop-down. Returns the chosen option (or the default if no UI)."""
+    try:
+        fu = resolve.Fusion()
+        ui = fu.UIManager
+        if bmd_ is None:
+            import builtins
+            bmd_ = getattr(builtins, "bmd", None)
+        disp = bmd_.UIDispatcher(ui)
+        win = disp.AddWindow({"ID": "Q", "WindowTitle": title, "Geometry": [500, 300, 380, 120]},
+                             ui.VGroup([ui.Label({"Text": label}), ui.ComboBox({"ID": "c"}),
+                                        ui.HGroup([ui.Button({"ID": "ok", "Text": "OK"}), ui.Button({"ID": "cancel", "Text": "Cancel"})])]))
+        it = win.GetItems()
+        for o in options:
+            it["c"].AddItem(o)
+        it["c"].CurrentIndex = default
+        res = {}
+
+        def done(ok):
+            if ok:
+                res["v"] = options[it["c"].CurrentIndex]
+            disp.ExitLoop()
+        win.On.ok.Clicked = lambda ev: done(True)
+        win.On.cancel.Clicked = lambda ev: done(False)
+        win.On.Q.Close = lambda ev: done(False)
+        win.Show(); disp.RunLoop(); win.Hide()
+        return res.get("v")
+    except Exception as e:
+        print("(no dialog: %s) using '%s'" % (e, options[default]))
+        return options[default]

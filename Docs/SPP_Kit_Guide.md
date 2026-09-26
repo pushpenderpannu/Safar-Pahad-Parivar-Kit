@@ -219,8 +219,10 @@ On the **VO** track (Fairlight): Voice Isolation 60–70 → EQ (high-pass 80 Hz
 De-esser → Dialogue Leveler / compressor 3:1 → final mix **−14 LUFS**, music 15–20 dB under the voice.
 
 ## 15a. Sound effects
-A brand sound library made for the SPP titles — **78 sounds, 249 files**, several variations each, seamless loops for any length.
-Full list: [`SFX_Library.md`](SFX_Library.md). Listen first: `SPP_SFX_Demo_Reel.mp3`.
+A brand sound library made for the SPP titles — **111 sounds, 364 files** in two styles, several variations each, seamless loops for any length.
+**Grand** (default): deep and cinematic like the mountains — sub-bass hits, taiko/dhol, low brass braams, gongs, deep mandir bell,
+singing bowl, a ransingha-style horn with valley echo, drone beds. **Light**: playful UI ticks, pops and marimba.
+Full list: [`SFX_Library.md`](SFX_Library.md). Listen first: `SPP_SFX_Grand_Demo.mp3` and `SPP_SFX_Demo_Reel.mp3`.
 
 **Build it once per PC:** `.\Tools\make_sfx.ps1` (≈1 min) → `<kit>\SFX\`. Then **SFX - Import Library** puts it in an **SPP SFX** bin.
 The sounds are generated from code, so they are identical on every PC and don't need backing up.
@@ -235,8 +237,13 @@ The sounds are generated from code, so they are identical on every PC and don't 
 | 06 Bells & Brand | mandir bell, hand ghanti, wind chime, **intro sting** and **end-card sting** timed to the SPP intro / end card |
 | 07 Nature Beds | 30 s seamless: mountain wind (calm/gusty/high whistle), prayer flags, mountain stream, light rain, night crickets |
 | 08 Phone | Indian ringback / dial / busy tones, ringtones, vibrate, keypad dialing, pickup, hang-up, call-ended beeps, message ping, line noise |
+| 09 Grand Title Kits | grand versions of every title kit (Info Card, Altitude 1.5–6 s with 3 landings, Peak, 5 chapter-title hits, Credits, Route open, stop hits, journey pulse loop, title-out) |
+| 10 Grand Impacts & Swells | braams, taiko hits, sub booms, valley-echo boom, deep whooshes, riser-into-hit, deep reverse swells |
+| 11 Grand Bells & Horns | gong / tam-tam, deep mandir bell, singing bowl, ransingha horn calls with valley echo |
+| 12 Grand Drones & Drums | 30 s drone beds (warm, hopeful, dark, airy), dhol-damau pulse loops, heavy gears, vast mountain air |
 
-**One click for all titles — SFX - Auto Sound for Titles.** It finds every SPP title (and the SPP intro / end-card clips) on the timeline and
+**One click for all titles — SFX - Auto Sound for Titles.** Pick a style — **Grand** (default), **Light** or **Mix**
+(grand for chapter titles, altitude, route map, intro/end; light for small cards). It finds every SPP title (and the SPP intro / end-card clips) on the timeline and
 lays the matching sounds on the **SFX 1–3** tracks, exactly on the animation beats: card whoosh, row pops, odometer roll that slows with
 the numbers, pin drop + chime at each route stop (times read from the route file), dotted-trail loop while the path draws, out-whoosh.
 Variations rotate so repeats never sound the same. Auto clips are **Lime**; run again after editing — it replaces the old Lime clips.
