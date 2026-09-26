@@ -219,13 +219,16 @@ On the **VO** track (Fairlight): Voice Isolation 60–70 → EQ (high-pass 80 Hz
 De-esser → Dialogue Leveler / compressor 3:1 → final mix **−14 LUFS**, music 15–20 dB under the voice.
 
 ## 15a. Sound effects
-A brand sound library made for the SPP titles — **111 sounds, 364 files** in two styles, several variations each, seamless loops for any length.
-**Grand** (default): deep and cinematic like the mountains — sub-bass hits, taiko/dhol, low brass braams, gongs, deep mandir bell,
-singing bowl, a ransingha-style horn with valley echo, drone beds. **Light**: playful UI ticks, pops and marimba.
-Full list: [`SFX_Library.md`](SFX_Library.md). Listen first: `SPP_SFX_Grand_Demo.mp3` and `SPP_SFX_Demo_Reel.mp3`.
+A brand sound library made for the SPP titles — **142 sounds, 480 files** in three styles, several variations each, seamless loops for any length.
+**Strings** (default): real recorded orchestra — violin, viola and cello sections, solo violin, harp, timpani, gong, Nepalese bells; warm
+and emotional, all in D major so the sounds fit together. **Grand**: deep cinematic synth — sub-bass hits, taiko/dhol, braams, gongs,
+ransingha-style horn with valley echo, drone beds. **Light**: playful UI ticks, pops and marimba.
+Full list: [`SFX_Library.md`](SFX_Library.md). Listen first: `SPP_SFX_Strings_Demo.mp3`, `SPP_SFX_Grand_Demo.mp3`, `SPP_SFX_Demo_Reel.mp3`.
 
-**Build it once per PC:** `.\Tools\make_sfx.ps1` (≈1 min) → `<kit>\SFX\`. Then **SFX - Import Library** puts it in an **SPP SFX** bin.
-The sounds are generated from code, so they are identical on every PC and don't need backing up.
+**Build it once per PC:** `.\Tools\make_sfx.ps1` → `<kit>\SFX\`. The first run downloads the recorded strings
+(*VSCO-2 Community Edition*, public domain / CC0 — free for YouTube, no credit needed; ~850 MB into `Source\_vsco`, not in git) and takes ≈10 min;
+later runs ≈3 min. Then **SFX - Import Library** puts it in an **SPP SFX** bin.
+The sounds are built from code + those recordings, so they are identical on every PC and don't need backing up.
 
 | Folder | What's in it |
 |---|---|
@@ -241,8 +244,11 @@ The sounds are generated from code, so they are identical on every PC and don't 
 | 10 Grand Impacts & Swells | braams, taiko hits, sub booms, valley-echo boom, deep whooshes, riser-into-hit, deep reverse swells |
 | 11 Grand Bells & Horns | gong / tam-tam, deep mandir bell, singing bowl, ransingha horn calls with valley echo |
 | 12 Grand Drones & Drums | 30 s drone beds (warm, hopeful, dark, airy), dhol-damau pulse loops, heavy gears, vast mountain air |
+| 13 Strings Title Kits | strings versions of every title kit: harp + pizzicato Info Card, tremolo that climbs with the altitude count and lands on timpani + chord, harp-to-violin peak, 5 chapter-title hits, credits swell, route open, pizz + bell stop hits, spiccato journey loop, title-out |
+| 14 Strings Hits & Swells | section swells, tremolo risers, string stabs, timpani hits and rolls, gong, bass drum, cymbal swells, solo-violin phrases (pahadi-style pentatonic) |
+| 15 Strings Beds & Bells | 30 s string pads and cello drone loops, harp glissandos, Nepalese bells, pizzicato pops |
 
-**One click for all titles — SFX - Auto Sound for Titles.** Pick a style — **Grand** (default), **Light** or **Mix**
+**One click for all titles — SFX - Auto Sound for Titles.** Pick a style — **Strings** (default), **Grand**, **Light** or **Mix**
 (grand for chapter titles, altitude, route map, intro/end; light for small cards). It finds every SPP title (and the SPP intro / end-card clips) on the timeline and
 lays the matching sounds on the **SFX 1–3** tracks, exactly on the animation beats: card whoosh, row pops, odometer roll that slows with
 the numbers, pin drop + chime at each route stop (times read from the route file), dotted-trail loop while the path draws, out-whoosh.

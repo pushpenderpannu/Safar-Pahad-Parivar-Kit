@@ -4,7 +4,8 @@
 # Running it again first removes the previous Lime auto-sounds, so it always matches the current edit.
 # Want to keep a sound you tweaked? Change its clip colour - then it is left alone.
 # Variations rotate so the same title never sounds identical twice in a row.
-# Style: Grand (deep, cinematic - default) / Light (playful UI) / Mix (grand for big moments, light for small ones).
+# Style: Strings (real violins, harp, timpani - default) / Grand (deep, cinematic synth) / Light (playful UI) /
+#        Mix (grand for big moments, light for small ones).
 import json, os, sys, zlib
 try:
     resolve
@@ -41,6 +42,14 @@ KITS = {
               "stop": ("09 Grand Title Kits", "Grand_Stop_Hit", 5), "chime": None,
               "intro": ("06 Bells & Brand", "Grand_Intro_Sting", 3), "end": ("06 Bells & Brand", "Grand_EndCard_Sting", 3)},
 }
+KITS["strings"] = {
+    "SPP-Info-Card": ("13 Strings Title Kits", "Strings_InfoCard_In", 4), "SPP-Peak-Callout": ("13 Strings Title Kits", "Strings_PeakCallout_In", 4),
+    "SPP-Popup-Title": ("13 Strings Title Kits", "Strings_PopupTitle_In", 5), "SPP-Credits": ("13 Strings Title Kits", "Strings_Credits_In", 3),
+    "alt": ("13 Strings Title Kits", "Strings_Altitude_In_%s", 3), "out": ("13 Strings Title Kits", "Strings_Title_Out", 4),
+    "open": ("13 Strings Title Kits", "Strings_RouteMap_Open", 3), "zin": ("14 Strings Hits & Swells", "Cymbal_Swell", 3),
+    "zout": ("13 Strings Title Kits", "Strings_Title_Out", 4), "trail": ("13 Strings Title Kits", "Strings_Journey", 3),
+    "stop": ("13 Strings Title Kits", "Strings_Stop_Hit", 5), "chime": None,
+    "intro": ("06 Bells & Brand", "Strings_Intro_Sting", 3), "end": ("06 Bells & Brand", "Strings_EndCard_Sting", 3)}
 # Mix: grand for the big moments, light for the small ones
 KITS["mix"] = dict(KITS["light"])
 for k in ("SPP-Popup-Title", "SPP-Credits", "alt", "open", "zin", "zout", "trail", "stop", "chime", "intro", "end"):
@@ -67,7 +76,7 @@ def main():
     if S.catalog() is None:
         return
     choice = S.ask_choice(resolve, "SPP Auto Sound", "Sound style for the titles on this timeline",
-                          ["Grand - deep, cinematic", "Light - playful", "Mix - grand for big moments"], 0,
+                          ["Strings - real violins, harp, timpani", "Grand - deep, cinematic synth", "Light - playful", "Mix - grand for big moments"], 0,
                           globals().get("bmd"))
     if not choice:
         return

@@ -1304,15 +1304,419 @@ def _(v, r):
 
 
 
+# ================================================================ STRINGS (real recorded instruments - VSCO-2 CE, CC0)
+import samples as _smp
+LIB = [None]          # set in main() when the sample library is present
+
+
+def Lb():
+    return LIB[0]
+
+
+def env_apply(x, pts):
+    e = env_curve(len(x) / SR, pts)[: len(x)]
+    return x * e[:, None]
+
+
+def swell(x, peak=0.6, start=0.0, end=None):
+    """Crescendo to 'peak' (fraction of the length) then a long release."""
+    d = len(x) / SR
+    return env_apply(x, [(0, start), (peak * d, 1.0), (d, 0.0 if end is None else end)])
+
+
+def harp_run(r, notes, gap=0.055, vel=4, gain=0.7):
+    y = canvas(len(notes) * gap + 3.5)
+    for i, m in enumerate(notes):
+        put(y, Lb().note("harp", m, r, vel=vel) * gain * (0.8 + 0.2 * r.random()), i * gap * (1 + 0.15 * r.uniform(-1, 1)))
+    return y
+
+
+PENT = [62, 64, 66, 69, 71]  # D E F# A B
+
+
+def pent(k, base=0):
+    o, i = divmod(k, 5)
+    return PENT[i] + 12 * o + base
+
+
+def spic_roll(r, d, key="vln_spic", start_k=5, ticks_per_s=13, settle=True):
+    """Counter roll played by strings: spiccato notes that slow down with the count, climbing the scale."""
+    y = canvas(d + 2.5)
+    K = max(5, int(ticks_per_s * d))
+    for k in range(1, K):
+        t0 = d * (1 - (1 - k / K) ** (1 / 3))
+        m = pent(start_k + (k % 7))
+        put(y, Lb().note(key, m, r, dur=0.12, release=0.1, vel=1) * (0.45 + 0.25 * r.random()), t0)
+    if settle:
+        put(y, Lb().note("vln_pizz", pent(start_k + 5), r, vel=2) * 0.9, d)
+        put(y, Lb().note("vc_pizz", 38, r, vel=2) * 0.8, d)
+    return y
+
+
+def string_chord(r, midis_by_key, d, vel=1, attack=0.25, release=1.2):
+    parts = []
+    for key, ms in midis_by_key.items():
+        for m in ms:
+            parts.append(Lb().note(key, m, r, dur=d, vel=vel, attack=attack, release=release))
+    return mx(*[p / np.sqrt(len(parts)) for p in parts])
+
+
+def cymbal_to(r, land, kind="Short"):
+    """Bowed/cresc cymbal swell whose peak lands at 'land' seconds (returns (signal, start_time))."""
+    items = [i for i in Lb().idx["cymb_cresc"] if kind in i["file"]] or Lb().idx["cymb_cresc"]
+    x = Lb()._load(items[0]["file"]).copy()
+    pk = int(np.argmax(np.convolve(np.abs(x).max(1), np.ones(n_(0.05)), "same"))) / SR
+    return x, land - pk
+
+
+def timp(r, vel=4, gain=1.0):
+    return Lb().raw("timp_hit", r, vel) * gain
+
+
+def trem_riser(r, d, chord=((55, 62), (50, 57), (38, 45)), land_gain=1.0):
+    keys = ["vln_trem", "vla_trem", "vc_trem"]
+    parts = []
+    for key, ms in zip(keys, chord):
+        for m in ms:
+            x = Lb().note(key, m, r, dur=d, vel=2, attack=0.3, release=0.05)
+            parts.append(x)
+    y = mx(*parts)[: n_(d)]
+    u = np.linspace(0, 1, len(y))
+    y = y * (0.05 + 0.95 * u ** 2.2)[:, None]
+    return y
+
+
+def violin_phrase(r, notes, key="svln_sus", legato=0.12, gain=1.0):
+    """notes: [(midi, dur)] - overlapping bowed notes for a singing line."""
+    tot = sum(dd for _, dd in notes) + 2.0
+    y = canvas(tot)
+    t = 0.0
+    for m, dd in notes:
+        put(y, Lb().note(key, m, r, dur=dd + legato, vel=2, attack=0.06, release=0.5) * gain, t)
+        t += dd
+    return y
+
+
+def need_lib(fn):
+    def w(v, r):
+        if Lb() is None:
+            raise RuntimeError("no samples")
+        return fn(v, r)
+    return w
+
+
+# ---------------------------------------------------------------- 13 Strings Title Kits
+@sfx("13 Strings Title Kits", "Strings_InfoCard_In", 4, db=-6, desc="STRINGS Info Card: harp flourish, pizzicato rows, spiccato counter, violin settle")
+@need_lib
+def _(v, r):
+    y = canvas(4.5)
+    put(y, harp_run(r, [pent(k) for k in ([0, 2, 4, 5] if v % 2 == 0 else [1, 3, 5, 7])], 0.06) * 0.8, 0.0)
+    for i in range(4):
+        put(y, Lb().note(["vln_pizz", "vla_pizz", "vln_pizz", "svln_pizz"][v], pent(5 + i * [1, 2, 1, 2][v]), r, vel=2) * 0.55, 0.55 + 0.1 * i)
+    put(y, spic_roll(r, 1.5, ["vln_spic", "vla_spic", "vln_spic", "vc_spic"][v], [5, 3, 6, 0][v]) * 0.75, 0.6)
+    put(y, Lb().note("vln_sus", [74, 78, 81, 69][v], r, dur=1.2, vel=1, attack=0.3, release=0.9) * 0.45, 2.05)
+    return reverb(y, r, 1.8, 0.18)
+
+
+@sfx("13 Strings Title Kits", "Strings_Title_Out", 4, db=-8, desc="STRINGS title leaving: soft falling harp / pizz")
+@need_lib
+def _(v, r):
+    if v < 2:
+        y = harp_run(r, [pent(k) for k in range([9, 8][v], [4, 3][v], -1)], 0.05, 3) * 0.7
+    else:
+        y = canvas(2.0)
+        for i, k in enumerate(range(8, 5, -1)):
+            put(y, Lb().note(["vln_pizz", "vla_pizz"][v - 2], pent(k), r, vel=1) * 0.6, i * 0.09)
+    return reverb(y, r, 1.6, 0.18)
+
+
+for _c in (1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0):
+    def _mk(c=_c):
+        @sfx("13 Strings Title Kits", f"Strings_Altitude_In_{str(c).replace('.', '_')}s", 3, db=-6,
+             desc=f"STRINGS Altitude Counter ({c} s): tremolo climbs with the count, spiccato counter, timpani + chord landing")
+        @need_lib
+        def _(v, r):
+            tot = 0.45 + c + 5.0
+            y = canvas(tot)
+            put(y, harp_run(r, [pent(k) for k in (0, 2, 4)], 0.07) * 0.5, 0)
+            tr = trem_riser(r, c + 0.1, [((62, 69), (57,), (38, 50)), ((66, 74), (62,), (43, 50)), ((69, 74), (62,), (38, 45))][v])
+            put(y, tr * 0.55, 0.45)
+            put(y, spic_roll(r, c, "vln_spic", 3, 12, settle=False) * 0.55, 0.45)
+            land = 0.45 + c
+            put(y, timp(r, 4, 0.8), land)
+            put(y, string_chord(r, {"vln_sus": [74, 78] if v != 2 else [74, 81], "vla_sus": [69], "vc_sus": [50, 38]}, 2.5, vel=2, attack=0.03, release=1.8) * 0.9, land)
+            if v == 1:
+                put(y, Lb().raw("gong", r, 4) * 0.25, land)
+            return reverb(y, r, 2.2, 0.2)
+    _mk()
+
+
+@sfx("13 Strings Title Kits", "Strings_PeakCallout_In", 4, db=-6, desc="STRINGS Peak Callout: harp rising to a high violin note, pizz on the label")
+@need_lib
+def _(v, r):
+    y = canvas(5.0)
+    put(y, harp_run(r, [pent(k) for k in range(2, 9)], 0.04) * 0.6, 0.1)
+    put(y, Lb().note(["svln_sus", "vln_sus", "svln_sus", "vln_trem"][v], [86, 81, 88, 86][v], r, dur=1.6, vel=2, attack=0.25, release=1.2) * 0.5, 0.35)
+    put(y, Lb().note("vln_pizz", [74, 78, 81, 74][v], r, vel=2) * 0.6, 0.72)
+    if v == 3:
+        put(y, Lb().raw("nepal_bells", r) * 0.35, 0.3)
+    return reverb(y, r, 2.2, 0.2)
+
+
+@sfx("13 Strings Title Kits", "Strings_PopupTitle_In", 5, db=-5,
+     desc="STRINGS chapter title: swell+timpani / tremolo into stab / solo violin phrase / cello+gong / harp into chord")
+@need_lib
+def _(v, r):
+    y = canvas(7.0)
+    if v == 0:
+        put(y, swell(string_chord(r, {"vln_sus": [74, 81], "vla_sus": [66], "vc_sus": [50, 38]}, 3.0, vel=2, attack=0.02), 0.25) * 0.9, 0)
+        put(y, timp(r, 4), 0.0)
+    elif v == 1:
+        put(y, trem_riser(r, 1.2) * 0.6, 0.0)
+        put(y, string_chord(r, {"vln_spic": [74, 78, 86], "vla_spic": [69], "vc_spic": [50], "cb_pizz": [38]}, 0.3, vel=2, release=0.3), 1.2)
+        put(y, timp(r, 5), 1.2)
+    elif v == 2:
+        put(y, violin_phrase(r, [(69, 0.35), (74, 0.35), (76, 0.3), (78, 1.6)]) * 0.8, 0)
+        put(y, Lb().note("vc_sus", 50, r, dur=2.4, vel=1, attack=0.4, release=1.2) * 0.4, 0.0)
+    elif v == 3:
+        put(y, Lb().note("vc_sus", 38, r, dur=3.0, vel=3, attack=0.05, release=1.5) * 0.8, 0)
+        put(y, Lb().note("cb_sus", 26 + 12, r, dur=3.0, vel=3, attack=0.05, release=1.5) * 0.6, 0)
+        put(y, Lb().raw("gong", r, 5) * 0.5, 0.0)
+    else:
+        put(y, harp_run(r, [pent(k) for k in range(0, 10)], 0.035) * 0.7, 0)
+        put(y, string_chord(r, {"vln_sus": [78, 86], "vla_sus": [74], "vc_sus": [50]}, 2.6, vel=1, attack=0.35, release=1.5) * 0.85, 0.3)
+    return reverb(y, r, 2.4, 0.2)
+
+
+@sfx("13 Strings Title Kits", "Strings_Credits_In", 3, db=-8, desc="STRINGS credits: warm string chord swell with harp")
+@need_lib
+def _(v, r):
+    y = canvas(9.0)
+    ch = [{"vln_sus": [74, 78], "vla_sus": [69], "vc_sus": [50, 38]}, {"vln_sus": [71, 78], "vla_sus": [66], "vc_sus": [47, 35 + 12]},
+          {"vln_sus": [74, 79], "vla_sus": [71], "vc_sus": [43, 55]}][v]
+    put(y, swell(string_chord(r, ch, 6.0, vel=1, attack=0.9, release=2.0), 0.35) * 0.9, 0)
+    put(y, harp_run(r, [pent(k) for k in (0, 2, 4, 5, 7)], 0.09) * 0.5, 0.3)
+    return reverb(y, r, 2.6, 0.22)
+
+
+@sfx("13 Strings Title Kits", "Strings_RouteMap_Open", 3, db=-6, desc="STRINGS route map start: cymbal swell, harp, low cello")
+@need_lib
+def _(v, r):
+    y = canvas(6.0)
+    cy, st = cymbal_to(r, 0.9, "Short")
+    put(y, cy * 0.45, max(0, st))
+    put(y, harp_run(r, [pent(k) for k in range(0, 8)], 0.05) * 0.6, 0.8)
+    put(y, Lb().note("vc_sus", [38, 43, 45][v], r, dur=2.5, vel=1, attack=0.3, release=1.5) * 0.55, 0.9)
+    return reverb(y, r, 2.2, 0.2)
+
+
+@sfx("13 Strings Title Kits", "Strings_Stop_Hit", 5, db=-6, desc="STRINGS route stop: pizzicato chord + Nepalese bell (+ soft timpani)")
+@need_lib
+def _(v, r):
+    y = canvas(3.5)
+    put(y, string_chord(r, {"vln_pizz": [pent(5 + v), pent(7 + v)], "vc_pizz": [38 + [0, 7, 4, 9, 5][v]]}, None, vel=2) * 0.9, 0)
+    put(y, Lb().raw("nepal_bells", r) * 0.35, 0.02)
+    if v in (1, 3):
+        put(y, timp(r, 1, 0.5), 0)
+    return reverb(y, r, 1.8, 0.2)
+
+
+@sfx("13 Strings Title Kits", "Strings_Journey", 3, loop=10, level="rms", db=-24,
+     desc="STRINGS travel ostinato (spiccato violins + cello pizz, 96 bpm) - loops under the route drawing")
+@need_lib
+def _(v, r):
+    bpm = 96
+    e8 = 60 / bpm / 2
+    bars = [[74, 69, 78, 69, 76, 69, 74, 69], [71, 66, 74, 66, 73, 66, 71, 66], [67, 62, 71, 62, 69, 62, 67, 62], [69, 64, 73, 64, 71, 64, 76, 64]]
+    roots = [38, 35, 31, 33]
+    if v == 1:
+        bars = [[b - 12 + 12 if i % 2 else b for i, b in enumerate(bar)] for bar in bars]
+    L = 4 * 8 * e8
+    y = canvas(L * 2 + 1.0)
+    for rep in range(2):
+        for bi, bar in enumerate(bars):
+            for k, m in enumerate(bar):
+                t = rep * L + (bi * 8 + k) * e8
+                acc = 1.0 if k % 4 == 0 else 0.7
+                put(y, Lb().note("vln_spic" if v != 2 else "vla_spic", m - (12 if v == 2 else 0), r, dur=0.11, release=0.08, vel=1) * 0.5 * acc, t)
+            for bt in (0, 4):
+                put(y, Lb().note("vc_pizz", roots[bi], r, vel=2) * 0.7, rep * L + (bi * 8 + bt) * e8)
+    y = reverb(y, r, 1.4, 0.15)
+    return seamless(y[n_(L * 0.5):], L, 0.3)
+
+
+@sfx("06 Bells & Brand", "Strings_Intro_Sting", 3, desc="STRINGS logo sound for the SPP intro (tremolo while the logo draws, harp dots, bell for the sun, full strings on the name)")
+@need_lib
+def _(v, r):
+    y = canvas(8.0)
+    cy, st = cymbal_to(r, 1.6, "Median")
+    put(y, cy * 0.3, max(0, st))
+    put(y, trem_riser(r, 1.6, [((62, 69), (57,), (38,)), ((66, 73), (62,), (43,)), ((69, 74), (62,), (38, 50))][v]) * 0.45, 0.3)
+    for i in range(8):
+        put(y, Lb().note("harp", pent(5 + i), r, vel=4) * 0.45, 1.6 + i * 0.08)
+    put(y, Lb().raw("nepal_bells", r) * 0.5, 1.9)
+    put(y, Lb().note("svln_sus", [86, 81, 88][v], r, dur=1.0, vel=2, attack=0.15, release=0.8) * 0.4, 1.95)
+    put(y, string_chord(r, {"vln_sus": [74, 78, 81], "vla_sus": [69], "vc_sus": [50, 38], "cb_sus": [38]}, 2.2, vel=2, attack=0.05, release=1.4) * 0.95, 2.3)
+    put(y, timp(r, [4, 3, 5][v], 0.8), 2.3)
+    return reverb(y, r, 2.6, 0.2)
+
+
+@sfx("06 Bells & Brand", "Strings_EndCard_Sting", 3, desc="STRINGS end card: harp, pizz for the boxes, warm chord")
+@need_lib
+def _(v, r):
+    y = canvas(7.0)
+    put(y, harp_run(r, [pent(k) for k in range(0, 7)], 0.06) * 0.6, 0.0)
+    for i, t0 in enumerate((0.8, 0.95, 1.2)):
+        put(y, Lb().note("vln_pizz", pent(7 + 2 * i), r, vel=2) * 0.5, t0)
+    put(y, swell(string_chord(r, {"vln_sus": [74, 78], "vla_sus": [69], "vc_sus": [50]}, 3.5, vel=1, attack=0.6, release=1.6), 0.4) * 0.7, 1.2)
+    return reverb(y, r, 2.4, 0.2)
+
+
+# ---------------------------------------------------------------- 14 Strings Hits & Swells
+@sfx("14 Strings Hits & Swells", "Strings_Swell", 5, desc="String-section swell (grows then fades) - scenic reveals")
+@need_lib
+def _(v, r):
+    ch = [{"vln_sus": [74, 81], "vla_sus": [66], "vc_sus": [50, 38]}, {"vln_sus": [71, 78], "vla_sus": [66], "vc_sus": [47]},
+          {"vln_sus": [74, 79], "vla_sus": [71], "vc_sus": [43]}, {"vln_sus": [76, 81], "vla_sus": [69], "vc_sus": [45]},
+          {"vln_sus": [78, 86], "vla_sus": [74], "vc_sus": [50, 62]}][v]
+    return reverb(swell(string_chord(r, ch, 4.5, vel=2, attack=1.2, release=1.8), 0.55), r, 2.6, 0.22)
+
+
+@sfx("14 Strings Hits & Swells", "Strings_Tremolo_Riser", 3, desc="Tremolo strings rising into a hit (hit at 4.0 s)")
+@need_lib
+def _(v, r):
+    y = canvas(8.0)
+    put(y, trem_riser(r, 4.0) * 0.8, 0)
+    put(y, string_chord(r, {"vln_spic": [74, 81], "vla_spic": [69], "vc_spic": [50], "cb_pizz": [38]}, 0.4, vel=2, release=0.3), 4.0)
+    put(y, timp(r, 5), 4.0)
+    if v == 2:
+        put(y, Lb().raw("gong", r, 5) * 0.4, 4.0)
+    return reverb(y, r, 2.4, 0.2)
+
+
+@sfx("14 Strings Hits & Swells", "Strings_Stab", 4, desc="Short full-strings stab with timpani")
+@need_lib
+def _(v, r):
+    y = canvas(3.5)
+    put(y, string_chord(r, {"vln_spic": [pent(5 + v), pent(7 + v)], "vla_spic": [pent(3 + v)], "vc_spic": [38 + [0, 7, 9, 5][v]], "cb_pizz": [38]}, 0.35, vel=2, release=0.3), 0)
+    put(y, timp(r, 4), 0)
+    return reverb(y, r, 2.0, 0.2)
+
+
+@sfx("14 Strings Hits & Swells", "Timpani_Hit", 4, desc="Real timpani hit")
+@need_lib
+def _(v, r):
+    return reverb(timp(r, [1, 3, 4, 4][v]), r, 1.8, 0.15)
+
+
+@sfx("14 Strings Hits & Swells", "Timpani_Roll", 3, desc="Real timpani roll (crescendo)")
+@need_lib
+def _(v, r):
+    x = Lb().raw("timp_roll", r, [3, 4, 5][v])
+    return reverb(swell(x, 0.85, 0.2, 0.3), r, 1.8, 0.15)
+
+
+@sfx("14 Strings Hits & Swells", "Gong_Hit", 4, desc="Real orchestral gong")
+@need_lib
+def _(v, r):
+    return reverb(Lb().raw("gong", r, [2, 4, 5, 7][v]), r, 2.0, 0.15)
+
+
+@sfx("14 Strings Hits & Swells", "Bass_Drum", 4, desc="Real orchestral bass drum hit")
+@need_lib
+def _(v, r):
+    return reverb(Lb().raw("bdrum", r, [3, 5, 6, 7][v]), r, 2.0, 0.15)
+
+
+@sfx("14 Strings Hits & Swells", "Cymbal_Swell", 3, desc="Cymbal crescendo (real) - peaks at its end, cut on it")
+@need_lib
+def _(v, r):
+    x = Lb()._load(Lb().idx["cymb_cresc"][v % len(Lb().idx["cymb_cresc"])]["file"])
+    return reverb(x.copy(), r, 1.5, 0.12)
+
+
+@sfx("14 Strings Hits & Swells", "Solo_Violin_Phrase", 6, desc="Short pahadi-flavoured solo violin phrases (emotional moments)")
+@need_lib
+def _(v, r):
+    ph = [[(69, 0.5), (74, 0.5), (76, 0.4), (78, 1.8)], [(81, 0.6), (78, 0.4), (76, 0.4), (74, 2.0)],
+          [(74, 0.35), (76, 0.35), (78, 0.35), (81, 0.5), (78, 1.6)], [(66, 0.6), (69, 0.6), (71, 0.5), (69, 2.0)],
+          [(86, 1.0), (83, 0.5), (81, 0.5), (78, 2.0)], [(74, 0.8), (69, 0.8), (74, 0.4), (76, 0.4), (74, 2.0)]][v]
+    y = violin_phrase(r, ph)
+    y = mx(y, Lb().note("vc_sus", 50 if v != 3 else 47, r, dur=sum(d for _, d in ph), vel=1, attack=0.6, release=1.2) * 0.35)
+    return reverb(y, r, 2.4, 0.22)
+
+
+# ---------------------------------------------------------------- 15 Strings Beds & Bells
+def _pad(r, L, chord, X=3.0):
+    d = L + X + 1.0
+    y = canvas(d)
+    for key, ms in chord.items():
+        for m in ms:
+            t = -r.uniform(0, 3)
+            while t < d:
+                seg_ = 7.0
+                x = Lb().note(key, m, r, dur=seg_, vel=1, attack=1.8, release=2.2)
+                put(y, x / np.sqrt(sum(len(v) for v in chord.values())), max(0, t))
+                t += seg_ - 0.4
+    y = reverb(y, r, 3.0, 0.25)
+    return seamless(y[n_(1.5):], L, X)
+
+
+@sfx("15 Strings Beds & Bells", "Strings_Pad", 4, loop=30, level="rms", db=-24,
+     desc="Sustained string bed: warm D / tender Bm / open G / hopeful A")
+@need_lib
+def _(v, r):
+    ch = [{"vln_sus": [74, 78], "vla_sus": [69], "vc_sus": [50, 38]}, {"vln_sus": [71, 78], "vla_sus": [66], "vc_sus": [47]},
+          {"vln_sus": [74, 79], "vla_sus": [71], "vc_sus": [43]}, {"vln_sus": [76, 81], "vla_sus": [73], "vc_sus": [45]}][v]
+    return _pad(r, 30, ch)
+
+
+@sfx("15 Strings Beds & Bells", "Cello_Drone", 2, loop=30, level="rms", db=-24, desc="Low cello + contrabass drone (awe, vastness)")
+@need_lib
+def _(v, r):
+    return _pad(r, 30, {"vc_sus": [38, 45] if v == 0 else [38, 50], "cb_sus": [38 if v == 0 else 33]})
+
+
+@sfx("15 Strings Beds & Bells", "Harp_Gliss", 4, desc="Harp glissando up / down (reveals, transitions)")
+@need_lib
+def _(v, r):
+    notes = [pent(k) for k in range(-5, 12)]
+    if v % 2:
+        notes = notes[::-1]
+    return reverb(harp_run(r, notes, [0.03, 0.03, 0.045, 0.045][v], 4) * 0.8, r, 2.0, 0.2)
+
+
+@sfx("15 Strings Beds & Bells", "Nepalese_Bells", 6, desc="Real Nepalese bells (arrivals, monastery, sparkle)")
+@need_lib
+def _(v, r):
+    items = Lb().idx["nepal_bells"]
+    x = Lb()._load(items[(v * 4) % len(items)]["file"]).copy()
+    return reverb(x, r, 1.8, 0.2)
+
+
+@sfx("15 Strings Beds & Bells", "Pizzicato_Pop", 6, db=-4, desc="Pizzicato 'pop' (organic replacement for UI pops)")
+@need_lib
+def _(v, r):
+    key = ["vln_pizz", "vln_pizz", "vla_pizz", "vc_pizz", "svln_pizz", "cb_pizz"][v]
+    m = [78, 74, 69, 50, 81, 38][v]
+    return reverb(Lb().note(key, m, r, vel=2), r, 1.2, 0.15)
+
+
 # ================================================================ run
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=str(KIT / "SFX"))
     ap.add_argument("--only", default="")
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--samples", default=str(KIT / "Source" / "_vsco"), help="VSCO-2 CE folder for the Strings set")
     a = ap.parse_args()
     out = Path(a.out)
     cat = []
+    if os.path.isdir(a.samples) and not a.list:
+        LIB[0] = _smp.Lib(a.samples)
+        print("Strings set: using recorded samples from", a.samples)
+    elif not a.list:
+        print("Strings set skipped (no samples in %s - run Tools\\make_sfx.ps1)" % a.samples)
     t0 = time.time()
     for s in SOUNDS:
         key = f"{s['cat']} {s['name']}"
@@ -1323,6 +1727,9 @@ def main():
             continue
         d = out / s["cat"]
         d.mkdir(parents=True, exist_ok=True)
+        if LIB[0] is None and "Strings" in s["cat"] + s["name"] or (LIB[0] is None and s["name"] in (
+                "Timpani_Hit", "Timpani_Roll", "Gong_Hit", "Bass_Drum", "Cymbal_Swell", "Solo_Violin_Phrase")):
+            continue
         for v in range(s["variants"]):
             r = rng(s["cat"], s["name"], v)
             x = np.asarray(s["fn"](v, r), float)

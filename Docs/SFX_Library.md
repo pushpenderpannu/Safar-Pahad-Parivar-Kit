@@ -1,18 +1,21 @@
 # SFX Library — Safar Pahad Parivar
 
-All sounds are generated from code (`Source/sfx/sfx_gen.py`) — identical on every PC, so they are **not stored in git**.
-Build or rebuild them with `.\Tools\make_sfx.ps1` (≈2 min, ~450 MB) → `<kit>\SFX\`.  48 kHz / 24-bit stereo WAV.
+All sounds are built by `Source/sfx/sfx_gen.py` — identical on every PC, so they are **not stored in git**.
+Build or rebuild them with `.\Tools\make_sfx.ps1` (first run ≈10 min incl. a one-time ~850 MB download of recorded strings) → `<kit>\SFX\`.
+48 kHz / 24-bit stereo WAV.
 
-Two styles:
-- **Grand** (folders 09–12 and `Grand_` stings) — deep, cinematic, mountain-scale: sub-bass, taiko/dhol, braams, gongs, ransingha horn with valley echo, drones.
-  The bass is built so it still carries on phone/laptop speakers (body at 100 Hz–2 kHz, not only sub).
-- **Light** (folders 01–08) — playful UI sounds, ticks, pops, marimba.
+Three styles:
+- **Strings** (folders 13–15 and `Strings_` stings) — real recorded orchestra: violin / viola / cello sections, solo violin, contrabass,
+  harp, timpani, gong, cymbal swells, Nepalese bells. Warm and emotional, built in D major / D pentatonic so the sounds fit together.
+  Recordings: *VSCO-2 Community Edition* by Versilian Studios (CC0 public domain — free for YouTube, no credit required).
+- **Grand** (folders 09–12 and `Grand_` stings) — deep, cinematic synth: sub-bass, taiko/dhol, braams, gongs, ransingha horn with valley echo, drones.
+- **Light** (folders 01–08) — playful UI sounds, ticks, pops, marimba, plus nature beds and phone sounds.
 
 - **vNN** = variations of the same idea, so repeated moments don't sound identical.
 - **LOOP_Ns** = seamless loop (the end joins the start) → use **SFX - Loop Fill (In to Out)** for any length.
 - Levels: one-shots peak −3 dBFS (title kits −5 to −8 so they sit under the VO); beds ~−24 dB RMS.
-- **Title Kits** (01 and 09) are timed to the SPP titles — **SFX - Auto Sound for Titles** places them (choose Grand / Light / Mix).
-- Listen: `Docs/SPP_SFX_Grand_Demo.mp3`, `Docs/SPP_SFX_Demo_Reel.mp3`.
+- **Title Kits** (01, 09, 13) are timed to the SPP titles — **SFX - Auto Sound for Titles** places them (choose Strings / Grand / Light / Mix).
+- Listen: `Docs/SPP_SFX_Strings_Demo.mp3`, `Docs/SPP_SFX_Grand_Demo.mp3`, `Docs/SPP_SFX_Demo_Reel.mp3`.
 
 
 ## 01 Title Kits
@@ -108,6 +111,8 @@ Two styles:
 | `SPP_EndCard_Sting` | 3 | 3.8 s | End-card sound timed to the SPP end card (first frame) |
 | `SPP_Grand_Intro_Sting` | 3 | 8.5 s | GRAND logo sound for the SPP intro (drone rise, dots, bell, braam/horn on the name) |
 | `SPP_Grand_EndCard_Sting` | 3 | 8.2 s | GRAND end-card sound (deep swell, bowl, warm low notes) |
+| `SPP_Strings_Intro_Sting` | 3 | 8.7 s | STRINGS logo sound for the SPP intro (tremolo while the logo draws, harp dots, bell for the sun, full strings on the name) |
+| `SPP_Strings_EndCard_Sting` | 3 | 6.3 s | STRINGS end card: harp, pizz for the boxes, warm chord |
 
 ## 07 Nature Beds
 
@@ -186,4 +191,48 @@ Two styles:
 | `SPP_Grand_Heavy_Gears` | 3 | loop 10.0 s | Heavy, slow mechanism loop (big dial turning) |
 | `SPP_Grand_Mountain_Air` | 3 | loop 30.0 s | Vast mountain air: deep wind with a low sub presence |
 
-**364 files, 111 sounds.**
+## 13 Strings Title Kits
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Strings_InfoCard_In` | 4 | 5.1 s | STRINGS Info Card: harp flourish, pizzicato rows, spiccato counter, violin settle |
+| `SPP_Strings_Title_Out` | 4 | 3.8 s | STRINGS title leaving: soft falling harp / pizz |
+| `SPP_Strings_Altitude_In_1_5s` | 3 | 7.2 s | STRINGS Altitude Counter (1.5 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
+| `SPP_Strings_Altitude_In_2_0s` | 3 | 7.7 s | STRINGS Altitude Counter (2.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
+| `SPP_Strings_Altitude_In_2_5s` | 3 | 8.0 s | STRINGS Altitude Counter (2.5 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
+| `SPP_Strings_Altitude_In_3_0s` | 3 | 8.7 s | STRINGS Altitude Counter (3.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
+| `SPP_Strings_Altitude_In_4_0s` | 3 | 9.7 s | STRINGS Altitude Counter (4.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
+| `SPP_Strings_Altitude_In_5_0s` | 3 | 10.5 s | STRINGS Altitude Counter (5.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
+| `SPP_Strings_Altitude_In_6_0s` | 3 | 11.7 s | STRINGS Altitude Counter (6.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
+| `SPP_Strings_PeakCallout_In` | 4 | 4.0 s | STRINGS Peak Callout: harp rising to a high violin note, pizz on the label |
+| `SPP_Strings_PopupTitle_In` | 5 | 5.0 s | STRINGS chapter title: swell+timpani / tremolo into stab / solo violin phrase / cello+gong / harp into chord |
+| `SPP_Strings_Credits_In` | 3 | 8.1 s | STRINGS credits: warm string chord swell with harp |
+| `SPP_Strings_RouteMap_Open` | 3 | 6.6 s | STRINGS route map start: cymbal swell, harp, low cello |
+| `SPP_Strings_Stop_Hit` | 5 | 4.1 s | STRINGS route stop: pizzicato chord + Nepalese bell (+ soft timpani) |
+| `SPP_Strings_Journey` | 3 | loop 10.0 s | STRINGS travel ostinato (spiccato violins + cello pizz, 96 bpm) - loops under the route drawing |
+
+## 14 Strings Hits & Swells
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Strings_Swell` | 5 | 7.1 s | String-section swell (grows then fades) - scenic reveals |
+| `SPP_Strings_Tremolo_Riser` | 3 | 7.3 s | Tremolo strings rising into a hit (hit at 4.0 s) |
+| `SPP_Strings_Stab` | 4 | 3.7 s | Short full-strings stab with timpani |
+| `SPP_Timpani_Hit` | 4 | 0.9 s | Real timpani hit |
+| `SPP_Timpani_Roll` | 3 | 13.7 s | Real timpani roll (crescendo) |
+| `SPP_Gong_Hit` | 4 | 29.4 s | Real orchestral gong |
+| `SPP_Bass_Drum` | 4 | 1.6 s | Real orchestral bass drum hit |
+| `SPP_Cymbal_Swell` | 3 | 15.0 s | Cymbal crescendo (real) - peaks at its end, cut on it |
+| `SPP_Solo_Violin_Phrase` | 6 | 5.0 s | Short pahadi-flavoured solo violin phrases (emotional moments) |
+
+## 15 Strings Beds & Bells
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Strings_Pad` | 4 | loop 30.0 s | Sustained string bed: warm D / tender Bm / open G / hopeful A |
+| `SPP_Cello_Drone` | 2 | loop 30.0 s | Low cello + contrabass drone (awe, vastness) |
+| `SPP_Harp_Gliss` | 4 | 4.6 s | Harp glissando up / down (reveals, transitions) |
+| `SPP_Nepalese_Bells` | 6 | 2.1 s | Real Nepalese bells (arrivals, monastery, sparkle) |
+| `SPP_Pizzicato_Pop` | 6 | 1.1 s | Pizzicato 'pop' (organic replacement for UI pops) |
+
+**480 files, 142 sounds.**
