@@ -21,7 +21,9 @@ SPARSE = ["/Strings/Violin Section/", "/Strings/Solo Violin/", "/Strings/Viola S
           "/Percussion/Triangle3-Hit_*", "/Miscellania Raw/Misc 2/NepaleseBells/", "/LICENSE",
           # background music (Tools/make_music.ps1): flute, upright piano (2 softer layers), glockenspiel, marimba
           "/Woodwinds/Flute/", "/Keys/Upright Piano/Player_dyn1_*", "/Keys/Upright Piano/Player_dyn2_*",
-          "/Keys/Upright Piano/MappingChart.txt", "/Keys/Upright Piano/Info.txt", "/Percussion/Glock/", "/Percussion/Marimba/"]
+          "/Keys/Upright Piano/MappingChart.txt", "/Keys/Upright Piano/Info.txt", "/Percussion/Glock/", "/Percussion/Marimba/",
+          "/Percussion/Xylo/", "/VSCO 1 Percussion/drums/snare/drum1/", "/VSCO 1 Percussion/drums/other/Bongos/",
+          "/VSCO 1 Percussion/varWood/"]
 
 # instrument key -> folder (relative), pitched?
 INSTR = {
@@ -43,9 +45,17 @@ INSTR = {
     "fl_sus": ("Woodwinds/Flute/susvib", True), "fl_exp": ("Woodwinds/Flute/expvib", True),
     "fl_nv": ("Woodwinds/Flute/susNV", True), "fl_stac": ("Woodwinds/Flute/stac", True),
     "piano": ("Keys/Upright Piano", True), "glock": ("Percussion/Glock", True), "marimba": ("Percussion/Marimba", True),
+    "xylo": ("Percussion/Xylo", True),
+    "snare": ("VSCO 1 Percussion/drums/snare/drum1", False), "bongo_hi": ("VSCO 1 Percussion/drums/other/Bongos", False),
+    "bongo_lo": ("VSCO 1 Percussion/drums/other/Bongos", False), "log_drum": ("VSCO 1 Percussion/varWood/log_drum", False),
+    "claves": ("VSCO 1 Percussion/varWood", False), "maraca": ("VSCO 1 Percussion/varWood", False),
+    "wood_click": ("VSCO 1 Percussion/varWood", False),
 }
 UNPITCHED_PAT = {"gong": "gongHit_", "cymb_cresc": "susCymb1-cresc-", "cymb_bow": "susCymb1-bow-", "bdrum": "BDrumNewhit_",
-                 "triangle": "Triangle3-Hit_", "timp_hit": "Timpani", "timp_roll": "Timpani", "nepal_bells": ""}
+                 "triangle": "Triangle3-Hit_", "timp_hit": "Timpani", "timp_roll": "Timpani", "nepal_bells": "",
+                 "snare": "snare1_", "bongo_hi": "HighBongo", "bongo_lo": "LowBongo", "log_drum": "slitdrum",
+                 "claves": "claves", "maraca": "maraca", "wood_click": "wood_click"}
+XYLO_OCT = 12  # xylophone sounds an octave above written pitch
 WIDTH = 0.35   # stereo width kept from the recordings (0 = mono, 1 = as recorded)
 NOTE = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
 DYN = {"ppp": 0, "pp": 1, "p": 2, "mp": 3, "mf": 4, "f": 5, "ff": 6, "fff": 7}
@@ -124,6 +134,8 @@ def build_index(root):
             files = [f for f in files if os.path.basename(f).startswith(pat)]
             if key == "timp_hit":
                 files = [f for f in files if "_Hit_" in os.path.basename(f)]
+            if key == "snare":
+                files = [f for f in files if "click" not in os.path.basename(f)]
         items = []
         for f in files:
             e = {"file": os.path.relpath(f, root), "vel": _vel(os.path.basename(f))}
@@ -131,10 +143,10 @@ def build_index(root):
                 nm = _name_midi(os.path.basename(f))
                 if nm is None:
                     continue
-                if key in ("piano", "glock") or key.startswith("fl_"):
+                if key in ("piano", "glock", "xylo") or key.startswith("fl_"):
                     # piano: mapping chart is exact.  glock + flute: names are written an octave low, and
                     # autocorrelation octave-jumps on bell tones / the almost pure flute tone -> trust the names
-                    e["midi"] = nm + (0 if key == "piano" else 12)
+                    e["midi"] = nm + {"piano": 0, "xylo": XYLO_OCT}.get(key, 12)
                     items.append(e)
                     continue
                 try:

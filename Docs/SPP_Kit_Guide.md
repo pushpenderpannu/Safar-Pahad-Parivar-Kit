@@ -220,11 +220,11 @@ On the **VO** track (Fairlight): Voice Isolation 60–70 → EQ (high-pass 80 Hz
 De-esser → Dialogue Leveler / compressor 3:1 → final mix **−14 LUFS**, music 15–20 dB under the voice.
 
 ## 15a. Sound effects
-A brand sound library made for the SPP titles — **142 sounds, 480 files** in three styles, several variations each, seamless loops for any length.
+A brand sound library made for the SPP titles — **180 sounds, ~575 files** in three styles plus cinematic risers, impacts and music transitions, several variations each, seamless loops for any length.
 **Strings** (default): real recorded orchestra — violin, viola and cello sections, solo violin, harp, timpani, gong, Nepalese bells; warm
 and emotional, all in D major so the sounds fit together. **Grand**: deep cinematic synth — sub-bass hits, taiko/dhol, braams, gongs,
 ransingha-style horn with valley echo, drone beds. **Light**: playful UI ticks, pops and marimba.
-Full list: [`SFX_Library.md`](SFX_Library.md). Listen first: `SPP_SFX_Strings_Demo.mp3`, `SPP_SFX_Grand_Demo.mp3`, `SPP_SFX_Demo_Reel.mp3`.
+Full list: [`SFX_Library.md`](SFX_Library.md). Listen first: `SPP_SFX_Strings_Demo.mp3`, `SPP_SFX_Cinematic_Demo.mp3`, `SPP_SFX_Grand_Demo.mp3`, `SPP_SFX_Demo_Reel.mp3`.
 
 **Build it once per PC:** `.\Tools\make_sfx.ps1` → `<kit>\SFX\`. The first run downloads the recorded strings
 (*VSCO-2 Community Edition*, public domain / CC0 — free for YouTube, no credit needed; ~1.1 GB into `Source\_vsco` incl. the music instruments, not in git) and takes ≈10 min;
@@ -248,6 +248,10 @@ The sounds are built from code + those recordings, so they are identical on ever
 | 13 Strings Title Kits | strings versions of every title kit: harp + pizzicato Info Card, tremolo that climbs with the altitude count and lands on timpani + chord, harp-to-violin peak, 5 chapter-title hits, credits swell, route open, pizz + bell stop hits, spiccato journey loop, title-out |
 | 14 Strings Hits & Swells | section swells, tremolo risers, string stabs, timpani hits and rolls, gong, bass drum, cymbal swells, solo-violin phrases (pahadi-style pentatonic) |
 | 15 Strings Beds & Bells | 30 s string pads and cello drone loops, harp glissandos, Nepalese bells, pizzicato pops |
+| 16 Cinematic Risers | **Riser_Epic** 3/5/8/12 s (tremolo strings, timpani + snare roll, cymbal → BIG HIT exactly at 3/5/8/12 s) · **Riser_Awe** 3/5/8/12 s (for waterfalls and big mountains: strings bloom, harp sweep, opens into a warm chord) · **Riser_Tension** 3/5/8 s (suspense, cuts to silence) |
+| 17 Downers & Sub Drops | sub drops, boom + sub drop (with valley echo), downers (strings slide down, energy drains), power-down / tape-stop |
+| 18 Impact Drums | big hits (taiko + timpani + bass drum + strings/crash/gong/boom), drum fills that run into a hit, soft hits, valley-echo hits |
+| 19 Music Transitions | key-matched to the SPP music: `Swell_Into_<key>` (lands on the new track), `Tail_<key>` (covers an early music cut), `Bridge_<a>_to_<b>` (joins two tracks in different keys) — keys D, E, Bm, Dm; each track's key is in `Music_Library.md` |
 
 **One click for all titles — SFX - Auto Sound for Titles.** Pick a style — **Strings** (default), **Grand**, **Light** or **Mix**
 (grand for chapter titles, altitude, route map, intro/end; light for small cards). It finds every SPP title (and the SPP intro / end-card clips) on the timeline and
@@ -255,6 +259,17 @@ lays the matching sounds on the **SFX 1–3** tracks, exactly on the animation b
 the numbers, pin drop + chime at each route stop (times read from the route file), dotted-trail loop while the path draws, out-whoosh.
 Variations rotate so repeats never sound the same. Auto clips are **Lime**; run again after editing — it replaces the old Lime clips.
 Keep a tweaked sound by changing its clip colour. **SFX - Remove Auto Sounds** clears them.
+
+**Land it on the cut — SFX - Land at Playhead.** Put the playhead on the reveal / title / first beat of the next track, select a sound
+in the Media Pool (a riser, `Swell_Into_*`, `Bridge_*`, drum fill…) and run it: the sound is placed so its big moment lands exactly
+on the playhead (a `Riser_Epic_8s` starts 8 s earlier). Every sound's landing time is stored in the library.
+
+**Near or far — Distance - Selected Clips.** You don't need separate near/far files. Select audio clip(s) on the timeline, run it, pick
+*Near (~10 m) · Mid (~50 m) · Far (~200 m) · Very far (~600 m) · Across the valley (echoes)*. It makes a processed copy on a free track and
+switches the original off (D to switch back). What it does — and what you'd do by hand in Fairlight: cut the treble (air absorbs it:
+high-cut ~8 kHz at 50 m, ~4 kHz at 200 m), cut the low bass (no proximity), lower the level, add more reverb than direct sound (reverb
+send, longer decay), narrow the stereo (a far sound is a point), and for valleys add 2–4 darker echoes 0.4–2 s apart. Tick *Keep the
+loudness* if you'd rather set the level with the fader. Loops stay seamless. Command line: `Tools\spp_distance.py <file> --preset far`.
 
 **Any length — SFX - Loop Fill (In to Out).** Select one `_LOOP_` sound in the media pool, set In/Out on the timeline (I / O), run it:
 the loop is laid end-to-end with seamless joins (last copy trimmed). Great for wind, stream, gear, clock, dotted trail.

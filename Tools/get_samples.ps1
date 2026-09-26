@@ -11,7 +11,9 @@ $sp = @("/Strings/Violin Section/", "/Strings/Solo Violin/", "/Strings/Viola Sec
         "/Percussion/susCymb1-cresc-*", "/Percussion/susCymb1-bow-*", "/Percussion/BDrumNewhit_*",
         "/Percussion/Triangle3-Hit_*", "/Miscellania Raw/Misc 2/NepaleseBells/", "/LICENSE",
         "/Woodwinds/Flute/", "/Keys/Upright Piano/Player_dyn1_*", "/Keys/Upright Piano/Player_dyn2_*",
-        "/Keys/Upright Piano/MappingChart.txt", "/Keys/Upright Piano/Info.txt", "/Percussion/Glock/", "/Percussion/Marimba/")
+        "/Keys/Upright Piano/MappingChart.txt", "/Keys/Upright Piano/Info.txt", "/Percussion/Glock/", "/Percussion/Marimba/",
+        "/Percussion/Xylo/", "/VSCO 1 Percussion/drums/snare/drum1/", "/VSCO 1 Percussion/drums/other/Bongos/",
+        "/VSCO 1 Percussion/varWood/")
 if (-not (Test-Path (Join-Path $vs ".git"))) {
   Write-Host "Downloading recorded instruments (VSCO-2 CE, public domain) - one time, ~1.1 GB..."
   git clone --filter=blob:none --no-checkout https://github.com/sgossner/VSCO-2-CE.git $vs

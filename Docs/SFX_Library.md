@@ -10,12 +10,14 @@ Three styles:
   Recordings: *VSCO-2 Community Edition* by Versilian Studios (CC0 public domain — free for YouTube, no credit required).
 - **Grand** (folders 09–12 and `Grand_` stings) — deep, cinematic synth: sub-bass, taiko/dhol, braams, gongs, ransingha horn with valley echo, drones.
 - **Light** (folders 01–08) — playful UI sounds, ticks, pops, marimba, plus nature beds and phone sounds.
+- **Cinematic** (folders 16–19) — orchestral risers that land on a hit or open into a chord, sub drops and downers, impact drums,
+  and music transitions matched to the keys of the SPP music.  **SFX - Land at Playhead** lines their landing moment up with a cut.
 
 - **vNN** = variations of the same idea, so repeated moments don't sound identical.
 - **LOOP_Ns** = seamless loop (the end joins the start) → use **SFX - Loop Fill (In to Out)** for any length.
 - Levels: one-shots peak −3 dBFS (title kits −5 to −8 so they sit under the VO); beds ~−24 dB RMS.
 - **Title Kits** (01, 09, 13) are timed to the SPP titles — **SFX - Auto Sound for Titles** places them (choose Strings / Grand / Light / Mix).
-- Listen: `Docs/SPP_SFX_Strings_Demo.mp3`, `Docs/SPP_SFX_Grand_Demo.mp3`, `Docs/SPP_SFX_Demo_Reel.mp3`.
+- Listen: `Docs/SPP_SFX_Strings_Demo.mp3`, `Docs/SPP_SFX_Cinematic_Demo.mp3`, `Docs/SPP_SFX_Grand_Demo.mp3`, `Docs/SPP_SFX_Demo_Reel.mp3`.
 
 
 ## 01 Title Kits
@@ -197,16 +199,16 @@ Three styles:
 |---|---|---|---|
 | `SPP_Strings_InfoCard_In` | 4 | 5.1 s | STRINGS Info Card: harp flourish, pizzicato rows, spiccato counter, violin settle |
 | `SPP_Strings_Title_Out` | 4 | 3.8 s | STRINGS title leaving: soft falling harp / pizz |
-| `SPP_Strings_Altitude_In_1_5s` | 3 | 7.2 s | STRINGS Altitude Counter (1.5 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
+| `SPP_Strings_Altitude_In_1_5s` | 3 | 7.1 s | STRINGS Altitude Counter (1.5 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
 | `SPP_Strings_Altitude_In_2_0s` | 3 | 7.7 s | STRINGS Altitude Counter (2.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
 | `SPP_Strings_Altitude_In_2_5s` | 3 | 8.0 s | STRINGS Altitude Counter (2.5 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
-| `SPP_Strings_Altitude_In_3_0s` | 3 | 8.7 s | STRINGS Altitude Counter (3.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
-| `SPP_Strings_Altitude_In_4_0s` | 3 | 9.7 s | STRINGS Altitude Counter (4.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
+| `SPP_Strings_Altitude_In_3_0s` | 3 | 8.6 s | STRINGS Altitude Counter (3.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
+| `SPP_Strings_Altitude_In_4_0s` | 3 | 9.6 s | STRINGS Altitude Counter (4.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
 | `SPP_Strings_Altitude_In_5_0s` | 3 | 10.5 s | STRINGS Altitude Counter (5.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
 | `SPP_Strings_Altitude_In_6_0s` | 3 | 11.7 s | STRINGS Altitude Counter (6.0 s): tremolo climbs with the count, spiccato counter, timpani + chord landing |
 | `SPP_Strings_PeakCallout_In` | 4 | 4.0 s | STRINGS Peak Callout: harp rising to a high violin note, pizz on the label |
-| `SPP_Strings_PopupTitle_In` | 5 | 5.0 s | STRINGS chapter title: swell+timpani / tremolo into stab / solo violin phrase / cello+gong / harp into chord |
-| `SPP_Strings_Credits_In` | 3 | 8.1 s | STRINGS credits: warm string chord swell with harp |
+| `SPP_Strings_PopupTitle_In` | 5 | 4.9 s | STRINGS chapter title: swell+timpani / tremolo into stab / solo violin phrase / cello+gong / harp into chord |
+| `SPP_Strings_Credits_In` | 3 | 7.9 s | STRINGS credits: warm string chord swell with harp |
 | `SPP_Strings_RouteMap_Open` | 3 | 6.6 s | STRINGS route map start: cymbal swell, harp, low cello |
 | `SPP_Strings_Stop_Hit` | 5 | 4.1 s | STRINGS route stop: pizzicato chord + Nepalese bell (+ soft timpani) |
 | `SPP_Strings_Journey` | 3 | loop 10.0 s | STRINGS travel ostinato (spiccato violins + cello pizz, 96 bpm) - loops under the route drawing |
@@ -215,14 +217,14 @@ Three styles:
 
 | Sound | Variations | Length | Use |
 |---|---|---|---|
-| `SPP_Strings_Swell` | 5 | 7.1 s | String-section swell (grows then fades) - scenic reveals |
-| `SPP_Strings_Tremolo_Riser` | 3 | 7.3 s | Tremolo strings rising into a hit (hit at 4.0 s) |
+| `SPP_Strings_Swell` | 5 | 7.0 s | String-section swell (grows then fades) - scenic reveals |
+| `SPP_Strings_Tremolo_Riser` | 3 | 7.1 s | Tremolo strings rising into a hit (hit at 4.0 s) |
 | `SPP_Strings_Stab` | 4 | 3.7 s | Short full-strings stab with timpani |
 | `SPP_Timpani_Hit` | 4 | 0.9 s | Real timpani hit |
 | `SPP_Timpani_Roll` | 3 | 13.7 s | Real timpani roll (crescendo) |
 | `SPP_Gong_Hit` | 4 | 29.4 s | Real orchestral gong |
 | `SPP_Bass_Drum` | 4 | 1.6 s | Real orchestral bass drum hit |
-| `SPP_Cymbal_Swell` | 3 | 15.0 s | Cymbal crescendo (real) - peaks at its end, cut on it |
+| `SPP_Cymbal_Swell` | 3 | 14.9 s | Cymbal crescendo (real) - peaks at its end, cut on it |
 | `SPP_Solo_Violin_Phrase` | 6 | 5.0 s | Short pahadi-flavoured solo violin phrases (emotional moments) |
 
 ## 15 Strings Beds & Bells
@@ -232,7 +234,66 @@ Three styles:
 | `SPP_Strings_Pad` | 4 | loop 30.0 s | Sustained string bed: warm D / tender Bm / open G / hopeful A |
 | `SPP_Cello_Drone` | 2 | loop 30.0 s | Low cello + contrabass drone (awe, vastness) |
 | `SPP_Harp_Gliss` | 4 | 4.6 s | Harp glissando up / down (reveals, transitions) |
-| `SPP_Nepalese_Bells` | 6 | 2.1 s | Real Nepalese bells (arrivals, monastery, sparkle) |
+| `SPP_Nepalese_Bells` | 6 | 1.9 s | Real Nepalese bells (arrivals, monastery, sparkle) |
 | `SPP_Pizzicato_Pop` | 6 | 1.1 s | Pizzicato 'pop' (organic replacement for UI pops) |
 
-**480 files, 142 sounds.**
+## 16 Cinematic Risers
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Riser_Epic_3s` | 3 | 9.9 s | Orchestral riser - tremolo strings, timpani & snare roll, cymbal - lands on a BIG HIT at 3.0 s (reveals, title drops) |
+| `SPP_Riser_Awe_3s` | 3 | 12.7 s | Reveal swell for waterfalls / big mountains: strings bloom, harp sweep, opens into a warm chord at 3.0 s (D / E / A) |
+| `SPP_Riser_Epic_5s` | 3 | 12.0 s | Orchestral riser - tremolo strings, timpani & snare roll, cymbal - lands on a BIG HIT at 5.0 s (reveals, title drops) |
+| `SPP_Riser_Awe_5s` | 3 | 13.6 s | Reveal swell for waterfalls / big mountains: strings bloom, harp sweep, opens into a warm chord at 5.0 s (D / E / A) |
+| `SPP_Riser_Epic_8s` | 3 | 14.9 s | Orchestral riser - tremolo strings, timpani & snare roll, cymbal - lands on a BIG HIT at 8.0 s (reveals, title drops) |
+| `SPP_Riser_Awe_8s` | 3 | 16.5 s | Reveal swell for waterfalls / big mountains: strings bloom, harp sweep, opens into a warm chord at 8.0 s (D / E / A) |
+| `SPP_Riser_Epic_12s` | 3 | 18.9 s | Orchestral riser - tremolo strings, timpani & snare roll, cymbal - lands on a BIG HIT at 12.0 s (reveals, title drops) |
+| `SPP_Riser_Awe_12s` | 3 | 21.8 s | Reveal swell for waterfalls / big mountains: strings bloom, harp sweep, opens into a warm chord at 12.0 s (D / E / A) |
+| `SPP_Riser_Tension_3s` | 3 | 3.7 s | Suspense riser (dissonant tremolo, speeding spiccato) that CUTS to silence at 3.0 s |
+| `SPP_Riser_Tension_5s` | 3 | 5.7 s | Suspense riser (dissonant tremolo, speeding spiccato) that CUTS to silence at 5.0 s |
+| `SPP_Riser_Tension_8s` | 3 | 8.7 s | Suspense riser (dissonant tremolo, speeding spiccato) that CUTS to silence at 8.0 s |
+
+## 17 Downers & Sub Drops
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Sub_Drop` | 5 | 1.5 s | Sub drop: deep falling bass hit with audible body (1.5-4 s) - cut to a vast shot, beat drop |
+| `SPP_Boom_Drop` | 4 | 6.1 s | Impact + sub drop (+ valley echo on v02/v04) - big cut, title slam |
+| `SPP_Downer` | 4 | 3.9 s | Falling 'downer': strings slide down, whoosh falls, energy drains (2 / 3 / 4 / 6 s) - endings, mood drop, night falls |
+| `SPP_Power_Down` | 3 | 1.8 s | Tape-stop / power-down of an orchestral chord (music stops dead, comic or dramatic) |
+
+## 18 Impact Drums
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Impact_Big` | 6 | 5.0 s | Big cinematic hit: taiko + timpani + bass drum (+ strings stab, crash, gong or boom) - cuts, title slams |
+| `SPP_Impact_Drum_Fill` | 4 | 7.8 s | Drum fill that runs into a hit (hit at 1.5 / 2.0 / 2.0 / 2.5 s) - end of a montage, into a reveal |
+| `SPP_Impact_Soft` | 4 | 4.7 s | Gentle hit: soft timpani with harp / pizzicato - small cuts, calm transitions |
+| `SPP_Impact_Echo` | 3 | 5.7 s | Big hit that echoes across the valley (mountain reveal, drone shot) |
+
+## 19 Music Transitions
+
+| Sound | Variations | Length | Use |
+|---|---|---|---|
+| `SPP_Swell_Into_D` | 2 | 8.3 s | Swell that lands (at 3.0 s) on the D chord - put its peak on the first beat of a track in D |
+| `SPP_Tail_D` | 2 | 7.5 s | Ringing D chord with harp / bell - covers the cut when a track in D stops early |
+| `SPP_Swell_Into_E` | 2 | 8.1 s | Swell that lands (at 3.0 s) on the E chord - put its peak on the first beat of a track in E |
+| `SPP_Tail_E` | 2 | 7.6 s | Ringing E chord with harp / bell - covers the cut when a track in E stops early |
+| `SPP_Swell_Into_Bm` | 2 | 8.3 s | Swell that lands (at 3.0 s) on the Bm chord - put its peak on the first beat of a track in Bm |
+| `SPP_Tail_Bm` | 2 | 7.4 s | Ringing Bm chord with harp / bell - covers the cut when a track in Bm stops early |
+| `SPP_Swell_Into_Dm` | 2 | 8.1 s | Swell that lands (at 3.0 s) on the Dm chord - put its peak on the first beat of a track in Dm |
+| `SPP_Tail_Dm` | 2 | 7.4 s | Ringing Dm chord with harp / bell - covers the cut when a track in Dm stops early |
+| `SPP_Bridge_D_to_E` | 1 | 9.0 s | 5 s musical bridge: starts on D, passes through the dominant of E, lands on E at 4.0 s - joins a track in D to one in E |
+| `SPP_Bridge_D_to_Bm` | 1 | 9.1 s | 5 s musical bridge: starts on D, passes through the dominant of Bm, lands on Bm at 4.0 s - joins a track in D to one in Bm |
+| `SPP_Bridge_D_to_Dm` | 1 | 9.0 s | 5 s musical bridge: starts on D, passes through the dominant of Dm, lands on Dm at 4.0 s - joins a track in D to one in Dm |
+| `SPP_Bridge_E_to_D` | 1 | 9.1 s | 5 s musical bridge: starts on E, passes through the dominant of D, lands on D at 4.0 s - joins a track in E to one in D |
+| `SPP_Bridge_E_to_Bm` | 1 | 9.0 s | 5 s musical bridge: starts on E, passes through the dominant of Bm, lands on Bm at 4.0 s - joins a track in E to one in Bm |
+| `SPP_Bridge_E_to_Dm` | 1 | 9.1 s | 5 s musical bridge: starts on E, passes through the dominant of Dm, lands on Dm at 4.0 s - joins a track in E to one in Dm |
+| `SPP_Bridge_Bm_to_D` | 1 | 9.0 s | 5 s musical bridge: starts on Bm, passes through the dominant of D, lands on D at 4.0 s - joins a track in Bm to one in D |
+| `SPP_Bridge_Bm_to_E` | 1 | 9.0 s | 5 s musical bridge: starts on Bm, passes through the dominant of E, lands on E at 4.0 s - joins a track in Bm to one in E |
+| `SPP_Bridge_Bm_to_Dm` | 1 | 9.2 s | 5 s musical bridge: starts on Bm, passes through the dominant of Dm, lands on Dm at 4.0 s - joins a track in Bm to one in Dm |
+| `SPP_Bridge_Dm_to_D` | 1 | 9.0 s | 5 s musical bridge: starts on Dm, passes through the dominant of D, lands on D at 4.0 s - joins a track in Dm to one in D |
+| `SPP_Bridge_Dm_to_E` | 1 | 9.0 s | 5 s musical bridge: starts on Dm, passes through the dominant of E, lands on E at 4.0 s - joins a track in Dm to one in E |
+| `SPP_Bridge_Dm_to_Bm` | 1 | 9.1 s | 5 s musical bridge: starts on Dm, passes through the dominant of Bm, lands on Bm at 4.0 s - joins a track in Dm to one in Bm |
+
+**574 files, 181 sounds.**

@@ -218,9 +218,11 @@ def crinkle(r, d, density=180, lo=1200, hi=9000, env=None):
 SOUNDS = []
 
 
-def sfx(cat, name, variants=3, loop=None, level="peak", db=-3.0, desc=""):
+def sfx(cat, name, variants=3, loop=None, level="peak", db=-3.0, desc="", land=None):
+    """land: the moment the sound 'arrives' (seconds, or a function of the variant) - stored as the catalog peak so
+    scripts can line it up with a cut.  Default: the loudest moment."""
     def deco(fn):
-        SOUNDS.append(dict(cat=cat, name=name, variants=variants, loop=loop, level=level, db=db, desc=desc, fn=fn))
+        SOUNDS.append(dict(cat=cat, name=name, variants=variants, loop=loop, level=level, db=db, desc=desc, fn=fn, land=land))
         return fn
     return deco
 
@@ -317,7 +319,7 @@ def _(v, r):
     return x[::-1].copy()
 
 
-@sfx("03 Motion", "Impact_Soft", 4, desc="Warm soft impact for a title / logo landing")
+@sfx("03 Motion", "Impact_Soft", 4, desc="Warm soft impact for a title / logo landing", land=0.0)
 def _(v, r):
     d = 2.4
     t = tt(d)
@@ -1702,6 +1704,344 @@ def _(v, r):
     return reverb(Lb().note(key, m, r, vel=2), r, 1.2, 0.15)
 
 
+# ================================================================ CINEMATIC (risers, downers, impacts, music transitions)
+def crash(r, d=4.0, bright=1.0):
+    """Big cymbal crash: bright noise wash + metallic partials, long shimmering decay."""
+    t = tt(d)
+    nz = hp(white(d, r), 2500) * np.exp(-t / (0.9 * bright)) * 0.5 + bp(white(d, r), 5000, 14000) * np.exp(-t / 1.6) * 0.35
+    y = nz + partials(420 * r.uniform(0.95, 1.05), [1, 1.41, 1.83, 2.37, 3.1, 3.9, 4.6, 5.8, 7.3],
+                      [0.4, 0.35, 0.3, 0.3, 0.25, 0.2, 0.18, 0.12, 0.1], [1.6, 1.4, 1.3, 1.1, 1.0, 0.9, 0.8, 0.6, 0.5], d, 0.004, r) * 0.25
+    return widen(fade(y, 0.0005, 0.4), r, 0.6)
+
+
+def snare_roll(r, d, rate=(10, 26), gain=0.5):
+    """Snare roll that speeds up and swells to the end."""
+    y = canvas(d + 0.5)
+    t = 0.0
+    while t < d:
+        u = t / d
+        x = Lb().raw("snare", r, 3 if u < 0.6 else 5)[: n_(0.25)]
+        put(y, x * gain * (0.12 + 0.88 * u ** 2) * (0.85 + 0.3 * r.random()), t)
+        t += 1.0 / (rate[0] + (rate[1] - rate[0]) * u)
+    return y
+
+
+def string_hit(r, root=50, short=True, vel=2):
+    """Low, wide strings chord hit (spiccato when short, sustained with release when long)."""
+    if short:
+        return string_chord(r, {"vln_spic": [root + 12, root + 19, root + 24], "vla_spic": [root + 7, root + 12],
+                                "vc_spic": [root - 12, root], "cb_pizz": [root - 12]}, 0.45, vel=vel, release=0.35)
+    return string_chord(r, {"vln_sus": [root + 16, root + 19, root + 24], "vla_sus": [root + 7, root + 12],
+                            "vc_sus": [root - 12, root], "cb_sus": [root - 12]}, 3.0, vel=vel, attack=0.03, release=2.0)
+
+
+def hit_stack(r, kind=0, root=50):
+    """Big cinematic impact from real and synthetic layers.  kind: 0 full, 1 drums only, 2 strings+gong, 3 dark boom."""
+    y = canvas(6.0)
+    put(y, taiko(r, [52, 48, 58, 44][kind], 3.0) * [0.6, 0.8, 0.4, 0.7][kind], 0)
+    put(y, Lb().raw("timp_hit", r, 5) * 0.9, 0)
+    put(y, Lb().raw("bdrum", r, 5) * [0.7, 0.9, 0.4, 0.8][kind], 0)
+    if kind in (0, 2):
+        put(y, string_hit(r, root, short=kind == 0, vel=2) * 1.4, 0)
+    if kind == 0:
+        put(y, crash(r, 4.0) * 0.6, 0)
+    if kind == 2:
+        put(y, Lb().raw("gong", r, 5)[: n_(6.0)] * 0.5, 0)
+    if kind == 3:
+        put(y, boom(r, 40, 5.0) * 0.8, 0)
+    return phone_body(y, 0.9)
+
+
+def phone_body(y, amt=0.8, drive=1.6):
+    """Make low hits readable on phone/laptop speakers: fold the low end up into 120-900 Hz harmonics and tame the
+    crest factor with a soft limiter (loud, dense, not just sub)."""
+    y = stereo(y)
+    body = bp(np.tanh(lp(y, 220, 2) * 6), 120, 900, 2) * amt
+    z = y * 0.8 + body
+    pk = np.max(np.abs(z)) + 1e-9
+    return np.tanh(z / pk * drive) * pk / np.tanh(drive)
+
+
+def tremolo_build(r, d, chords, rise=0.0, cluster=False):
+    """Tremolo strings through a list of chords, growing to the end; 'rise' bends the last chord up (semitones)."""
+    y = canvas(d + 0.3)
+    seg = d / len(chords)
+    for i, ch in enumerate(chords):
+        last = i == len(chords) - 1
+        for key, ms in ch.items():
+            for m in ms:
+                bend = (lambda t, s=seg: rise * np.clip(t / s, 0, 1) ** 2) if last and rise else None
+                x = Lb().note(key, m + (r.choice([-1, 1]) if cluster and r.random() < 0.3 else 0), r,
+                              dur=seg + 0.15, vel=2, attack=0.08, release=0.1, bend=bend)
+                put(y, x / np.sqrt(sum(len(v) for v in ch.values())), i * seg)
+    u = np.linspace(0, 1, len(y))
+    return y * (0.06 + 0.94 * np.clip(u * (d + 0.3) / d, 0, 1) ** 2.4)[:, None]
+
+
+def riser_epic(r, L, v):
+    y = canvas(L + 6.5)
+    ch = [({"vln_trem": [62, 65], "vla_trem": [57], "vc_trem": [38, 50]}),        # Dm
+          ({"vln_trem": [62, 65], "vla_trem": [58], "vc_trem": [34, 46]}),        # Bb
+          ({"vln_trem": [64, 67], "vla_trem": [60], "vc_trem": [36, 48]}),        # C
+          ({"vln_trem": [66, 69], "vla_trem": [57, 62], "vc_trem": [38, 45]})]    # D (major - the arrival)
+    ch = ch[-max(2, min(4, int(L // 2))):]
+    put(y, tremolo_build(r, L, ch, rise=[0, 1.0, 2.0][v]) * 0.8, 0)
+    roll = Lb().raw("timp_roll", r)[: n_(L)]
+    put(y, roll * np.linspace(0.05, 1, len(roll))[:, None] ** 2 * 0.7, L - len(roll) / SR)
+    put(y, snare_roll(r, min(L, 4.0), gain=0.35)[: n_(min(L, 4.0))], L - min(L, 4.0))
+    cx, st = cymbal_to(r, L)
+    put(y, cx * 0.5, st)
+    put(y, grand_whoosh(r, L, "in")[: n_(L)] * 0.25, 0)
+    hit = hit_stack(r, [0, 3, 2][v], 50)
+    if v == 1:
+        hit = mountain_echo(hit, r)
+    put(y, hit, L)
+    return reverb(y, r, 2.6, 0.2)
+
+
+def riser_awe(r, L, v):
+    """Reveal swell: strings bloom, harp sweeps up, and it opens into a warm major chord (no hard hit)."""
+    y = canvas(L + 8.0)
+    keys = [(50, [62, 66, 69], [57, 62], [50, 38]), (52, [64, 68, 71], [59, 64], [52, 40]), (45, [61, 64, 69], [57, 64], [45, 33])][v]
+    root, vl, va, vc = keys
+    pre = {"vln_sus": [vl[0], vl[2]], "vla_sus": [va[0]], "vc_sus": [vc[1]]}
+    x = string_chord(r, pre, L, vel=1, attack=L * 0.6, release=0.2)[: n_(L)]
+    put(y, x * np.linspace(0.1, 1, len(x))[:, None] ** 1.5 * 0.9, 0)
+    gl = [m for m in range(root + 12, root + 43) if (m - root) % 12 in (0, 2, 4, 7, 9)]
+    gap = min(0.07, 1.4 / len(gl))
+    put(y, harp_run(r, gl, gap, 4, 0.5), L - len(gl) * gap)
+    cx, st = cymbal_to(r, L)
+    put(y, cx * 0.45, st)
+    roll = Lb().raw("timp_roll", r)[: n_(min(L, 5.0))]
+    put(y, roll * np.linspace(0.05, 0.8, len(roll))[:, None] ** 2 * 0.5, L - len(roll) / SR)
+    big = string_chord(r, {"vln_sus": vl + [vl[0] + 12], "vla_sus": va, "vc_sus": vc, "cb_sus": [root % 12 + 28]}, 4.5,
+                       vel=2, attack=0.12, release=2.5)
+    put(y, big * 1.1, L - 0.05)
+    put(y, timp(r, 3, 0.7), L)
+    put(y, Lb().raw("nepal_bells", r) * 0.35, L + 0.1)
+    for k in range(6):
+        put(y, Lb().note("glock", gl[-1 - (k % 5)] + 12, r) * 0.18, L + 0.2 + k * 0.17)
+    return reverb(y, r, 3.2, 0.28)
+
+
+def riser_tension(r, L, v):
+    y = canvas(L + 1.0)
+    cl = {"vln_trem": [74, 75, 77], "vla_trem": [62, 63], "vc_trem": [44, 45]}
+    put(y, tremolo_build(r, L, [cl, cl], rise=[3, 5, 7][v], cluster=True) * 0.8, 0)
+    t = 0.0
+    k = 0
+    while t < L - 0.05:
+        u = t / L
+        put(y, Lb().note("vln_spic", [74, 75, 74, 77][k % 4] + int(u * 5), r, dur=0.1, release=0.06, vel=1) * (0.2 + 0.5 * u), t)
+        t += 0.25 - 0.17 * u
+        k += 1
+    cx, st = cymbal_to(r, L)
+    put(y, cx * 0.35, st)
+    y = y[: n_(L)]
+    y = np.concatenate([y, reverb(y[-n_(0.2):] * np.linspace(1, 0, n_(0.2))[:, None], r, 0.6, 0.6)])
+    return y
+
+
+for _L in (3, 5, 8, 12):
+    def _mk(L=_L):
+        @sfx("16 Cinematic Risers", f"Riser_Epic_{L}s", 3, desc=f"Orchestral riser - tremolo strings, timpani & snare roll, cymbal - lands on a BIG HIT at {L}.0 s (reveals, title drops)", land=L)
+        @need_lib
+        def _(v, r):
+            return riser_epic(r, L, v)
+
+        @sfx("16 Cinematic Risers", f"Riser_Awe_{L}s", 3, desc=f"Reveal swell for waterfalls / big mountains: strings bloom, harp sweep, opens into a warm chord at {L}.0 s (D / E / A)", land=L)
+        @need_lib
+        def _(v, r):
+            return riser_awe(r, L, v)
+    _mk()
+
+for _L in (3, 5, 8):
+    def _mk(L=_L):
+        @sfx("16 Cinematic Risers", f"Riser_Tension_{L}s", 3, desc=f"Suspense riser (dissonant tremolo, speeding spiccato) that CUTS to silence at {L}.0 s", land=L)
+        @need_lib
+        def _(v, r):
+            return riser_tension(r, L, v)
+    _mk()
+
+
+# ---------------------------------------------------------------- 17 Downers & Sub Drops
+def sub_drop(r, d=2.5, f0=95, f1=30):
+    t = tt(d)
+    f = f1 + (f0 - f1) * np.exp(-t / (d / 3.5))
+    s_ = osc(f, d) * env_curve(d, [(0, 0), (0.01, 1), (d * 0.6, 0.7), (d, 0)])
+    body = bp(np.tanh(s_ * 6), 110, 700, 2) * 0.9                # harmonics so phones hear the drop
+    thump = osc(110 * (1 - 0.5 * np.clip(t / 0.12, 0, 1)), d) * env_exp(d, 0.1, 0.002) * 0.5
+    return sub_clean(np.tanh((s_ + body + thump) * 1.4))
+
+
+@sfx("17 Downers & Sub Drops", "Sub_Drop", 5, desc="Sub drop: deep falling bass hit with audible body (1.5-4 s) - cut to a vast shot, beat drop", land=0.0)
+def _(v, r):
+    return phone_body(widen(sub_drop(r, [1.5, 2.0, 2.5, 3.0, 4.0][v], [90, 100, 80, 110, 95][v], [30, 32, 28, 34, 30][v]), r, 0.2), 0.7, 1.2)
+
+
+@sfx("17 Downers & Sub Drops", "Boom_Drop", 4, desc="Impact + sub drop (+ valley echo on v02/v04) - big cut, title slam", land=0.0)
+@need_lib
+def _(v, r):
+    y = phone_body(mx(hit_stack(r, [1, 3, 0, 2][v]), stereo(sub_drop(r, 3.0)) * 0.8), 0.6, 1.2)
+    return reverb(mountain_echo(y, r) if v % 2 else y, r, 2.4, 0.2)
+
+
+@sfx("17 Downers & Sub Drops", "Downer", 4, desc="Falling 'downer': strings slide down, whoosh falls, energy drains (2 / 3 / 4 / 6 s) - endings, mood drop, night falls", land=0.0)
+@need_lib
+def _(v, r):
+    d = [2.0, 3.0, 4.0, 6.0][v]
+    y = canvas(d + 3.0)
+    ch = {"vln_trem": [74, 81], "vla_trem": [66], "vc_trem": [50, 38]} if v % 2 == 0 else {"vln_sus": [74, 78], "vla_sus": [69], "vc_sus": [50]}
+    n = sum(len(m) for m in ch.values())
+    for key, ms in ch.items():
+        for m in ms:
+            x = Lb().note(key, m, r, dur=d, vel=2, attack=0.02, release=0.6, bend=lambda t, d=d: -12 * np.clip(t / d, 0, 1) ** 1.6)
+            put(y, x / np.sqrt(n), 0)
+    u = np.linspace(0, 1, len(y))
+    y *= ((1 - np.clip(u * (d + 3) / (d + 0.5), 0, 1)) ** 1.3)[:, None]
+    put(y, grand_whoosh(r, d, "out") * 0.5, 0)
+    put(y, stereo(sub_drop(r, d, 70, 28)) * 0.25, 0)
+    return reverb(y, r, 2.5, 0.25)
+
+
+@sfx("17 Downers & Sub Drops", "Power_Down", 3, desc="Tape-stop / power-down of an orchestral chord (music stops dead, comic or dramatic)", land=0.6)
+@need_lib
+def _(v, r):
+    x = string_chord(r, [{"vln_sus": [74, 78, 81], "vla_sus": [69], "vc_sus": [50]},
+                         {"vln_trem": [74, 77], "vla_trem": [69], "vc_trem": [50, 38]},
+                         {"vln_spic": [74, 78], "vc_spic": [50], "cb_pizz": [38]}][v], 3.0, vel=2, attack=0.02, release=0.2)
+    x = mx(x, stereo(taiko(r, 60, 2.0)) * 0.4) if v == 2 else x
+    d_run, d_stop = 0.6, [1.2, 0.9, 1.5][v]
+    n_out = n_(d_run + d_stop)
+    rate = np.ones(n_out)
+    k = n_(d_run)
+    rate[k:] = np.linspace(1, 0, n_out - k) ** 1.4
+    pos = np.cumsum(rate)
+    pos = pos[pos < len(x) - 1]
+    y = np.stack([np.interp(pos, np.arange(len(x)), x[:, c]) for c in range(2)], 1)
+    return fade(y, 0.005, 0.05)
+
+
+# ---------------------------------------------------------------- 18 Impact Drums
+@sfx("18 Impact Drums", "Impact_Big", 6, desc="Big cinematic hit: taiko + timpani + bass drum (+ strings stab, crash, gong or boom) - cuts, title slams", land=0.0)
+@need_lib
+def _(v, r):
+    y = hit_stack(r, [0, 1, 2, 3, 0, 1][v], [50, 47, 45, 50, 52, 43][v])
+    return reverb(y, r, [2.2, 1.8, 3.0, 2.6, 2.2, 1.6][v], 0.2)
+
+
+@sfx("18 Impact Drums", "Impact_Drum_Fill", 4, desc="Drum fill that runs into a hit (hit at 1.5 / 2.0 / 2.0 / 2.5 s) - end of a montage, into a reveal", land=lambda v: [1.5, 2.0, 2.0, 2.5][v])
+@need_lib
+def _(v, r):
+    land = [1.5, 2.0, 2.0, 2.5][v]
+    pats = [[0, 0.5, 0.75, 1.0, 1.125, 1.25, 1.375],
+            [0, 0.5, 1.0, 1.25, 1.5, 1.625, 1.75, 1.875],
+            [0, 0.25, 0.5, 1.0, 1.167, 1.333, 1.5, 1.667, 1.833],
+            [0, 0.75, 1.5, 1.75, 2.0, 2.125, 2.25, 2.375]][v]
+    y = canvas(land + 6.0)
+    for i, t in enumerate(pats):
+        u = t / land
+        which = i % 3
+        if which == 0:
+            put(y, taiko(r, 70 - 10 * u, 1.0) * (0.35 + 0.5 * u), t)
+        elif which == 1:
+            put(y, Lb().raw("timp_hit", r, 4) * (0.3 + 0.5 * u), t)
+        else:
+            put(y, Lb().raw("bongo_lo", r) * (0.4 + 0.4 * u), t)
+        put(y, Lb().raw("snare", r, 3) * 0.12 * u, t)
+    put(y, hit_stack(r, [1, 0, 3, 2][v]), land)
+    return reverb(phone_body(y, 0.8), r, 2.2, 0.2)
+
+
+@sfx("18 Impact Drums", "Impact_Soft", 4, desc="Gentle hit: soft timpani with harp / pizzicato - small cuts, calm transitions")
+@need_lib
+def _(v, r):
+    y = canvas(4.5)
+    put(y, timp(r, 2, 0.8), 0)
+    put(y, Lb().raw("bdrum", r, 2) * 0.35, 0)
+    put(y, [Lb().note("harp", 38, r, vel=4), Lb().note("cb_pizz", 38, r, vel=3), Lb().note("harp", 45, r, vel=4),
+            Lb().note("vc_pizz", 50, r, vel=3)][v] * 0.7, 0)
+    return reverb(y, r, 2.4, 0.3)
+
+
+@sfx("18 Impact Drums", "Impact_Echo", 3, desc="Big hit that echoes across the valley (mountain reveal, drone shot)", land=0.0)
+@need_lib
+def _(v, r):
+    return reverb(mountain_echo(hit_stack(r, [1, 3, 0][v]), r, delays=(0.4, 0.95, 1.6, 2.4)), r, 2.8, 0.22)
+
+
+# ---------------------------------------------------------------- 19 Music Transitions (key-matched to the SPP music)
+MKEYS = {"D": (62, "maj"), "E": (64, "maj"), "Bm": (59, "min"), "Dm": (62, "min")}
+
+
+def key_voicing(root, q):
+    """Warm string voicing of a major/minor chord on 'root', every section in its comfortable range."""
+    th = root + (3 if q == "min" else 4)
+    near_ = lambda ms, lo, hi: sorted(((m - lo) % 12) + lo for m in ms if True) if hi - lo >= 12 else ms
+    return {"cb_sus": near_([root], 28, 40), "vc_sus": near_([root], 38, 50) + near_([root + 7], 45, 57),
+            "vla_sus": near_([th, root + 7], 55, 67), "vln_sus": near_([th, root + 7, root + 12], 64, 76)}
+
+
+for _k, (_root, _q) in MKEYS.items():
+    def _mk(k=_k, root=_root, q=_q):
+        @sfx("19 Music Transitions", f"Swell_Into_{k}", 2, desc=f"Swell that lands (at 3.0 s) on the {k} chord - put its peak on the first beat of a track in {k}", land=3.0)
+        @need_lib
+        def _(v, r):
+            y = canvas(6.5)
+            ch = key_voicing(root, q)
+            x = string_chord(r, ch, 3.0, vel=1, attack=2.6, release=0.1)[: n_(3.0)]
+            put(y, x * np.linspace(0, 1, len(x))[:, None] ** 2, 0)
+            cx, st = cymbal_to(r, 3.0)
+            put(y, cx * 0.4, st)
+            if v == 1:
+                gl = [m for m in range(root, root + 31) if (m - root) % 12 in ((0, 2, 3, 7, 10) if q == "min" else (0, 2, 4, 7, 9))]
+                put(y, harp_run(r, gl, 0.05, 4, 0.45), 3.0 - len(gl) * 0.05)
+            put(y, string_chord(r, ch, 2.5, vel=2, attack=0.06, release=1.2) * 0.8, 3.0)
+            put(y, timp(r, 2, 0.4), 3.0)
+            return reverb(y, r, 2.8, 0.25)
+
+        @sfx("19 Music Transitions", f"Tail_{k}", 2, desc=f"Ringing {k} chord with harp / bell - covers the cut when a track in {k} stops early", land=0.0)
+        @need_lib
+        def _(v, r):
+            y = canvas(8.0)
+            ch = key_voicing(root, q)
+            put(y, string_chord(r, ch, 4.0, vel=1, attack=0.2, release=3.0) * 0.8, 0)
+            tones = sorted(set(m for ms in ch.values() for m in ms if m > 55))
+            if v == 0:
+                put(y, harp_run(r, tones + [tones[0] + 12], 0.09, 3, 0.5), 0.1)
+            else:
+                put(y, Lb().raw("nepal_bells", r) * 0.4, 0.1)
+                put(y, Lb().note("glock", tones[-1] + 12, r) * 0.2, 0.6)
+            return reverb(y, r, 3.4, 0.3)
+    _mk()
+
+for _a, (_ra, _qa) in MKEYS.items():
+    for _b, (_rb, _qb) in MKEYS.items():
+        if _a == _b:
+            continue
+
+        def _mk(a=_a, ra=_ra, qa=_qa, b=_b, rb=_rb, qb=_qb):
+            @sfx("19 Music Transitions", f"Bridge_{a}_to_{b}", 1, desc=f"5 s musical bridge: starts on {a}, passes through the dominant of {b}, lands on {b} at 4.0 s - joins a track in {a} to one in {b}", land=4.0)
+            @need_lib
+            def _(v, r):
+                y = canvas(8.0)
+                A = key_voicing(ra, qa)
+                V = key_voicing(rb + 7, "maj")                   # dominant of the new key
+                B = key_voicing(rb, qb)
+                put(y, string_chord(r, A, 2.0, vel=1, attack=0.4, release=0.5) * 0.7, 0)
+                vx = string_chord(r, V, 1.75, vel=2, attack=0.3, release=0.2) * 0.8
+                put(y, vx[: n_(1.97)] * np.linspace(1, 0.3, len(vx[: n_(1.97)]))[:, None], 2.0)
+                sc = (0, 2, 3, 7, 10) if qb == "min" else (0, 2, 4, 7, 9)
+                gl = [m for m in range(rb, rb + 25) if (m - rb) % 12 in sc]
+                put(y, harp_run(r, gl, 0.06, 4, 0.4), 4.0 - len(gl) * 0.06)
+                cx, st = cymbal_to(r, 4.0)
+                put(y, cx * 0.3, st)
+                put(y, string_chord(r, B, 2.5, vel=2, attack=0.05, release=1.5) * 1.15, 4.0)
+                put(y, timp(r, 2, 0.4), 4.0)
+                return reverb(y, r, 2.4, 0.18)
+        _mk()
+
+
 # ================================================================ run
 def main():
     ap = argparse.ArgumentParser()
@@ -1732,7 +2072,12 @@ def main():
             continue
         for v in range(s["variants"]):
             r = rng(s["cat"], s["name"], v)
-            x = np.asarray(s["fn"](v, r), float)
+            try:
+                x = np.asarray(s["fn"](v, r), float)
+            except RuntimeError as e:
+                if "no samples" in str(e):
+                    break
+                raise
             x = stereo(x)
             if not s["loop"]:
                 x = fade(trim_silence(x), 0.0005, 0.02)
@@ -1746,7 +2091,9 @@ def main():
             w = n_(0.05)
             env = np.convolve(m ** 2, np.ones(w) / w, "same")
             cat.append({"file": f"{s['cat']}/{fn}", "category": s["cat"], "name": s["name"], "variant": v + 1,
-                        "seconds": round(len(x) / SR, 3), "peak": round(int(np.argmax(env)) / SR, 3),
+                        "seconds": round(len(x) / SR, 3),
+                        "peak": round(float(s["land"](v) if callable(s["land"]) else s["land"]) if s["land"] is not None
+                                      else int(np.argmax(env)) / SR, 3),
                         "loop": bool(s["loop"]), "use": s["desc"]})
         print(f"  {key}  x{s['variants']}", flush=True)
     if not a.list:

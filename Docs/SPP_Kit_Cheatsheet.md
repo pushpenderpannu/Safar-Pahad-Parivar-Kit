@@ -91,8 +91,11 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - Better paths: export Google Maps Timeline (`Timeline.json`) into the trip folder. Full guide: `Docs\Maps_GPS_and_Terrain.md`.
 
 ## 9. Sound effects & phone voice
-- Build once: `.\Tools\make_sfx.ps1` → **SFX - Import Library** (bin *SPP SFX*, 142 sounds / 480 files, Strings + Grand + Light styles, see `Docs\SFX_Library.md`).
+- Build once: `.\Tools\make_sfx.ps1` → **SFX - Import Library** (bin *SPP SFX*, 180 sounds / ~575 files: Strings + Grand + Light styles, cinematic risers / sub drops / impacts, music transitions, see `Docs\SFX_Library.md`).
 - **SFX - Auto Sound for Titles**: pick Strings / Grand / Light / Mix → beat-timed sounds for every SPP title on SFX 1–3 (Lime clips; re-run after edits).
+- **SFX - Land at Playhead**: playhead on the cut → select a riser / swell / bridge in the Media Pool → run: its hit lands on the playhead.
+- **Distance - Selected Clips**: selected audio → near / mid / far / very far / across the valley (echoes); original switched off.
+- Music change: `Swell_Into_<key>` onto the new track, `Tail_<key>` to end early, `Bridge_<a>_to_<b>` between keys (keys in `Docs\Music_Library.md`).
 - **SFX - Loop Fill (In to Out)**: select a `_LOOP_` sound, set I/O, run — any length, seamless.
 - Music: `.\Tools\make_music.ps1` → **Music - Import Library** (bin *SPP Music*, 12 tracks: Slow Build / Temple Bells / Wind / Flute; preview `Docs\SPP_Music_Preview.mp3`).
 - **Phone Voice - Selected Clips**: selected audio → mobile / landline / speaker / walkie; original is switched off (D to restore).

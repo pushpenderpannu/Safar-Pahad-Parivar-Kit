@@ -372,6 +372,10 @@ def drone(M, notes, t, d, gain=0.3, keys=("vc_sus", "cb_sus"), send=0.3, seed=0)
 
 # ================================================================ tracks
 TRACKS = []
+# home key of each track (use the matching SFX '19 Music Transitions' sounds: Swell_Into_<key>, Tail_<key>, Bridge_<a>_to_<b>)
+KEY_OF = {"First_Light": "D", "Long_Road_Up": "Bm", "Summit_Rise": "E", "Mandir_Dawn": "D", "Aarti_Glow": "D",
+          "Himalayan_Gongs": "D", "High_Pass": "D", "Prayer_Flags": "D", "Snowline": "Dm", "Bansuri_Valley": "E",
+          "Pahadi_Dhun": "D", "Evening_Raag": "D"}
 
 
 def track(theme, name, desc, bpm, mood=""):
@@ -870,12 +874,15 @@ def write_doc(catp, out):
           "Original background music, composed in code (`Source/music/music_gen.py`) and played with recorded instruments from",
           "*VSCO-2 Community Edition* (CC0 public domain) plus synthesised tanpura, temple bells, manjira and wind.",
           "Build with `.\\Tools\\make_music.ps1` → `<kit>\\Music\\` (not in git); import with **Music - Import Library**.",
-          "Free for monetised YouTube, no credit needed. Preview: `Docs/SPP_Music_Preview.mp3`.", ""]
+          "Free for monetised YouTube, no credit needed. Preview: `Docs/SPP_Music_Preview.mp3`.",
+          "**Key** = the track's home chord: to change music smoothly use the SFX `19 Music Transitions` in that key",
+          "(`Swell_Into_<key>` onto the new track, `Tail_<key>` to end one early, `Bridge_<from>_to_<to>` between two).", ""]
     for th in sorted({c["theme"] for c in cat}):
-        L_ += ["## " + th, "", "| Track | Length | Tempo | Mood | Use |", "|---|---|---|---|---|"]
+        L_ += ["## " + th, "", "| Track | Length | Key | Tempo | Mood | Use |", "|---|---|---|---|---|---|"]
         for c in [c for c in cat if c["theme"] == th]:
-            L_.append("| `%s` | %d:%02d | %s | %s | %s |" % (c["file"].split("/")[-1], c["seconds"] // 60, c["seconds"] % 60,
-                                                          "%d bpm" % c["bpm"] if c["bpm"] else "free", c["mood"], c["use"]))
+            L_.append("| `%s` | %d:%02d | %s | %s | %s | %s |" % (c["file"].split("/")[-1], c["seconds"] // 60, c["seconds"] % 60,
+                                                               c.get("key") or KEY_OF.get(c["name"], ""),
+                                                               "%d bpm" % c["bpm"] if c["bpm"] else "free", c["mood"], c["use"]))
         L_.append("")
     open(out, "w", encoding="utf-8").write("\n".join(L_))
     print("wrote", out)
@@ -921,7 +928,7 @@ def main():
         write_wav(d / fn, x)
         cat = [c for c in cat if c["name"] != t["name"]]
         cat.append({"file": f"{t['theme']}/{fn}", "theme": t["theme"], "name": t["name"], "seconds": round(len(x) / SR, 1),
-                    "bpm": t["bpm"], "mood": t["mood"], "use": t["desc"]})
+                    "bpm": t["bpm"], "key": KEY_OF.get(t["name"], ""), "mood": t["mood"], "use": t["desc"]})
         print(f"  {t['theme']} {t['name']}  {len(x) / SR:.0f}s  ({time.time() - ts:.0f}s)", flush=True)
         del x
         STATS.clear()
