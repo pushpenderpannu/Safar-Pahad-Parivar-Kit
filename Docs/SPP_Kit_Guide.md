@@ -37,6 +37,9 @@ Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles l
 once per PC to install/build things, and at the start of each trip to make folders and sort footage — and you read
 two text reports the moment finder writes.
 
+> **Every menu script in detail** — what you need first, what changes in Resolve after running it, how to redo / undo:
+> [`SPP_Menu_Scripts.md`](SPP_Menu_Scripts.md). **New project?** Read its section A first — don't import the kit folder into the Media Pool.
+
 ### Inside Resolve — menu scripts (Workspace → Scripts → Safar Pahad Parivar → …)
 | When | Menu script | What you select first | What it does |
 |---|---|---|---|
@@ -122,7 +125,10 @@ python Tools\spp_sort_media.py "<trip>\Footage"           # dry run - shows the 
 python Tools\spp_sort_media.py "<trip>\Footage" --apply   # -> Horizontal / Vertical / Square / Photos
 python Tools\spp_sort_media.py --undo "<trip>\Footage\_spp_sort_log_<date>.csv"
 ```
-In Resolve: new project → *Project Settings → Master Settings → Working Folders → Project media location* = `<video>\Resolve Media`.
+In Resolve (step by step: [`SPP_Menu_Scripts.md` §A](SPP_Menu_Scripts.md#a-before-any-script--a-new-project-the-right-way)): new project →
+*Project Settings → Master Settings → Working Folders → Project media location* = `<video>\Resolve Media` → import the footage
+from `<trip>\Footage` (**not** the kit folder — the kit is already inside Resolve) → **New Timeline** → **Import Brand Graphics** →
+**SFX - Import Library** → **Music - Import Library**.
 Import the footage, then run **Moments - Analyse Trip** once per trip (it works in the background — see §15d).
 
 ## 3. New timeline

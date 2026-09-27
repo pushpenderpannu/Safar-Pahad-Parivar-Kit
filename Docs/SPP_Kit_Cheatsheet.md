@@ -4,7 +4,8 @@
 route map, captions sync, moments, sound effects, music, key transitions, phone voice, distance.
 **Outside Resolve** (PowerShell in the kit folder): once per PC `.\install.ps1`, `.\Tools\setup_word_timing.ps1`, `.\Tools\make_sfx.ps1`,
 `.\Tools\make_music.ps1`; per trip `.\Tools\new_video.ps1` and `spp_sort_media.py`. Read: `<trip>\_spp_moments\Moments.md`.
-Full map with every tool: `Docs\SPP_Kit_Guide.md` §0.
+Full map with every tool: `Docs\SPP_Kit_Guide.md` §0 · every menu script in detail (before / after / undo): `Docs\SPP_Menu_Scripts.md`.
+**New project:** don't import the kit folder — import footage, then New Timeline → Import Brand Graphics → SFX / Music - Import Library.
 
 ## 1. New timeline (one click)
 Resolve → **Workspace → Scripts → Safar Pahad Parivar →**
