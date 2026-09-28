@@ -34,6 +34,13 @@ CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Route-Map", [500, 1600, 3500, 5200, 7600, 9500, 12500, 14000], (1920, 1080), "bg_a.jpg", {"routeFile": "http://127.0.0.1:8765/route/route.json"}, "follow"),
     ("SPP-Route-Map", [14000], (1920, 1080), "bg_a.jpg", {"routeFile": "http://127.0.0.1:8765/route/route.json", "camera": "0"}, "whole"),
     ("SPP-Route-Map", [2000], (1920, 1080), "bg_a.jpg", {}, "empty"),
+    ("SPP-Film-Title", [300, 800, 1300, 1800, 3000, 6600], (1920, 1080), "bg_a.jpg", {}, "centre"),
+    ("SPP-Film-Title", [3000], (1920, 1080), "bg_b.jpg", {"position": "bottom-left"}, "bl"),
+    ("SPP-Film-Title", [3000], (1080, 1920), "bg_b.jpg", {}, "916"),
+    ("SPP-Chapter", [200, 600, 1000, 1500, 2500, 4700], (1920, 1080), "bg_b.jpg", {}, "centre"),
+    ("SPP-Chapter", [2500], (1920, 1080), "bg_a.jpg", {"position": "bottom-left", "number": 4, "total": 6, "hindiDigits": True}, "bl"),
+    ("SPP-Chapter", [2500], (1920, 1080), "bg_a.jpg", {"position": "top-left", "total": 0, "meta": ""}, "tl"),
+    ("SPP-Chapter", [2500], (1080, 1920), "bg_b.jpg", {"number": 1}, "916"),
 ]
 errors = []
 if os.environ.get("SPP_ONLY"): CASES = [c for c in CASES if c[0] == os.environ["SPP_ONLY"]]

@@ -55,6 +55,7 @@ Write-Host @"
 
 Done. Next:
   1. Restart DaVinci Resolve (it only scans title templates and DCTLs at start-up).
-  2. Once: Workspace > Scripts > Safar Pahad Parivar > Setup Render Presets
+  2. Once: Workspace > Scripts > Safar Pahad Parivar > 1 Setup > Setup Render Presets
+     (the scripts are in folders: 1 Setup, 2 Marking & Moments, 3 Picture, 4 Titles & Graphics, 5 Captions & Voice, 6 Sound & Music)
   3. Titles appear under: Effects > Titles > Safar Pahad Parivar
 "@

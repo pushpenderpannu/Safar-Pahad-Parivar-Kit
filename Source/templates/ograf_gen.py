@@ -715,6 +715,170 @@ _fmtClock(ep){const tz=(this._route.tz??5.5)*3600,d=new Date((ep+tz)*1000);
   return `${d.getUTCDate()} ${M[d.getUTCMonth()]} · ${h}:${String(m).padStart(2,"0")} ${ap}`;}""",
 ))
 
+# ------------------------------------------------------------------ 8. FILM TITLE (follows the SPP intro "presents")
+TEMPLATES.append(dict(
+    id="spp-film-title", name="SPP Film Title", file="SPP-Film-Title", duration=7,
+    desc="The film's name right after the SPP intro ('... presents'): mountain line draws, Hindi title wipes in, English title and place / date.",
+    props={
+        "kicker": {"type": "string", "title": "Small line above (blank = hide)", "default": "एक पारिवारिक सफ़र · A FAMILY JOURNEY"},
+        "titleHi": {"type": "string", "title": "Film Title (Hindi)", "default": "हिमालय की सैर"},
+        "titleEn": {"type": "string", "title": "Film Title (English, blank = hide)", "default": "HIMALAYA KI SAIR"},
+        "line": {"type": "string", "title": "Place / date line (blank = hide)", "default": "कुमाऊँ · दारमा · मुंस्यारी — जून 2026"},
+        "showMark": {"type": "boolean", "title": "Draw the mountain line", "default": True},
+        "position": select_prop("Position", ["centre", "bottom-left"], 0),
+        "backdrop": {"type": "boolean", "title": "Darken Background", "default": True},
+        "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
+        "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 7, "default": 0},
+        "accentColor": color_prop("Accent Colour"),
+    },
+    css=f"""
+.bd{{position:absolute;inset:0}}
+.wrap{{position:absolute;display:flex;flex-direction:column}}
+.mk{{display:block;width:{U(460)};height:{U(88)};overflow:visible;margin-bottom:{U(18)}}}
+.kick{{font-size:{U(22)};font-weight:700;color:var(--accent);white-space:nowrap;text-shadow:0 {U(2)} {U(8)} rgba(0,0,0,.5)}}
+.clip{{padding:{U(8)} {U(10)} {U(6)}}}
+.th{{font-size:{U(150)};font-weight:800;color:var(--snow);line-height:1.2;white-space:nowrap;
+    text-shadow:0 {U(4)} {U(30)} rgba(0,0,0,.45),0 0 {U(60)} rgba(7,18,43,.35)}}
+.rule{{height:{U(4)};width:{U(240)};background:var(--accent);border-radius:{U(2)};margin:{U(10)} 0 {U(16)}}}
+.te{{font-size:{U(30)};font-weight:700;color:var(--snow);white-space:nowrap;text-shadow:0 {U(2)} {U(12)} rgba(0,0,0,.5)}}
+.ln{{font-size:{U(26)};font-weight:500;color:rgba(245,248,252,.88);white-space:nowrap;margin-top:{U(12)};text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.5)}}""",
+    build="""
+this.$.bd=el("div","bd",scene); this.$.wrap=el("div","wrap",scene);
+this.$.mk=svgEl("svg",{viewBox:"0 0 474 90",class:"mk"},this.$.wrap);
+this.$.ridge=svgEl("path",{d:"M4 84 L120 36 L158 56 L236 6 L312 60 L350 42 L470 84",fill:"none",stroke:"#f5f8fc","stroke-width":"3.2","stroke-linejoin":"round","stroke-linecap":"round",pathLength:"1"},this.$.mk);
+this.$.snow=svgEl("path",{d:"M212 32 L224 42 L236 28 L248 42 L260 32",fill:"none",stroke:"#f5f8fc","stroke-width":"2.2","stroke-linejoin":"round","stroke-linecap":"round",pathLength:"1"},this.$.mk);
+this.$.trail=svgEl("path",{d:"M236 88 C 220 78, 252 70, 237 60 C 228 55, 244 50, 238 44",fill:"none",stroke:"var(--accent)","stroke-width":"3","stroke-linecap":"round","stroke-dasharray":"0.1 7"},this.$.mk);
+this.$.sun=svgEl("circle",{cx:"338",cy:"16",r:"8",fill:"var(--accent)"},this.$.mk);
+this.$.kick=el("div","kick mix",this.$.wrap);
+const c=el("div","clip",this.$.wrap); this.$.th=el("div","th deva",c);
+this.$.rule=el("div","rule",this.$.wrap); this.$.te=el("div","te pop",this.$.wrap); this.$.ln=el("div","ln mix",this.$.wrap);""",
+    apply="""
+const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e");
+setT(this.$.kick,s.kicker||""); this.$.kick.style.display=s.kicker?"block":"none";
+setT(this.$.th,s.titleHi||""); setT(this.$.te,s.titleEn||""); this.$.te.style.display=s.titleEn?"block":"none";
+setT(this.$.ln,s.line||""); this.$.ln.style.display=s.line?"block":"none";
+this.$.mk.style.display=s.showMark===false?"none":"block"; this.$.bd.style.display=s.backdrop?"block":"none";
+const p=this._ch("position"); this._pos=p;
+if(p===0){this.$.wrap.style.left="50%";this.$.wrap.style.top="50%";this.$.wrap.style.bottom="auto";this.$.wrap.style.alignItems="center";this.$.wrap.style.textAlign="center";
+  this.$.bd.style.background="radial-gradient(75% 65% at 50% 50%, rgba(7,18,43,.62), rgba(7,18,43,.12) 80%)";}
+else{this.$.wrap.style.left=this.px(this._vertical?70:120);this.$.wrap.style.top="auto";this.$.wrap.style.bottom=this.px(this._vertical?420:120);
+  this.$.wrap.style.alignItems="flex-start";this.$.wrap.style.textAlign="left";
+  this.$.bd.style.background="linear-gradient(0deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}
+this.$.wrap.style.transformOrigin=p===0?"50% 50%":"0% 100%";""",
+    frame="""
+const s=this._state,p=this._pos,sc=(s.scale||1)*(this._vertical&&p===0?0.72:1);
+this.$.bd.style.opacity=String(eo(seg(t,0,0.8)));
+const push=1+0.03*seg(t,0,DURATION);
+this.$.wrap.style.transform=(p===0?"translate(-50%,-50%) ":"")+`scale(${(sc*push).toFixed(4)})`;
+const r=eo(seg(t,0.1,1.3)); this.$.ridge.setAttribute("stroke-dasharray","1 1"); this.$.ridge.setAttribute("stroke-dashoffset",String(1-r));
+const sn=eo(seg(t,0.9,1.4)); this.$.snow.setAttribute("stroke-dasharray","1 1"); this.$.snow.setAttribute("stroke-dashoffset",String(1-sn));
+this.$.trail.style.opacity=String(eo(seg(t,1.1,1.6)));
+const su=eb(seg(t,1.0,1.5)); this.$.sun.setAttribute("r",String(Math.max(0,8*su))); this.$.sun.style.opacity=String(clamp(su,0,1));
+const k=eo(seg(t,0.4,1.1)); this.$.kick.style.opacity=String(k); this.$.kick.style.letterSpacing=(0.42-0.2*k).toFixed(3)+"em";
+const w=eo(seg(t,0.6,1.7)); const edge=(1-w)*100;
+this.$.th.style.clipPath=p===0?`inset(-20% ${(edge/2).toFixed(2)}% -20% ${(edge/2).toFixed(2)}%)`:`inset(-20% ${edge.toFixed(2)}% -20% 0)`;
+this.$.th.style.transform=`translateY(${Math.round(26*this._u*(1-w))}px)`; this.$.th.style.opacity=String(clamp(w*1.4,0,1));
+const ru=eo(seg(t,1.2,1.9)); this.$.rule.style.transform=`scaleX(${ru})`; this.$.rule.style.transformOrigin=p===0?"50% 50%":"0% 50%";
+const e=eo(seg(t,1.4,2.2)); this.$.te.style.opacity=String(e); this.$.te.style.letterSpacing=(0.6-0.24*e).toFixed(3)+"em";
+const l=eo(seg(t,1.8,2.5)); this.$.ln.style.opacity=String(l); this.$.ln.style.transform=`translateY(${Math.round(12*this._u*(1-l))}px)`;""",
+))
+
+# ------------------------------------------------------------------ 9. CHAPTER
+TEMPLATES.append(dict(
+    id="spp-chapter", name="SPP Chapter", file="SPP-Chapter", duration=5,
+    desc="Chapter card: big chapter number, Hindi + English chapter name, day / route line and a trail showing chapter X of N. "
+         "'Chapters - Number + YouTube List' numbers them and writes the YouTube chapter list.",
+    props={
+        "number": {"type": "integer", "title": "Chapter number", "minimum": 0, "maximum": 99, "default": 2},
+        "total": {"type": "integer", "title": "Total chapters (0 = hide the trail)", "minimum": 0, "maximum": 30, "default": 5},
+        "titleHi": {"type": "string", "title": "Chapter name (Hindi)", "default": "दारमा घाटी की ओर"},
+        "titleEn": {"type": "string", "title": "Chapter name (English, blank = hide)", "default": "INTO THE DARMA VALLEY"},
+        "meta": {"type": "string", "title": "Day / route line (blank = hide)", "default": "दिन 2 · धारचूला → दुग्तू"},
+        "labelHi": {"type": "string", "title": "Label (Hindi)", "default": "अध्याय"},
+        "labelEn": {"type": "string", "title": "Label (English)", "default": "CHAPTER"},
+        "hindiDigits": {"type": "boolean", "title": "Hindi digits (२ instead of 2)", "default": False},
+        "position": select_prop("Position", ["centre", "bottom-left", "top-left"], 0),
+        "backdrop": {"type": "boolean", "title": "Darken Background", "default": True},
+        "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
+        "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 5, "default": 0},
+        "accentColor": color_prop("Accent Colour"),
+        "rolling": {"type": "boolean", "title": "Rolling-dial number", "default": True},
+    },
+    css=f"""
+.bd{{position:absolute;inset:0}}
+.wrap{{position:absolute;display:flex;flex-direction:column}}
+.row{{display:flex;align-items:center;gap:{U(22)}}}
+.num{{font-size:{U(150)};font-weight:700;color:var(--accent);line-height:1;text-shadow:0 {U(4)} {U(24)} rgba(0,0,0,.4)}}
+.num.deva{{font-weight:800;font-size:{U(140)}}}
+.dv{{width:{U(4)};height:{U(118)};background:rgba(245,248,252,.85);border-radius:{U(2)};transform-origin:50% 50%}}
+.lab{{display:flex;flex-direction:column;align-items:flex-start}}
+.lh{{font-size:{U(40)};font-weight:800;color:var(--snow);line-height:1.2;text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.45)}}
+.le{{font-size:{U(17)};font-weight:700;color:var(--accent);letter-spacing:.34em;white-space:nowrap}}
+.clip{{overflow:hidden;padding:{U(10)} {U(6)} {U(4)};margin-top:{U(8)}}}
+.th{{font-size:{U(96)};font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 {U(4)} {U(24)} rgba(0,0,0,.5)}}
+.te{{font-size:{U(24)};font-weight:700;color:var(--snow);opacity:.92;white-space:nowrap;text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.5)}}
+.meta{{font-size:{U(24)};font-weight:500;color:rgba(245,248,252,.88);white-space:nowrap;margin-top:{U(10)};text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.5)}}
+.prog{{display:block;height:{U(40)};margin-top:{U(24)};overflow:visible}}""",
+    build="""
+this.$.bd=el("div","bd",scene); this.$.wrap=el("div","wrap",scene);
+const row=el("div","row",this.$.wrap); this.$.num=el("div","num pop",row); this.$.dv=el("div","dv",row);
+const lab=el("div","lab",row); this.$.lh=el("div","lh deva",lab); this.$.le=el("div","le pop",lab);
+const c=el("div","clip",this.$.wrap); this.$.th=el("div","th deva",c);
+this.$.te=el("div","te pop",this.$.wrap); this.$.meta=el("div","meta mix",this.$.wrap);
+this.$.prog=svgEl("svg",{class:"prog"},this.$.wrap);
+this.$.pLine=svgEl("line",{stroke:"rgba(245,248,252,.55)","stroke-width":"3","stroke-linecap":"round","stroke-dasharray":"0.1 9"},this.$.prog);
+this.$.pDone=svgEl("line",{stroke:"var(--accent)","stroke-width":"3.4","stroke-linecap":"round","stroke-dasharray":"0.1 9"},this.$.prog);
+this.$.pDots=svgEl("g",{},this.$.prog); this.$.pRing=svgEl("circle",{fill:"none",stroke:"var(--accent)","stroke-width":"2.5"},this.$.prog);
+this._dots=[]; this._progKey=null;""",
+    apply="""
+const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e");
+const HD="०१२३४५६७८९", n=Math.max(0,Math.round(+s.number||0));
+let txt=String(n).padStart(2,"0"); if(s.hindiDigits)txt=txt.replace(/[0-9]/g,d=>HD[+d]);
+this._numTxt=txt; this.$.num.className="num "+(s.hindiDigits?"deva":"pop");
+setT(this.$.lh,s.labelHi||""); setT(this.$.le,s.labelEn||"");
+setT(this.$.th,s.titleHi||""); setT(this.$.te,s.titleEn||""); this.$.te.style.display=s.titleEn?"block":"none";
+setT(this.$.meta,s.meta||""); this.$.meta.style.display=s.meta?"block":"none";
+this.$.bd.style.display=s.backdrop?"block":"none";
+const N=Math.max(0,Math.round(+s.total||0)), cur=clamp(n,1,Math.max(1,N));
+const key=N+"/"+cur;
+if(key!==this._progKey){this._progKey=key; this.$.pDots.innerHTML=""; this._dots=[];
+  const gap=62, W=Math.max(1,(N-1)*gap);
+  this.$.prog.setAttribute("viewBox",`-14 -17 ${W+28} 34`); this.$.prog.style.width=this.px((W+28)*40/34);
+  this.$.pLine.setAttribute("x1","0");this.$.pLine.setAttribute("y1","0");this.$.pLine.setAttribute("x2",String(W));this.$.pLine.setAttribute("y2","0");
+  for(let i=0;i<N;i++){const d=svgEl("circle",{cx:String(i*gap),cy:"0",r:"7"},this.$.pDots);this._dots.push(d);}
+  this._gap=gap; this._N=N; this._cur=cur;}
+this.$.prog.style.display=N>=2?"block":"none";
+const p=this._ch("position"); this._pos=p;
+const w=this.$.wrap.style; w.left=w.top=w.bottom="auto";
+if(p===0){w.left="50%";w.top="50%";w.alignItems="center";w.textAlign="center";
+  this.$.bd.style.background="radial-gradient(75% 65% at 50% 50%, rgba(7,18,43,.6), rgba(7,18,43,.1) 80%)";}
+else{w.left=this.px(this._vertical?70:120);w.alignItems="flex-start";w.textAlign="left";
+  if(p===1){w.bottom=this.px(this._vertical?420:110);this.$.bd.style.background="linear-gradient(0deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}
+  else{w.top=this.px(this._vertical?260:100);this.$.bd.style.background="linear-gradient(180deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}}
+w.transformOrigin=p===0?"50% 50%":(p===1?"0% 100%":"0% 0%");""",
+    frame="""
+const s=this._state,p=this._pos,sc=(s.scale||1)*(this._vertical&&p===0?0.8:1);
+this.$.bd.style.opacity=String(eo(seg(t,0,0.5)));
+this.$.wrap.style.transform=(p===0?"translate(-50%,-50%) ":"")+`scale(${sc.toFixed(4)})`;
+const nk=eo(seg(t,0.05,0.5)); this.$.num.style.opacity=String(nk);
+if(s.rolling!==false&&!s.hindiDigits)rollSlot(this.$.num,this._numTxt,seg(t,0.05,1.0),0.12);
+else{this.$.num.classList.remove("roll");this.$.num._rk=null;setT(this.$.num,this._numTxt);this.$.num.style.transform=`translateY(${Math.round(20*this._u*(1-nk))}px)`;}
+this.$.dv.style.transform=`scaleY(${eo(seg(t,0.2,0.6))})`;
+const lb=eo(seg(t,0.3,0.8)); this.$.lh.style.opacity=this.$.le.style.opacity=String(lb);
+this.$.lh.style.transform=this.$.le.style.transform=`translateX(${Math.round(-14*this._u*(1-lb))}px)`;
+const h=eo(seg(t,0.35,0.95)); this.$.th.style.transform=`translateY(${Math.round(112*this._u*(1-h))}px)`;
+const e=eo(seg(t,0.7,1.3)); this.$.te.style.opacity=String(e*0.92); this.$.te.style.letterSpacing=(0.6-0.3*e).toFixed(3)+"em";
+const m=eo(seg(t,0.9,1.4)); this.$.meta.style.opacity=String(m); this.$.meta.style.transform=`translateY(${Math.round(10*this._u*(1-m))}px)`;
+if(this._N>=2){const g=this._gap,cur=this._cur,pk=eo(seg(t,0.9,1.9)),x=(cur-1)*g*pk;
+  this.$.prog.style.opacity=String(eo(seg(t,0.8,1.1)));
+  this.$.pDone.setAttribute("x1","0");this.$.pDone.setAttribute("y1","0");this.$.pDone.setAttribute("x2",x.toFixed(1));this.$.pDone.setAttribute("y2","0");
+  this._dots.forEach((d,i)=>{const reached=i*g<=x+0.5, isCur=i===cur-1;
+    d.setAttribute("fill",reached?"var(--accent)":"#07122b"); d.setAttribute("stroke",reached?"var(--accent)":"rgba(245,248,252,.8)"); d.setAttribute("stroke-width","2.5");
+    const pop=isCur?eb(seg(t,1.85,2.3)):1; d.setAttribute("r",String(isCur?(7+4*clamp(pop,0,1.2)):7));});
+  const ph=(t*0.9)%1, show=seg(t,1.9,2.1); this.$.pRing.setAttribute("cx",String((cur-1)*g)); this.$.pRing.setAttribute("cy","0");
+  this.$.pRing.setAttribute("r",String(11+14*ph)); this.$.pRing.setAttribute("opacity",String((1-ph)*show));}""",
+))
+
 for T in TEMPLATES:
     choices = {k: v.pop("x_choices") for k, v in T["props"].items() if "x_choices" in v}
     defaults = {k: v["default"] for k, v in T["props"].items()}

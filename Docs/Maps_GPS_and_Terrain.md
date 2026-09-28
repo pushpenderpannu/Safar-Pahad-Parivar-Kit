@@ -8,7 +8,7 @@
   → save `Timeline.json` into the trip folder. (Older Google Takeout `Records.json` / `Semantic Location History` also work.)
   Then re-index: `spp_gps.py index "<trip>" --timeline "<trip>\Timeline.json"` (it remembers it afterwards).
 
-## 2. One-click in Resolve (Workspace → Scripts → Safar Pahad Parivar)
+## 2. One-click in Resolve (Workspace → Scripts → Safar Pahad Parivar → 4 Titles & Graphics)
 | Script | What it does |
 |---|---|
 | **Info Cards - Fill from GPS** | Every SPP Info Card whose *Place (Hindi)* is empty gets place (Hindi + English), altitude, date, time, weather icon and temperature for the shot underneath it. Clear *Place (Hindi)* to refresh a card. |

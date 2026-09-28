@@ -533,7 +533,7 @@ def jobs(jpath):
         save()
     J["finished"] = time.strftime("%H:%M")
     save()
-    say("\nAll done. In Resolve run  Workspace > Scripts > Safar Pahad Parivar > Reflection - Clean Selected Clips  again"
+    say("\nAll done. In Resolve run  Workspace > Scripts > Safar Pahad Parivar > 3 Picture > Reflection - Clean Selected Clips  again"
         " to put the cleaned clips on the timeline.")
 
 

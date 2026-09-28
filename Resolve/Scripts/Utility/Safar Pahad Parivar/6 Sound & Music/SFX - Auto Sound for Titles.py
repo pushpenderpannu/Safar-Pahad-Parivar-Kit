@@ -1,5 +1,5 @@
 # Safar Pahad Parivar - add matching sound effects to every SPP title on this timeline.
-#   Info Card, Altitude Counter, Peak Callout, Pop-up Title, Credits, Route Map (+ SPP intro / end card clips).
+#   Info Card, Altitude Counter, Peak Callout, Pop-up Title, Film Title, Chapter, Credits, Route Map (+ SPP intro / end card clips).
 # Sounds go on the audio tracks named "SFX 1/2/3" (a new SFX track is added if they are busy), coloured Lime.
 # Running it again first removes the previous Lime auto-sounds, so it always matches the current edit.
 # Want to keep a sound you tweaked? Change its clip colour - then it is left alone.
@@ -24,8 +24,10 @@ tl = proj.GetCurrentTimeline() if proj else None
 
 import math
 
-DUR = {"SPP-Info-Card": 8, "SPP-Altitude-Counter": 8, "SPP-Peak-Callout": 6, "SPP-Popup-Title": 5, "SPP-Credits": 10, "SPP-Route-Map": 40}
-OUTAT = {"SPP-Info-Card": 13, "SPP-Altitude-Counter": 9, "SPP-Peak-Callout": 10, "SPP-Popup-Title": 6, "SPP-Credits": 11, "SPP-Route-Map": 12}
+DUR = {"SPP-Info-Card": 8, "SPP-Altitude-Counter": 8, "SPP-Peak-Callout": 6, "SPP-Popup-Title": 5, "SPP-Credits": 10, "SPP-Route-Map": 40,
+       "SPP-Film-Title": 7, "SPP-Chapter": 5}
+OUTAT = {"SPP-Info-Card": 13, "SPP-Altitude-Counter": 9, "SPP-Peak-Callout": 10, "SPP-Popup-Title": 6, "SPP-Credits": 11, "SPP-Route-Map": 12,
+         "SPP-Film-Title": 8, "SPP-Chapter": 11}
 KITS = {
     "light": {"SPP-Info-Card": ("01 Title Kits", "InfoCard_In", 4), "SPP-Peak-Callout": ("01 Title Kits", "PeakCallout_In", 4),
               "SPP-Popup-Title": ("01 Title Kits", "PopupTitle_In", 4), "SPP-Credits": ("01 Title Kits", "Credits_In", 3),
@@ -54,6 +56,10 @@ KITS["strings"] = {
 KITS["mix"] = dict(KITS["light"])
 for k in ("SPP-Popup-Title", "SPP-Credits", "alt", "open", "zin", "zout", "trail", "stop", "chime", "intro", "end"):
     KITS["mix"][k] = KITS["grand"][k]
+# Film Title and Chapter cards use the big pop-up title sound of each style
+for _k in KITS.values():
+    _k["SPP-Film-Title"] = _k["SPP-Popup-Title"]
+    _k["SPP-Chapter"] = _k["SPP-Popup-Title"]
 ALT = [1.5, 2.0, 2.5, 3.0, 4.0, 5.0, 6.0]
 
 

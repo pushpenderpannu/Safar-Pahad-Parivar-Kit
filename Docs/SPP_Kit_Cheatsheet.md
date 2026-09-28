@@ -1,14 +1,15 @@
 # Safar Pahad Parivar — Editing Kit (cheat sheet)
 
-**Inside Resolve** (Workspace → Scripts → Safar Pahad Parivar): everything you do while editing — timelines, tags, titles, GPS fill,
-route map, captions sync, moments, sound effects, music, key transitions, phone voice, distance.
+**Inside Resolve** (Workspace → Scripts → Safar Pahad Parivar → folder): **1 Setup** (render presets, timelines, brand graphics) ·
+**2 Marking & Moments** (shot tags, moments) · **3 Picture** (reflections) · **4 Titles & Graphics** (GPS fill, route map, chapters) ·
+**5 Captions & Voice** · **6 Sound & Music** (libraries, auto sounds, loops, key transitions, distance).
 **Outside Resolve** (PowerShell in the kit folder): once per PC `.\install.ps1`, `.\Tools\setup_word_timing.ps1`, `.\Tools\make_sfx.ps1`,
 `.\Tools\make_music.ps1`; per trip `.\Tools\new_video.ps1` and `spp_sort_media.py`. Read: `<trip>\_spp_moments\Moments.md`.
 Full map with every tool: `Docs\SPP_Kit_Guide.md` §0 · every menu script in detail (before / after / undo): `Docs\SPP_Menu_Scripts.md`.
 **New project:** don't import the kit folder — import footage, then New Timeline → Import Brand Graphics → SFX / Music - Import Library.
 
 ## 1. New timeline (one click)
-Resolve → **Workspace → Scripts → Safar Pahad Parivar →**
+Resolve → **Workspace → Scripts → Safar Pahad Parivar → 1 Setup →**
 - **New Timeline – YouTube 16x9** → 3840×2160, 30 fps, scale-to-fit
 - **New Timeline – Shorts 9x16** → 1080×1920, 30 fps, scale-to-crop (fills the frame)
 
@@ -23,7 +24,7 @@ Resolve → **Workspace → Scripts → Safar Pahad Parivar →**
 | A6–A8 | SFX 1–3 | whooshes, ambience, pops |
 | ST1 | Subtitles | Hindi VO captions |
 
-## 2. Shot-type colours (select clips → Workspace → Scripts → Safar Pahad Parivar → Tag Shot Type)
+## 2. Shot-type colours (select clips → Workspace → Scripts → Safar Pahad Parivar → 2 Marking & Moments → Tag Shot Type)
 Works on selected **timeline** clips (also tags their source), or selected **media pool** clips.
 
 | Colour | Shot type |
@@ -82,7 +83,7 @@ The subtitle track (ST1) stays as the plain, editable source and the **.srt you 
 Edited the text? Export the SRT again and re-paste. Words animate whole, so Hindi always shapes correctly.
 
 ### 7b. Real word timing + stress (recommended)
-One click instead of steps 2 and 4: **Workspace → Scripts → Safar Pahad Parivar → Captions - Sync Words to VO**.
+One click instead of steps 2 and 4: **Workspace → Scripts → Safar Pahad Parivar → 5 Captions & Voice → Captions - Sync Words to VO**.
 It listens to the clips on the audio track named **VO** (on the GPU), finds when each word of your subtitles is really
 spoken, trims the silences, marks words you stress (louder / stretched), and fills in the SPP Captions clip itself
 (text and start time). Resolve pauses while it works (~1 min per 10 min of VO; first run downloads a 3 GB model).
@@ -102,6 +103,12 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
   (3 cold-open candidates, top 40, by day) and `Transcript.md` (everything said).
 - **Moments - Add Markers**: Yellow laughter · Pink kids · Red shouts · Fuchsia cheering · Purple singing · Green reactions.
 - **Moments - Best Moments Timeline** (top 20/40/80, laughter, kids, openers) · **Moments - Search Transcript** (e.g. `बर्फ, पानी`).
+
+## 8a. Film title and chapters
+- The intro ends on *…presents* → put **SPP Film Title** straight after it (film name Hindi + English, place / date line).
+- Each chapter starts with an **SPP Chapter** card (type the name; the number is set for you).
+- **4 Titles & Graphics → Chapters - Number + YouTube List**: numbers them, purple markers, YouTube chapter list copied
+  (paste into the description). YouTube needs 3+ chapters, first at 00:00, each ≥ 10 s.
 
 ## 9a. Filmed through the car window (reflections / glare)
 - **Reflection - Scan Trip** (background) → run again: Media Pool **Orange** = strong reflection, **Yellow** = some.

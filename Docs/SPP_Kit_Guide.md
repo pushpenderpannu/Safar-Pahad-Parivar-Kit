@@ -3,7 +3,22 @@
 Everything in the kit, in the order you use it when making a video.
 Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles live in **Effects → Titles → Safar Pahad Parivar**.
 
-![Menu scripts](guide_img/tag_menu.jpg)
+```
+Workspace → Scripts → Safar Pahad Parivar
+├─ 1 Setup              Setup Render Presets · New Timeline - YouTube 16x9
+│                       New Timeline - Shorts 9x16 · Import Brand Graphics
+├─ 2 Marking & Moments  Tag Shot Type ▸ 0–9 · Moments - Analyse Trip
+│                       Moments - Add Markers / Best Moments Timeline / Search Transcript
+├─ 3 Picture            Reflection - Scan Trip / Clean Selected Clips
+│                       Reflection - Show Original or Cleaned
+├─ 4 Titles & Graphics  Info Cards - Fill from GPS · Route Map - Build from Timeline
+│                       Chapters - Number + YouTube List
+├─ 5 Captions & Voice   Captions - Sync Words to VO · Phone Voice - Selected Clips
+└─ 6 Sound & Music      SFX - Import Library · Music - Import Library
+                        SFX - Auto Sound for Titles / Remove Auto Sounds
+                        SFX - Land at Playhead / Loop Fill (In to Out)
+                        Music - Key Transition · Distance - Selected Clips
+```
 
 **Contents**
 0. [Where each tool runs — inside Resolve or outside](#0-where-each-tool-runs--inside-resolve-or-outside)
@@ -17,6 +32,8 @@ Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles l
 8. [Altitude Counter](#8-altitude-counter)
 9. [Peak Callout](#9-peak-callout)
 10. [Pop-up Title](#10-pop-up-title)
+10a. [Film Title](#10a-film-title)
+10b. [Chapters](#10b-chapters)
 11. [Credits](#11-credits)
 12. [Hindi captions (+ sync to VO)](#12-hindi-captions--sync-to-vo)
 13. [Route Map](#13-route-map)
@@ -41,30 +58,34 @@ two text reports the moment finder writes.
 > **Every menu script in detail** — what you need first, what changes in Resolve after running it, how to redo / undo:
 > [`SPP_Menu_Scripts.md`](SPP_Menu_Scripts.md). **New project?** Read its section A first — don't import the kit folder into the Media Pool.
 
-### Inside Resolve — menu scripts (Workspace → Scripts → Safar Pahad Parivar → …)
-| When | Menu script | What you select first | What it does |
+### Inside Resolve — menu scripts (Workspace → Scripts → Safar Pahad Parivar → folder → script)
+The scripts sit in six folders, in the order you use them while making a video:
+
+| Menu folder | Menu script | What you select first | What it does |
 |---|---|---|---|
-| Once per PC | **Setup Render Presets** | — | adds the SPP YouTube 4K / 1080p / Shorts render presets |
-| New video | **New Timeline - YouTube 16x9** / **Shorts 9x16** | — | named tracks (Main, B-Roll, GFX, Nat Sound, VO, Music, SFX, Subtitles) |
-| New video | **Import Brand Graphics** | — | intro, end card, watermarks into a bin |
-| New trip | **Moments - Analyse Trip** | trip footage in the project | finds laughter / kids / reactions + Hindi transcript (runs in the background) |
-| Finding shots | **Moments - Add Markers** · **Best Moments Timeline** · **Search Transcript** | — | markers on clips · a selects timeline · a timeline of every clip where a word was said |
-| Logging | **Tag Shot Type → 0–9** | timeline or media-pool clips | colour + keyword (Hero, Family talk, Scenery, Road, Drone, Timelapse, Kids, Stay/Food, Reject) |
-| Titles | **Info Cards - Fill from GPS** | — (works on all empty SPP Info Cards) | place, altitude, date, time, weather from the GPS of the shot underneath |
-| Titles | **Route Map - Build from Timeline** | an SPP Route Map clip on the timeline | real-road route, stops, times for the trip |
-| Captions | **Captions - Sync Words to VO** | subtitles + a track named **VO** | word-by-word timing + stress into SPP Captions |
-| Sound | **SFX - Import Library** · **Music - Import Library** | — | puts the libraries into the *SPP SFX* / *SPP Music* bins |
-| Sound | **SFX - Auto Sound for Titles** | — | beat-timed sounds for every SPP title (Strings / Grand / Light / Mix) |
-| Sound | **SFX - Land at Playhead** | one sound in the Media Pool | its hit / swell lands exactly on the playhead |
-| Sound | **SFX - Loop Fill (In to Out)** | one `_LOOP_` sound in the Media Pool + In/Out | repeats it seamlessly for any length |
-| Sound | **SFX - Remove Auto Sounds** | — | clears the Lime auto-sound clips |
-| Music | **Music - Key Transition** | 1 or 2 music clips on the timeline | detects the keys, places a bridge / swell / tail on the cut |
-| Voices | **Phone Voice - Selected Clips** | audio clips | phone / walkie-talkie voice |
-| Voices / SFX | **Distance - Selected Clips** | audio clips | near / mid / far / very far / across the valley |
-| New trip | **Reflection - Scan Trip** | trip footage in the project | colours the clips that have windshield / window reflections |
-| Picture | **Reflection - Clean Selected Clips** | video clips shot through the glass | removes dashboard / phone reflections → cleaned take on the same clip (background) |
-| Picture | **Reflection - Show Original or Cleaned** | cleaned clips (or none = all) | before / after switch |
-Titles (Info Card, Altitude Counter, Peak Callout, Pop-up Title, Credits, Captions, Route Map) are in **Effects → Titles → Safar Pahad Parivar**.
+| **1 Setup** | **Setup Render Presets** (once per PC) | — | adds the SPP YouTube 4K / 1080p / Shorts render presets |
+| | **New Timeline - YouTube 16x9** / **Shorts 9x16** | — | named tracks (Main, B-Roll, GFX, Nat Sound, VO, Music, SFX, Subtitles) |
+| | **Import Brand Graphics** | — | intro, end card, watermarks into a bin |
+| **2 Marking & Moments** | **Tag Shot Type → 0–9** | timeline or media-pool clips | colour + keyword (Hero, Family talk, Scenery, Road, Drone, Timelapse, Kids, Stay/Food, Reject) |
+| | **Moments - Analyse Trip** | trip footage in the project | finds laughter / kids / reactions + Hindi transcript (background) |
+| | **Moments - Add Markers** · **Best Moments Timeline** · **Search Transcript** | — | markers on clips · a selects timeline · a timeline of every clip where a word was said |
+| **3 Picture** | **Reflection - Scan Trip** | trip footage in the project | colours the clips with windshield / window reflections |
+| | **Reflection - Clean Selected Clips** | video clips shot through the glass | removes dashboard / phone reflections → cleaned take on the same clip (background) |
+| | **Reflection - Show Original or Cleaned** | cleaned clips (or none = all) | before / after switch |
+| **4 Titles & Graphics** | **Info Cards - Fill from GPS** | — (all empty SPP Info Cards) | place, altitude, date, time, weather from the GPS of the shot underneath |
+| | **Route Map - Build from Timeline** | an SPP Route Map clip on the timeline | real-road route, stops, times for the trip |
+| | **Chapters - Number + YouTube List** | SPP Chapter titles on the timeline | numbers the chapters, adds markers, copies the YouTube chapter list |
+| **5 Captions & Voice** | **Captions - Sync Words to VO** | subtitles + a track named **VO** | word-by-word timing + stress into SPP Captions |
+| | **Phone Voice - Selected Clips** | audio clips | phone / walkie-talkie voice |
+| **6 Sound & Music** | **SFX - Import Library** · **Music - Import Library** | — | puts the libraries into the *SPP SFX* / *SPP Music* bins |
+| | **SFX - Auto Sound for Titles** · **SFX - Remove Auto Sounds** | — | beat-timed sounds for every SPP title (Strings / Grand / Light / Mix) · clears them |
+| | **SFX - Land at Playhead** | one sound in the Media Pool | its hit / swell lands exactly on the playhead |
+| | **SFX - Loop Fill (In to Out)** | one `_LOOP_` sound + In/Out | repeats it seamlessly for any length |
+| | **Music - Key Transition** | 1 or 2 music clips on the timeline | detects the keys, places a bridge / swell / tail on the cut |
+| | **Distance - Selected Clips** | audio clips | near / mid / far / very far / across the valley |
+
+Titles are in **Effects → Titles → Safar Pahad Parivar**: Film Title, Chapter, Info Card, Altitude Counter, Peak Callout,
+Pop-up Title, Route Map, Captions, Credits (§6–§13).
 Colour tool **SPP Glass Glare** (takes the milky glare off windshield shots) is on the Color page: **ResolveFX Color → DCTL** → *SPP Glass Glare* (§15e).
 Script output and progress show in **Workspace → Console**.
 
@@ -100,12 +121,14 @@ Script output and progress show in **Workspace → Console**.
 2. **Resolve:** new project → import footage → **New Timeline** → **Import Brand Graphics** → **Moments - Analyse Trip**
    (and **Reflection - Scan Trip** if you filmed through the car windows).
 3. Read `Moments.md`; **Moments - Add Markers** / **Best Moments Timeline**; **Tag Shot Type** while you watch.
-4. Edit. Shots through the glass: **Reflection - Clean Selected Clips** (+ *SPP Glass Glare* when grading).
+4. Edit. Intro → **SPP Film Title** right after it; an **SPP Chapter** card at the start of each chapter.
+   Shots through the glass: **Reflection - Clean Selected Clips** (+ *SPP Glass Glare* when grading).
    Add SPP titles → **Info Cards - Fill from GPS**, **Route Map - Build from Timeline**.
 5. Record the VO onto the **VO** track → subtitles → **Captions - Sync Words to VO**.
 6. Music from *SPP Music* → **Music - Key Transition** where tracks change. **SFX - Auto Sound for Titles**, real sounds from
    folders 20–24 (use **Loop Fill** for beds, **Distance** for far-away sounds, **Land at Playhead** for risers).
 7. Mix (VO recipe, §15) → render with an SPP preset → save to `<video>\Exports`.
+8. **Chapters - Number + YouTube List** → paste the chapter list into the YouTube description.
 
 ## 1. One-time setup
 Do this on a new or rebuilt PC (or after pulling kit changes).
@@ -119,7 +142,7 @@ Do this on a new or rebuilt PC (or after pulling kit changes).
 | 5 | Optional, for the real-world sounds: create a free key at freesound.org/apiv2/apply and save it as `Tools\freesound_key.txt` (git ignores it). Without it the SFX library is built without folders 20–24. |
 | 6 | `.\Tools\make_sfx.ps1` — builds the sound-effects library (first time 15–25 min: downloads ~1.1 GB of CC0 instrument recordings and the real-world recordings). |
 | 7 | `.\Tools\make_music.ps1` — builds the 12 background-music tracks (~10 min). |
-| 8 | Restart Resolve, then once: **Setup Render Presets**, **SFX - Import Library**, **Music - Import Library** (menu scripts). |
+| 8 | Restart Resolve, then once: **1 Setup → Setup Render Presets**, **6 Sound & Music → SFX - Import Library** and **Music - Import Library** (menu scripts). |
 Disk space: ~5 GB for the generated libraries and the instrument recordings (`SFX` 2 GB, `Music` 0.5 GB, `Source\_vsco` 2 GB, `Source\_cc0` 0.3 GB) — none of it is in git.
 
 > After any kit update: `git pull` → `.\install.ps1` → restart Resolve. Re-run `make_sfx.ps1` / `make_music.ps1` only when the update changed the sounds or music (the commit message says so).
@@ -157,7 +180,7 @@ Every timeline gets the same named tracks:
 | ST1 | Subtitles | Hindi subtitles (source for captions + YouTube CC) |
 
 ## 4. Tag shot types (colours)
-Select clips (timeline or media pool) → **Tag Shot Type → 1…9**. Sets the clip colour **and** a keyword, so you can make
+Select clips (timeline or media pool) → **2 Marking & Moments → Tag Shot Type → 1…9**. Sets the clip colour **and** a keyword, so you can make
 Smart Bins like *Keywords contains "Hero Shot"*. **0 Clear Tag** removes it.
 
 ![Shot colours](guide_img/shot_colours.png)
@@ -170,6 +193,10 @@ Smart Bins like *Keywords contains "Hero Shot"*. **0 Clear Tag** removes it.
 | Intro (5 s, transparent) | End card (15 s) — drop the next-video / suggested-video end screens on the two boxes in YouTube Studio |
 |---|---|
 | ![Intro](guide_img/intro.jpg) | ![End card](guide_img/endcard.jpg) |
+
+**The intro ends on "… presents"** — what it presents is the film: put an **SPP Film Title** (§10a) straight after the
+intro, over the first wide shot (or on its own over the dark end of the intro). Intro → Film Title → cold open or
+Chapter 1.
 
 Watermark: `SPP_Watermark_16x9_4K.png` (or `_Shorts_9x16`) on the top video track for the whole film, opacity ~70 %.
 Brand board (colours, fonts, logo): [`Brand/brand_board.png`](../Brand/brand_board.png).
@@ -228,11 +255,41 @@ Names a mountain in the shot with a dot-and-line or an arrow.
 - If the camera moves, keyframe nothing — just keep the callout short (3–4 s) on a steady shot.
 
 ## 10. Pop-up Title
-Chapter / place title: small kicker, big Hindi headline, English line.
+Place / moment title inside a chapter: small kicker, big Hindi headline, English line. For the start of a chapter use
+the SPP Chapter card (§10b).
 
 ![Pop-up Title](guide_img/popup_title.jpg)
 
 *Darken Background* adds a soft vignette so the text reads over bright snow.
+
+## 10a. Film Title
+The film's name, right after the SPP intro ("… presents"): a mountain line draws itself with the sun and the trail, the
+Hindi title wipes in, then a gold rule, the English title and a place / date line.
+
+| Centre (over a wide shot) | Bottom-left (over action) |
+|---|---|
+| ![Film Title](guide_img/film_title.jpg) | ![Film Title bottom-left](guide_img/film_title_bl.jpg) |
+
+Fields: *Small line above* (e.g. एक पारिवारिक सफ़र · A FAMILY JOURNEY), *Film Title (Hindi)*, *(English)*, *Place / date
+line*, *Draw the mountain line*, *Position: centre / bottom-left*, *Darken Background*, *Size*, *Animate Out At*.
+Length: 7 s (stretch or shorten the clip; the picture slowly pushes in while it's on screen).
+
+## 10b. Chapters
+Long films read better in chapters — and on YouTube the chapter list splits the progress bar so viewers can jump.
+
+![Chapter card](guide_img/chapter.jpg)
+
+1. At the start of each chapter put an **SPP Chapter** title on V3 (~5 s) over the chapter's first shot.
+2. Type *Chapter name (Hindi)* and *(English)*, and a *Day / route line* (दिन 2 · धारचूला → दुग्तू) — or leave it blank.
+   *Position*: centre (big moment) / bottom-left / top-left (over action). *Hindi digits* shows ०२ instead of 02.
+3. Run **4 Titles & Graphics → Chapters - Number + YouTube List**: the chapters are numbered in order, each card's
+   trail shows *chapter X of N*, a purple marker is put on each, and the YouTube list (`00:00 शुरुआत · Intro`,
+   `01:12 अध्याय 1 · …`) is copied to the clipboard and saved in `<trip>\_spp_youtube\`. Paste it into the description.
+   Run it again after every edit (and once more after the final render).
+YouTube only shows chapters when there are **3 or more**, the first at **00:00**, each **10 s or longer** — the script
+adds the 00:00 intro line and warns about the rest.
+
+![Chapter card bottom-left](guide_img/chapter_bl.jpg)
 
 ## 11. Credits
 Heading + up to 7 lines written `Role | Name` (blank lines are hidden), logo and handle.
@@ -486,6 +543,9 @@ Save the final file into `<video>\Exports`. Then *File → Export Project* (.drp
 | Moment analysis is very slow | It fell back to the CPU — check `<trip>\_spp_moments\analyse_log.txt` for "GPU not available"; re-run `setup_word_timing.ps1`. |
 | Key Transition picked the wrong key | Change it in the window before placing. Relative keys (D / Bm) share notes — either sounds right. |
 | No folders 20–24 in the SFX library | `Tools\freesound_key.txt` missing when `make_sfx.ps1` ran — add the key and run it again. |
+| YouTube doesn't show chapters | 3+ chapters, first at 00:00, each ≥ 10 s — run **Chapters - Number + YouTube List** and read its notes. |
+| No *SPP Film Title* / *SPP Chapter* in Effects → Titles | Run `.\install.ps1`, restart Resolve (titles are only read at start-up). |
+| A menu script "disappeared" | They're in folders now: Workspace → Scripts → Safar Pahad Parivar → 1 Setup … 6 Sound & Music. |
 | Reflection cleaning darkened the landscape / blotches | Run **Reflection - Clean Selected Clips** again with *Gentle*, or switch that clip back with *Show Original or Cleaned*. |
 | Cleaned take is shorter than the clip after trimming | Run **Reflection - Clean Selected Clips** again — it cleans the new range. |
 | No *SPP Glass Glare* in the DCTL list | Run `.\install.ps1` (as administrator if it says it couldn't copy), restart Resolve. DCTL needs Resolve Studio. |
