@@ -1,0 +1,45 @@
+// Safar Pahad Parivar - Glass Glare: takes off the milky veil that sun on the dashboard / dusty glass adds
+// to shots filmed through a windshield or window, mostly at the bottom of the frame, and puts contrast back.
+// Use: Color page > first node > ResolveFX > DCTL > DCTL List: Safar Pahad Parivar > SPP Glass Glare.
+// Timeline colour space: Rec.709 Gamma 2.4 (the kit's default).
+// Shaped reflections (vents, phone, hands) are for the 'Reflection - Clean Selected Clips' script; on bad shots
+// use both - script first, this on top.
+//   Glare amount          how thick the veil is (start 0.08-0.12; tick 'Show glare map' to see where it acts)
+//   Strength at bottom/top  the veil is usually strongest low in the frame (the dashboard reflects there)
+//   Glare starts at height  0 = top of frame, 1 = bottom; the ramp to full strength starts here
+//   Glare colour           + warm (tan dashboard), - cool (sky on the glass)
+//   Colour back            a little saturation where the veil had washed it out
+
+DEFINE_UI_PARAMS(amount, Glare amount, DCTLUI_SLIDER_FLOAT, 0.10, 0.0, 0.40, 0.005)
+DEFINE_UI_PARAMS(bottom, Strength at bottom, DCTLUI_SLIDER_FLOAT, 1.0, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(top, Strength at top, DCTLUI_SLIDER_FLOAT, 0.35, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(split, Glare starts at height, DCTLUI_SLIDER_FLOAT, 0.35, 0.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(tint, Glare colour cool to warm, DCTLUI_SLIDER_FLOAT, 0.15, -1.0, 1.0, 0.01)
+DEFINE_UI_PARAMS(sat, Colour back, DCTLUI_SLIDER_FLOAT, 1.10, 0.8, 1.6, 0.01)
+DEFINE_UI_PARAMS(showmap, Show glare map, DCTLUI_CHECK_BOX, 0)
+
+__DEVICE__ float lin(float v) { return _powf(_fmaxf(v, 0.0f), 2.4f); }
+__DEVICE__ float gam(float v) { return _powf(_fmaxf(v, 0.0f), 1.0f / 2.4f); }
+
+__DEVICE__ float3 transform(int p_Width, int p_Height, int p_X, int p_Y, float p_R, float p_G, float p_B)
+{
+    float y = (float)p_Y / (float)(p_Height - 1);
+    float t = _saturatef((y - split) / _fmaxf(1.0f - split, 0.001f));
+    t = t * t * (3.0f - 2.0f * t);
+    float w = top + (bottom - top) * t;
+    float v = amount * w;
+    float vr = v * (1.0f + 0.25f * tint);
+    float vg = v;
+    float vb = v * (1.0f - 0.25f * tint);
+
+    if (showmap != 0) return make_float3(gam(vr * 2.5f), gam(vg * 2.5f), gam(vb * 2.5f));
+
+    float r = _fmaxf((lin(p_R) - vr) / _fmaxf(1.0f - vr, 0.05f), 0.0f);
+    float g = _fmaxf((lin(p_G) - vg) / _fmaxf(1.0f - vg, 0.05f), 0.0f);
+    float b = _fmaxf((lin(p_B) - vb) / _fmaxf(1.0f - vb, 0.05f), 0.0f);
+    float R = gam(r), G = gam(g), B = gam(b);
+
+    float L = 0.2126f * R + 0.7152f * G + 0.0722f * B;
+    float s = 1.0f + (sat - 1.0f) * (0.4f + 0.6f * w);
+    return make_float3(L + (R - L) * s, L + (G - L) * s, L + (B - L) * s);
+}

@@ -34,6 +34,19 @@ foreach ($o in $ours) {
   Write-Host ("Installed {0,3} files -> {1}" -f $n, $o.dst)
 }
 
+# Colour tools (DCTL) -> Resolve's LUT folder (Color page > ResolveFX DCTL > DCTL List)
+$SrcLut = Join-Path $Kit "Resolve\LUT\Safar Pahad Parivar"
+$DstLut = Join-Path $env:ProgramData "Blackmagic Design\DaVinci Resolve\Support\LUT\Safar Pahad Parivar"
+if (Test-Path $SrcLut) {
+  try {
+    New-Item -ItemType Directory -Force -Path $DstLut | Out-Null
+    Copy-Item (Join-Path $SrcLut "*") $DstLut -Recurse -Force
+    Write-Host ("Installed {0,3} files -> {1}" -f (Get-ChildItem $DstLut -File).Count, $DstLut)
+  } catch {
+    Write-Host "Could not copy the DCTL colour tools to $DstLut (run PowerShell as administrator once, or copy them by hand)."
+  }
+}
+
 # Tell the menu scripts where the kit is (used by 'Import Brand Graphics')
 Set-Content -Path (Join-Path $DstScr "Utility\Safar Pahad Parivar\kit_path.txt") -Value $Kit -Encoding UTF8
 Write-Host "`nKit path recorded."
@@ -41,7 +54,7 @@ Write-Host "`nKit path recorded."
 Write-Host @"
 
 Done. Next:
-  1. Restart DaVinci Resolve (it only scans title templates at start-up).
+  1. Restart DaVinci Resolve (it only scans title templates and DCTLs at start-up).
   2. Once: Workspace > Scripts > Safar Pahad Parivar > Setup Render Presets
   3. Titles appear under: Effects > Titles > Safar Pahad Parivar
 "@

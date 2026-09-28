@@ -103,6 +103,14 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - **Moments - Add Markers**: Yellow laughter · Pink kids · Red shouts · Fuchsia cheering · Purple singing · Green reactions.
 - **Moments - Best Moments Timeline** (top 20/40/80, laughter, kids, openers) · **Moments - Search Transcript** (e.g. `बर्फ, पानी`).
 
+## 9a. Filmed through the car window (reflections / glare)
+- **Reflection - Scan Trip** (background) → run again: Media Pool **Orange** = strong reflection, **Yellow** = some.
+- Trim the shots, select → **Reflection - Clean Selected Clips** → *Preview pictures only* first → **Clean** (background,
+  ~4–5 min per minute of 4K) → when the window says *All done*, run again: cleaned **take 2** on the same clip (teal).
+- **Reflection - Show Original or Cleaned**: before / after (nothing selected = every cleaned clip).
+- Milky glare: Color page → **ResolveFX Color → DCTL → SPP Glass Glare** on node 1 (amount 0.08–0.12, *Show glare map* to aim).
+- At the shoot: black dash mat · silicone lens hood · lens flat on the glass · CPL filter · dark tops in the front seats.
+
 ## 10. Sound effects (bin *SPP SFX*, 269 sounds / 846 files — `Docs\SFX_Library.md`)
 - Build once: `.\Tools\make_sfx.ps1` → **SFX - Import Library**.
 - Styles for titles: Strings · Grand · Light · Mix → **SFX - Auto Sound for Titles** (Lime clips; re-run after edits; **Remove Auto Sounds** clears).

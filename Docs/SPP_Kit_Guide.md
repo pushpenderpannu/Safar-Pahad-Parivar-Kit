@@ -26,6 +26,7 @@ Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles l
 15b. [Phone-call voice](#15b-phone-call-voice)
 15c. [Background music](#15c-background-music)
 15d. [Moment finder](#15d-moment-finder)
+15e. [Reflections and glare through the car window](#15e-reflections-and-glare-through-the-car-window)
 16. [Render (Deliver)](#16-render-deliver)
 17. [Backup with git](#17-backup-with-git)
 18. [Troubleshooting](#18-troubleshooting)
@@ -60,7 +61,11 @@ two text reports the moment finder writes.
 | Music | **Music - Key Transition** | 1 or 2 music clips on the timeline | detects the keys, places a bridge / swell / tail on the cut |
 | Voices | **Phone Voice - Selected Clips** | audio clips | phone / walkie-talkie voice |
 | Voices / SFX | **Distance - Selected Clips** | audio clips | near / mid / far / very far / across the valley |
+| New trip | **Reflection - Scan Trip** | trip footage in the project | colours the clips that have windshield / window reflections |
+| Picture | **Reflection - Clean Selected Clips** | video clips shot through the glass | removes dashboard / phone reflections → cleaned take on the same clip (background) |
+| Picture | **Reflection - Show Original or Cleaned** | cleaned clips (or none = all) | before / after switch |
 Titles (Info Card, Altitude Counter, Peak Callout, Pop-up Title, Credits, Captions, Route Map) are in **Effects → Titles → Safar Pahad Parivar**.
+Colour tool **SPP Glass Glare** (takes the milky glare off windshield shots) is on the Color page: **ResolveFX Color → DCTL** → *SPP Glass Glare* (§15e).
 Script output and progress show in **Workspace → Console**.
 
 ### Outside Resolve — PowerShell in the kit folder (`F:\Video Editing\_Safar Pahad Parivar Kit`)
@@ -81,17 +86,22 @@ Script output and progress show in **Workspace → Console**.
 | `<trip>\_spp_moments\Transcript.md` | everything said on the trip, clip by clip (Ctrl+F) |
 | `<trip>\stops.csv` | route-map stops — edit names/times, then run *Route Map - Build from Timeline* again |
 | `Docs\SFX_Library.md` · `Docs\Music_Library.md` | every sound / track, what it's for, length, key |
+| `<trip>\_spp_clean\reflection_sheet.jpg` · `reflection_report.csv` | clips with reflections (after *Reflection - Scan Trip*) |
+| `<trip>\_spp_clean\<clip>__f….jpg` | before / after / removed picture for each cleaned clip |
 | `Docs\*.mp3` | demo reels: listen before choosing |
 
 ### Optional command-line tools (the menu scripts call these for you)
 `spp_gps.py` (GPS lookup, stops, route, GPX, local API) · `spp_key.py` (find a song's key / make a transition) ·
-`spp_distance.py` · `spp_phone_voice.py` · `spp_moments.py --search "बर्फ"` — all run with `Tools\.venv\Scripts\python.exe`.
+`spp_distance.py` · `spp_phone_voice.py` · `spp_moments.py --search "बर्फ"` ·
+`spp_reflection.py preview|clean|scan "<clip or trip>"` — all run with `Tools\.venv\Scripts\python.exe`.
 
 ### A video, start to finish
 1. **PowerShell:** `new_video.ps1` → copy footage into `<trip>\Footage` → `spp_sort_media.py --apply`.
-2. **Resolve:** new project → import footage → **New Timeline** → **Import Brand Graphics** → **Moments - Analyse Trip**.
+2. **Resolve:** new project → import footage → **New Timeline** → **Import Brand Graphics** → **Moments - Analyse Trip**
+   (and **Reflection - Scan Trip** if you filmed through the car windows).
 3. Read `Moments.md`; **Moments - Add Markers** / **Best Moments Timeline**; **Tag Shot Type** while you watch.
-4. Edit. Add SPP titles → **Info Cards - Fill from GPS**, **Route Map - Build from Timeline**.
+4. Edit. Shots through the glass: **Reflection - Clean Selected Clips** (+ *SPP Glass Glare* when grading).
+   Add SPP titles → **Info Cards - Fill from GPS**, **Route Map - Build from Timeline**.
 5. Record the VO onto the **VO** track → subtitles → **Captions - Sync Words to VO**.
 6. Music from *SPP Music* → **Music - Key Transition** where tracks change. **SFX - Auto Sound for Titles**, real sounds from
    folders 20–24 (use **Loop Fill** for beds, **Distance** for far-away sounds, **Land at Playhead** for risers).
@@ -410,6 +420,41 @@ names being called (Pihu, Oju, Meenakshi, Brijesh, Alka, Pushpender) — and wri
 5. **Moments - Search Transcript**: type words (comma-separated) → a timeline of every clip where they were said.
 Engines: faster-whisper large-v3 (speech, on the GPU) and PANNs (AudioSet sound events). Automatic Hindi transcripts have mistakes — use them to *find*, not to quote.
 
+## 15e. Reflections and glare through the car window
+Two different problems, two tools:
+
+| On screen | What it is | Tool |
+|---|---|---|
+| Shapes on the glass: the dashboard and its vents, the phone, a hand, a white shirt | **reflection** — stays in the same place while the road slides past | menu script **Reflection - Clean Selected Clips** |
+| Everything low in the frame looks milky / washed-out | **glare** — sunlight on the dashboard or dusty glass adds a veil | colour tool **SPP Glass Glare** (DCTL) |
+
+Resolve's own **Dehaze** (ResolveFX Refine) works on the glare, not on the shapes; SPP Glass Glare does the same job but
+is aimed at the lower frame where windshield glare sits, keeps whites white and has a map to see what it does.
+
+**Workflow**
+1. New trip: **Reflection - Scan Trip** (background) → run again → Orange/Yellow clips in the Media Pool = check these.
+2. Put the shots on the timeline, trim them, select → **Reflection - Clean Selected Clips** → *Preview pictures only* to
+   check → run again → **Clean** (background, ~4–5 min per minute of 4K) → when the window says *All done*, run it once more.
+3. The cleaned version is a **second take** of the same clip (teal). **Reflection - Show Original or Cleaned** flips
+   every cleaned clip for a before / after.
+4. Grade: **SPP Glass Glare** on the first node (Glare amount 0.08–0.12 to start; *Show glare map* to aim it).
+
+**How the cleaner works:** it looks at up to a minute of the clip. Scenery changes, the reflection doesn't — whatever is
+still there in every part of that minute, over areas where the landscape keeps rushing past, is the reflection. It takes
+that off in linear light (like peeling off the light the glass added), follows how strong it is second by second (the
+sun on the dashboard changes), and leaves alone anything that isn't moving behind the glass: the bonnet, the window
+frame, the sky, the far view straight ahead.
+
+**Better at the shoot (saves more than any fix)** — also on the *Clothing Colours* print-out:
+- **Black non-slip dash mat** — the dashboard can't reflect what's black and matte.
+- **Silicone anti-reflection lens hood** (rubber cone that presses against the glass) — blocks the car's inside.
+- **Phone lens flat against the glass**, not angled; clean the glass inside and out; wipe the lens.
+- **Clip-on polarising filter (CPL)** — turn it until the glare on the glass disappears (also deepens the sky).
+- Front-seat passengers in **dark tops** (bright clothes reflect in the windshield — the opposite of the outdoor rule).
+- Film from the **shady side** of the car; tilt the phone slightly down; switch off the phone screen's reflection by
+  dimming its brightness.
+- Side windows reflect less than the windshield; an open window reflects nothing (when it's safe).
+
 ## 16. Render (Deliver)
 Pick a preset: **SPP YouTube 4K**, **SPP YouTube 1080p**, **SPP Shorts 9x16**.
 
@@ -441,4 +486,7 @@ Save the final file into `<video>\Exports`. Then *File → Export Project* (.drp
 | Moment analysis is very slow | It fell back to the CPU — check `<trip>\_spp_moments\analyse_log.txt` for "GPU not available"; re-run `setup_word_timing.ps1`. |
 | Key Transition picked the wrong key | Change it in the window before placing. Relative keys (D / Bm) share notes — either sounds right. |
 | No folders 20–24 in the SFX library | `Tools\freesound_key.txt` missing when `make_sfx.ps1` ran — add the key and run it again. |
+| Reflection cleaning darkened the landscape / blotches | Run **Reflection - Clean Selected Clips** again with *Gentle*, or switch that clip back with *Show Original or Cleaned*. |
+| Cleaned take is shorter than the clip after trimming | Run **Reflection - Clean Selected Clips** again — it cleans the new range. |
+| No *SPP Glass Glare* in the DCTL list | Run `.\install.ps1` (as administrator if it says it couldn't copy), restart Resolve. DCTL needs Resolve Studio. |
 | A sound is missing in the bin after a rebuild | Run **SFX - Import Library** / **Music - Import Library** again (only new files are added). |

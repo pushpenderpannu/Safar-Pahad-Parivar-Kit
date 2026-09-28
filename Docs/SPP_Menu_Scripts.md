@@ -19,6 +19,8 @@ changes in Resolve afterwards, how to redo / undo it, and what to do if it doesn
   [SFX - Land at Playhead](#sfx---land-at-playhead) · [SFX - Loop Fill (In to Out)](#sfx---loop-fill-in-to-out) ·
   [Music - Key Transition](#music---key-transition) · [Distance - Selected Clips](#distance---selected-clips) ·
   [Phone Voice - Selected Clips](#phone-voice---selected-clips)
+- Picture: [Reflection - Scan Trip](#reflection---scan-trip) · [Reflection - Clean Selected Clips](#reflection---clean-selected-clips) ·
+  [Reflection - Show Original or Cleaned](#reflection---show-original-or-cleaned) · colour tool [SPP Glass Glare](#spp-glass-glare-colour-page-not-a-menu-script)
 
 ---
 
@@ -335,3 +337,84 @@ source and imported into a bin **SPP Distance**. Loops stay seamless. Console: `
 original is switched off. File: `<source>_phone-<style>_<start>s.wav` next to the source; bin **SPP Phone Voice**.
 Then add phone sounds around it from *SPP SFX → 08 Phone*: ringtone / vibrate → pickup → *(voice)* → hang-up + call-ended beeps.
 **Undo:** delete the new clip, select the original, press **D**.
+
+---
+
+# Picture
+
+Shots filmed with the phone **through the car's windshield or a window** pick up two kinds of trouble: **shaped
+reflections** on the glass (the dashboard and its vents, the phone, hands, a bright shirt) and a **milky
+glare** (sun on the dashboard, dust on the glass). The scripts below remove the shaped reflections; the colour
+tool **SPP Glass Glare** takes off the glare. Resolve's own *Dehaze* helps the glare a little but can't remove shapes.
+
+## Reflection - Scan Trip
+**Use it for:** finding which clips of a trip have reflections, before you start editing.
+**Before:** the trip's footage imported into the project (from `<trip>\Footage`); the Python engines installed.
+**How:** run it. The first run starts a background window **SPP Reflection scan** (it looks at the key frames only —
+a few minutes for a trip; later runs only look at new clips). Run it **again** when that window says *Done*.
+**You'll see (second run):**
+- In the Media Pool the clips get a colour: **Orange** = strong reflection, **Yellow** = some.
+- Console: the worst clips with their score (0 = none, 1.5+ = some, 4+ = strong).
+- A picture of the worst clips opens (`<trip>\_spp_clean\reflection_sheet.jpg`); the full list is
+  `<trip>\_spp_clean\reflection_report.csv`.
+**Again / undo:** run again after adding footage. Clip colours are ordinary Media Pool colours — change them any time
+(right-click → Clip Color). The score is a hint, not a verdict: dusty glass and a car-bonnet shot can score too.
+**Problems:** `Couldn't find the trip folder` → import footage from `<trip>\Footage` first.
+
+## Reflection - Clean Selected Clips
+**Use it for:** removing the reflection of the dashboard / phone / hands from shots filmed through the glass.
+Works best when the phone was on a mount (or held still against the glass) while the car was moving — the scenery
+slides past, the reflection stays in the same place, and that's how the tool tells them apart.
+**Before:** the clips on your timeline, trimmed roughly to what you'll use (only the used part + 1 s either side is
+cleaned). Select them (or park the playhead on one). The Python engines installed; an NVIDIA GPU for the fast encoder.
+**How:** run it → choose **Strength**: *Normal* (recommended — removes only what it's sure is a reflection), *Gentle*
+(subtle) or *Strong* (also removes what it is less sure about — try it on windshield shots looking straight down the road
+if Normal leaves the reflection; always check the preview). Then:
+- **Preview pictures only** — in a few seconds per clip a picture opens: *original | cleaned | what was removed (×3 brighter)*.
+  Check the right-hand panel shows the dashboard / reflection shapes, not the landscape.
+- **Clean** — starts a background window **SPP Reflection cleaning**: about **4–5 minutes per minute of 4K** (less for 1080p); keep editing.
+  When the window says *All done*, select the same clips and **run the script again**.
+**You'll see (after the second run):**
+- Each clip now has **two takes** (Resolve's *Take Selector*): take 1 = original, take 2 = cleaned. The cleaned take is
+  shown, and the clip turns **teal**. Position, length, track, titles above it — all unchanged.
+- The cleaned files are in `<trip>\_spp_clean\` (`<clip>__f<first>-<last>_s<strength>.mp4`, HEVC 10-bit, same size and frame rate,
+  video only — the sound still comes from your original audio) with a `.jpg` before/after next to each, in a bin
+  **SPP Cleaned (reflection)**.
+- Console: `Cleaned take added: VID….mp4`.
+**Again / undo:** *Reflection - Show Original or Cleaned* switches back and forth. Run it again with another strength to
+replace the cleaned take (a new file is made). To remove it for good: right-click the clip → *Take Selector*, delete take 2
+→ *Finalize Take*. Trimmed the clip longer than the cleaned part? Run it again — it cleans the new range.
+Colour grade: clean first, grade afterwards. If you already graded the original, check the grade is still there on the
+cleaned take; if not, grab a still of it before cleaning and apply it after (Color page → right-click the viewer →
+*Grab Still*; later right-click the still → *Apply Grade*).
+**Problems:**
+- Scenery got darker or blotchy → use *Gentle*, or keep the original for that clip (not every shot can be cleaned).
+- Hand-held shots with lots of movement, sharp hairpin bends where the sun swings across the dashboard, and reflections
+  over plain bright sky are cleaned only partly.
+- The far view straight ahead (where the road meets the mountains) is left alone on purpose — it barely moves while
+  driving, so the tool can't tell it from a reflection.
+- `not enough video to look at` → the clip is shorter than ~5 s.
+
+## Reflection - Show Original or Cleaned
+**Use it for:** comparing before / after, or going back to the original.
+**Before:** clips cleaned with *Reflection - Clean Selected Clips*.
+**How:** select clips and run it — or select nothing to switch **every** cleaned clip on the timeline (a quick before /
+after of the whole edit).
+**You'll see:** the clips switch take; **teal** = showing cleaned, **orange** = showing the original. Console:
+`3 clip(s) now show the ORIGINAL (orange)`.
+**Again / undo:** run again to switch back.
+
+## SPP Glass Glare (colour page, not a menu script)
+**Use it for:** the milky, washed-out look of shots through a sunny or dusty windshield — mostly low in the frame, where
+the dashboard reflects.
+**Before:** `install.ps1` run once (it copies the tool into Resolve's LUT folder) and Resolve restarted.
+**How:** Color page → select the clip → open **Effects** (top right) → **ResolveFX Color → DCTL** → drag it onto the
+clip's **first node** → in its *DCTL List* pick **SPP Glass Glare** (listed under Safar Pahad Parivar). Start with **Glare amount 0.08–0.12**; tick **Show glare map** to see where it
+acts (brighter = more), set **Strength at bottom / top** and **Glare starts at height** to match, untick. *Glare colour*:
++ for a tan/brown dashboard, − for sky-blue glare. *Colour back* returns a little saturation.
+To reuse on other clips from the same drive: right-click the viewer → *Grab Still*, then on each clip right-click the
+still → *Apply Grade*.
+**You'll see:** deeper blacks and colour in the lower part of the frame; whites stay white.
+**Undo:** switch the node off (Ctrl+D) or delete it.
+**Tip:** on a bad shot use both — *Reflection - Clean Selected Clips* first (removes shapes), then this (removes the veil).
+
