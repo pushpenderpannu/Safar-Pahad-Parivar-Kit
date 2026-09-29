@@ -1,8 +1,8 @@
-# Safar Pahad Parivar - make every SPP title leave with its exit animation, whatever length you gave the clip.
-# Resolve doesn't tell a title how long its clip is, so a title trimmed shorter (Ctrl+D, dragging its end) would just
-# vanish at the cut. Run this after changing title lengths: each trimmed title's "Animate Out At" is set so the exit
-# animation ends on the clip's last frame. Titles back at full length get their default exit again.
-# (Fill from GPS, Chapters and Auto Sound for Titles do this too, every time they run.)
+# Safar Pahad Parivar - make SPP titles behave like Resolve's own titles when you change their length:
+# the entrance keeps its timing at the start, the exit always finishes on the last frame, the hold in between
+# stretches or shrinks.  Run it once after adding titles - from then on it's automatic (Ctrl+D, dragging the end...).
+# (Fill from GPS, Chapters and Auto Sound for Titles do this too.)  Titles can be shortened, not made longer than
+# their default length.
 import os, sys
 try:
     resolve
@@ -21,4 +21,4 @@ tl = proj.GetCurrentTimeline() if proj else None
 if not tl:
     print("Open a timeline first.")
 else:
-    C.fit_titles(tl)
+    C.follow_clip(tl)

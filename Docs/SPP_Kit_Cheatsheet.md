@@ -105,7 +105,7 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - **Moments - Best Moments Timeline** (top 20/40/80, laughter, kids, openers) · **Moments - Search Transcript** (e.g. `बर्फ, पानी`).
 
 ## 8a. Film title and chapters
-- Made a title shorter? **4 Titles & Graphics → Titles - Fit Exit to Clip Length** so it animates out at its end.
+- After adding titles run **4 Titles & Graphics → Titles - Follow Clip Length** once: entrance fixed, exit always on the last frame, hold stretches.
 - The intro ends on *…presents* → put **SPP Film Title** straight after it (film name Hindi + English, place / date line).
 - Each chapter starts with an **SPP Chapter** card (type the name; the number is set for you).
 - **4 Titles & Graphics → Chapters - Number + YouTube List**: numbers them, purple markers, YouTube chapter list copied

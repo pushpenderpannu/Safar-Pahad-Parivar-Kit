@@ -12,7 +12,7 @@ Workspace → Scripts → Safar Pahad Parivar
 ├─ 3 Picture            Reflection - Scan Trip / Clean Selected Clips
 │                       Reflection - Show Original or Cleaned
 ├─ 4 Titles & Graphics  Info Cards - Fill from GPS · Route Map - Build from Timeline
-│                       Chapters - Number + YouTube List · Titles - Fit Exit to Clip Length
+│                       Chapters - Number + YouTube List · Titles - Follow Clip Length
 ├─ 5 Captions & Voice   Captions - Sync Words to VO · Phone Voice - Selected Clips
 └─ 6 Sound & Music      SFX - Import Library · Music - Import Library
                         SFX - Auto Sound for Titles / Remove Auto Sounds
@@ -75,7 +75,7 @@ The scripts sit in six folders, in the order you use them while making a video:
 | **4 Titles & Graphics** | **Info Cards - Fill from GPS** | — (all empty SPP Info Cards) | place, altitude, date, time, weather from the GPS of the shot underneath |
 | | **Route Map - Build from Timeline** | an SPP Route Map clip on the timeline | real-road route, stops, times for the trip |
 | | **Chapters - Number + YouTube List** | SPP Chapter titles on the timeline | numbers the chapters, adds markers, copies the YouTube chapter list |
-| | **Titles - Fit Exit to Clip Length** | — (all SPP titles) | titles you made shorter get their exit animation at their clip end |
+| | **Titles - Follow Clip Length** | — (all SPP titles) | entrance fixed, exit always on the clip's last frame, hold stretches (once; then automatic) |
 | **5 Captions & Voice** | **Captions - Sync Words to VO** | subtitles + a track named **VO** | word-by-word timing + stress into SPP Captions |
 | | **Phone Voice - Selected Clips** | audio clips | phone / walkie-talkie voice |
 | **6 Sound & Music** | **SFX - Import Library** · **Music - Import Library** | — | puts the libraries into the *SPP SFX* / *SPP Music* bins |
@@ -210,10 +210,10 @@ Brand board (colours, fonts, logo): [`Brand/brand_board.png`](../Brand/brand_boa
 - **Choice fields are typed words** (Resolve 21 shows them as text boxes). The field name lists the choices, e.g.
   *Position: bottom-left / bottom-right / top-left / top-right* → type `top-right` (just `top-r` or the number `3` also works).
 - **Animate Out At (s, 0 = end)** — when the title leaves; 0 = at its end.
-- **Made a title shorter** (Ctrl+D or dragging its end)? Resolve doesn't tell a title its clip length, so run
-  **4 Titles & Graphics → Titles - Fit Exit to Clip Length**: each trimmed title gets its exit animation right at its
-  clip end (a short Info Card also plays its entrance faster). *Fill from GPS*, *Chapters* and *Auto Sound for Titles*
-  do the same every time they run. Titles can be made shorter, not longer than their default length.
+- **Changing a title's length** (Ctrl+D, dragging its end): run **4 Titles & Graphics → Titles - Follow Clip Length** once
+  after adding titles. Then they behave like Resolve's own titles — entrance fixed at the start, exit always on the last
+  frame, the hold in between stretches (a short Info Card also plays its entrance faster). *Fill from GPS*, *Chapters*
+  and *Auto Sound for Titles* do it too. Titles can be made shorter, not longer than their default length.
 - **Accent Colour** — defaults to brand gold `#F4B03E`.
 - Works in 16:9 and 9:16 timelines (layouts adapt automatically).
 
@@ -560,7 +560,7 @@ Save the final file into `<video>\Exports`. Then *File → Export Project* (.drp
 | No folders 20–24 in the SFX library | `Tools\freesound_key.txt` missing when `make_sfx.ps1` ran — add the key and run it again. |
 | YouTube doesn't show chapters | 3+ chapters, first at 00:00, each ≥ 10 s — run **Chapters - Number + YouTube List** and read its notes. |
 | No *SPP Film Title* / *SPP Chapter* in Effects → Titles | Run `.\install.ps1`, restart Resolve (titles are only read at start-up). |
-| A title vanishes at its end instead of animating out | You made it shorter — run **Titles - Fit Exit to Clip Length** (4 Titles & Graphics). |
+| A title vanishes at its end instead of animating out | Run **Titles - Follow Clip Length** (4 Titles & Graphics) once — after that its exit follows the clip end. |
 | A menu script "disappeared" | They're in folders now: Workspace → Scripts → Safar Pahad Parivar → 1 Setup … 6 Sound & Music. |
 | Reflection cleaning darkened the landscape / blotches | Run **Reflection - Clean Selected Clips** again with *Gentle*, or switch that clip back with *Show Original or Cleaned*. |
 | Cleaned take is shorter than the clip after trimming | Run **Reflection - Clean Selected Clips** again — it cleans the new range. |

@@ -155,7 +155,7 @@ this.$.wrap.style.transformOrigin=p===0?"50% 50%":"0% 100%";
 _frame(t,out){
 const s=this._state,p=this._pos,sc=(s.scale||1)*(this._vertical&&p===0?0.72:1);
 this.$.bd.style.opacity=String(eo(seg(t,0,0.8)));
-const push=1+0.03*seg(t,0,DURATION);
+const push=1+0.03*seg(t,0,(typeof s.outAt==="number"&&s.outAt>0)?s.outAt+0.5:DURATION);   // slow push-in over the whole clip
 this.$.wrap.style.transform=(p===0?"translate(-50%,-50%) ":"")+`scale(${(sc*push).toFixed(4)})`;
 const r=eo(seg(t,0.1,1.3)); this.$.ridge.setAttribute("stroke-dasharray","1 1"); this.$.ridge.setAttribute("stroke-dashoffset",String(1-r));
 const sn=eo(seg(t,0.9,1.4)); this.$.snow.setAttribute("stroke-dasharray","1 1"); this.$.snow.setAttribute("stroke-dashoffset",String(1-sn));

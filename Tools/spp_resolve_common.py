@@ -112,35 +112,52 @@ def set_choice(tool, index, word):
     tool.SetInput(f"DynParamText{index}", str(word))
 
 
-# ------------------------------------------------------------------ titles: exit animation follows the clip length
-# Resolve never tells an OGraf title how long its clip is - the title only knows its default length. When a title is
-# trimmed shorter, its exit would fall after the clip end and it would just vanish. fit_titles() moves the exit so it
-# finishes on the clip's last frame.  {template: (index of "Animate Out At", default length s, exit length s)}
+# ------------------------------------------------------------------ titles: fixed entrance, dynamic middle, fixed exit
+# Resolve never tells an OGraf title how long its clip is - the title only knows its default length. follow_clip()
+# ties each SPP title's "Animate Out At" to its clip with a Fusion expression: out = clip end - exit length. From then
+# on Resolve recalculates it whenever the clip is made longer or shorter: the entrance keeps its timing at the start,
+# the exit always finishes on the last frame, and the hold in between stretches or shrinks.
+# {template: (index of "Animate Out At", default length s, exit length s)}
 OUT_PARAM = {"SPP-Info-Card": (13, 8, 1.0), "SPP-Altitude-Counter": (9, 8, 0.6), "SPP-Peak-Callout": (10, 6, 0.6),
              "SPP-Popup-Title": (6, 5, 0.6), "SPP-Credits": (11, 10, 0.6), "SPP-Route-Map": (12, 40, 0.6),
              "SPP-Film-Title": (8, 7, 0.6), "SPP-Chapter": (11, 5, 0.6)}
+EXPR = "(comp.RenderEnd + 1)/comp:GetPrefs('Comp.FrameFormat.Rate') - %.2f"
 
 
-def fit_titles(tl, quiet=False):
-    """Set 'Animate Out At' on every trimmed SPP title so it animates out right at its clip end. Returns count."""
-    fps = float(tl.GetSetting("timelineFrameRate"))
-    n = 0
+def follow_clip(tl, quiet=False):
+    """Make every SPP title's exit follow its clip end (once per title; afterwards Resolve keeps it up to date)."""
+    new = own = 0
     for name, (idx, full, outlen) in OUT_PARAM.items():
         for it, tool, trk in templates_on(tl, name):
-            dur = it.GetDuration() / fps
-            key = "DynParamNum%d" % idx
             try:
-                cur = float(tool.GetInput(key) or 0)
+                inp = tool["DynParamNum%d" % idx]
+                ex = inp.GetExpression() or ""
             except Exception:
-                cur = 0.0
-            if dur < full - 0.05:                                   # trimmed shorter than the template
-                want = round(max(0.3, dur - outlen - 0.04), 2)
-                if cur <= 0 or cur > want + 0.01:                    # default, or it would be cut off
-                    tool.SetInput(key, want)
-                    n += 1
-            elif cur > full - outlen:                                # back to full length: default exit again
-                tool.SetInput(key, 0.0)
-                n += 1
+                continue
+            want = EXPR % (outlen + 0.04)
+            if ex == want:
+                continue
+            if not ex and float(tool.GetInput("DynParamNum%d" % idx) or 0) > 0 and not _was_fitted(tool, idx, it, outlen):
+                own += 1                                           # the editor typed an exit time - keep it
+                continue
+            inp.SetExpression(want)
+            new += 1
     if not quiet:
-        print("Fitted the exit animation of %d title(s) to their clip length." % n if n else "All titles already end with their exit animation.")
-    return n
+        msg = ("%d title(s) now follow their clip length (entrance fixed, exit on the last frame)." % new) if new else \
+              "All SPP titles already follow their clip length."
+        if own:
+            msg += " %d kept their own 'Animate Out At' (clear it to 0 and run again to make them follow)." % own
+        print(msg)
+    return new
+
+
+def _was_fitted(tool, idx, it, outlen):
+    """A value written by the older 'fit' script (clip end - exit) counts as ours, not the editor's."""
+    try:
+        fps = float(it.GetFusionCompByIndex(1).GetPrefs("Comp.FrameFormat.Rate") or 30)
+        return abs(float(tool.GetInput("DynParamNum%d" % idx) or 0) - (it.GetDuration() / fps - outlen - 0.04)) < 0.02
+    except Exception:
+        return False
+
+
+fit_titles = follow_clip          # older name used by some scripts
