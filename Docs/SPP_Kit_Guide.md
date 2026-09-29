@@ -7,6 +7,7 @@ Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles l
 Workspace → Scripts → Safar Pahad Parivar
 ├─ 1 Setup              Setup Render Presets · New Timeline - YouTube 16x9
 │                       New Timeline - Shorts 9x16 · Import Brand Graphics
+│                       Keyboard Shortcuts - On or Off
 ├─ 2 Marking & Moments  Tag Shot Type ▸ 0–9 · Moments - Analyse Trip
 │                       Moments - Add Markers / Best Moments Timeline / Search Transcript
 ├─ 3 Picture            Reflection - Scan Trip / Clean Selected Clips
@@ -66,6 +67,7 @@ The scripts sit in six folders, in the order you use them while making a video:
 | **1 Setup** | **Setup Render Presets** (once per PC) | — | adds the SPP YouTube 4K / 1080p / Shorts render presets |
 | | **New Timeline - YouTube 16x9** / **Shorts 9x16** | — | named tracks (Main, B-Roll, GFX, Nat Sound, VO, Music, SFX, Subtitles) |
 | | **Import Brand Graphics** | — | intro, end card, watermarks into a bin |
+| | **Keyboard Shortcuts - On or Off** | — | number keys 4–0 tag clips; Ctrl+Alt+B / M / S import brand graphics / music / SFX |
 | **2 Marking & Moments** | **Tag Shot Type → 0–9** | timeline or media-pool clips | colour + keyword (Hero, Family talk, Scenery, Road, Drone, Timelapse, Kids, Stay/Food, Reject) |
 | | **Moments - Analyse Trip** | trip footage in the project | finds laughter / kids / reactions + Hindi transcript (background) |
 | | **Moments - Add Markers** · **Best Moments Timeline** · **Search Transcript** | — | markers on clips · a selects timeline · a timeline of every clip where a word was said |
@@ -183,6 +185,20 @@ Every timeline gets the same named tracks:
 ## 4. Tag shot types (colours)
 Select clips (timeline or media pool) → **2 Marking & Moments → Tag Shot Type → 1…9**. Sets the clip colour **and** a keyword, so you can make
 Smart Bins like *Keywords contains "Hero Shot"*. **0 Clear Tag** removes it.
+
+**Keyboard shortcuts** — run **1 Setup → Keyboard Shortcuts - On or Off** once, then tag while you watch:
+
+| Key | Tag | Key | Does |
+|---|---|---|---|
+| **4** | Hero Shot | **9** | Reject |
+| **5** | A-Roll Family Talk | **0** | Clear Tag |
+| **6** | B-Roll Scenery | **Ctrl+Alt+B** | Import Brand Graphics |
+| **7** | Road Drive | **Ctrl+Alt+M** | Music - Import Library |
+| **8** | Kids Moment | **Ctrl+Alt+S** | SFX - Import Library |
+
+They work only while Resolve is in front on the Media / Cut / Edit page and you're not typing in a text box; 1 2 3 and
+Q W E are untouched. 4–0 replace Resolve's multicam angle keys (numpad keys untouched). **Ctrl+Alt+Shift+K** pauses
+them; running the script again turns them off. Drone, Timelapse and Stay/Food stay in the menu.
 
 ![Shot colours](guide_img/shot_colours.png)
 

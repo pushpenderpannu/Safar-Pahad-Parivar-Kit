@@ -7,7 +7,7 @@ changes in Resolve afterwards, how to redo / undo it, and what to do if it doesn
 **Contents**
 - [A. Before any script — a new project the right way](#a-before-any-script--a-new-project-the-right-way)
 - [B. Running a script and reading its messages](#b-running-a-script-and-reading-its-messages)
-- **1 Setup**: [Setup Render Presets](#setup-render-presets) · [New Timeline - YouTube 16x9](#new-timeline---youtube-16x9) · [New Timeline - Shorts 9x16](#new-timeline---shorts-9x16) · [Import Brand Graphics](#import-brand-graphics)
+- **1 Setup**: [Setup Render Presets](#setup-render-presets) · [New Timeline - YouTube 16x9](#new-timeline---youtube-16x9) · [New Timeline - Shorts 9x16](#new-timeline---shorts-9x16) · [Import Brand Graphics](#import-brand-graphics) · [Keyboard Shortcuts - On or Off](#keyboard-shortcuts---on-or-off)
 - **2 Marking & Moments**: [Tag Shot Type 0–9](#tag-shot-type-09) · [Moments - Analyse Trip](#moments---analyse-trip) · [Moments - Add Markers](#moments---add-markers) · [Moments - Best Moments Timeline](#moments---best-moments-timeline) · [Moments - Search Transcript](#moments---search-transcript)
 - **3 Picture**: [Reflection - Scan Trip](#reflection---scan-trip) · [Reflection - Clean Selected Clips](#reflection---clean-selected-clips) · [Reflection - Show Original or Cleaned](#reflection---show-original-or-cleaned) · [SPP Glass Glare](#spp-glass-glare-colour-page-not-a-menu-script)
 - **4 Titles & Graphics**: [Info Cards - Fill from GPS](#info-cards---fill-from-gps) · [Route Map - Build from Timeline](#route-map---build-from-timeline) · [Chapters - Number + YouTube List](#chapters---number--youtube-list) · [Titles - Follow Clip Length](#titles---follow-clip-length)
@@ -103,7 +103,35 @@ Console: `Imported 4 new graphics from …\Graphics into 'SPP Graphics'`.
 Then: intro at the start of V1 (or V3 over footage) — it ends on *…presents*, so put the **SPP Film Title** right after it
 (Effects → Titles → Safar Pahad Parivar; see *Chapters - Number + YouTube List*) — end card at the end, watermark on V3
 across the whole video.
+**Shortcut:** **Ctrl+Alt+B** (with *Keyboard Shortcuts* on).
 **Again / undo:** running again adds only files not already in the bin. Undo: delete the bin (files stay on disk).
+
+## Keyboard Shortcuts - On or Off
+**Use it for:** tagging clips with the number keys while you watch, and importing the brand graphics / music / SFX with one key.
+**Before:** the kit's Python tools installed (`.\Tools\setup_word_timing.ps1`, once).
+**How:** run it once — the shortcuts are then on, also after every Windows restart. Run it again to turn them off.
+
+| Key | Does | | Key | Does |
+|---|---|---|---|---|
+| **4** | Hero Shot (Orange) | | **9** | Reject (Chocolate) |
+| **5** | A-Roll Family Talk (Yellow) | | **0** | Clear Tag |
+| **6** | B-Roll Scenery (Green) | | **Ctrl+Alt+B** | Import Brand Graphics |
+| **7** | Road Drive (Blue) | | **Ctrl+Alt+M** | Music - Import Library |
+| **8** | Kids Moment (Pink) | | **Ctrl+Alt+S** | SFX - Import Library |
+
+**Ctrl+Alt+Shift+K** pauses / resumes them (high beep = on, low beep = paused). Drone, Timelapse and Stay/Food have no
+key — use the menu for those.
+**You'll see:** console `Keyboard shortcuts are ON (and will start with Windows)`. From then on a number key recolours the
+selected clips at once (same as the Tag Shot Type scripts); an import gives a short *ding* when done.
+**How it works:** Resolve can't put a shortcut on a menu script, so a tiny background helper (no window) listens for these
+keys — **only** while the Resolve window is in front, you're on the **Media, Cut or Edit** page, and you're **not typing in
+a text box** (title text, search, rename…). Anywhere else the keys do what they always did. 1 2 3 and Q W E are not touched.
+The top-row 4–0 were Resolve's *multicam cut to angle 4–9* keys; while the helper is on, they tag instead (numpad keys are
+untouched, and after **+** or **−** the digits still go to Resolve, so *+10 Enter* still moves the playhead).
+**Again / undo:** run again = off (4–0 are multicam keys again, and it no longer starts with Windows).
+**Problems:** nothing happens → check you're on the Edit/Cut/Media page and clicked on the timeline (not in a text box);
+*Preferences → System → General → External scripting using* must be **Local**; log:
+`%LOCALAPPDATA%\Safar Pahad Parivar\hotkeys_log.txt`. Status: `Tools\.venv\Scripts\python.exe Tools\spp_hotkeys.py --status`.
 
 ---
 
@@ -132,7 +160,7 @@ selected on the timeline, in the **Media Pool**.
 keywords you typed are kept). Console: `Tagged 3 timeline / 3 media pool clips as Hero Shot`.
 Then: **Smart Bin** (*File → New Smart Bin*, rule *Keywords contains "Kids Moment"*) = every kids clip, always up to date.
 **Again / undo:** a new tag replaces the old SPP tag; **0 Clear Tag** removes it.
-Tip: give it keyboard shortcuts (*DaVinci Resolve → Keyboard Customization*, search the script name) to tag while watching.
+Faster: turn on **1 Setup → Keyboard Shortcuts - On or Off** — then **4** Hero · **5** Family Talk · **6** Scenery · **7** Road · **8** Kids · **9** Reject · **0** Clear.
 
 ## Moments - Analyse Trip
 **Use it for:** finding the family moments in all of a trip's footage — laughter, kids shouting / cheering, singing,
@@ -391,6 +419,7 @@ Menu **Workspace → Scripts → Safar Pahad Parivar → 6 Sound & Music** — l
 21 Car & Road, 22 Birds, 23 Water, 24 Temple & Town*. Console: `Imported 846 new sounds into the 'SPP SFX' bin (846 in the library).`
 File names tell you what they are: `SPP_Rain_Heavy_LOOP_30s_v02` = loopable 30 s bed, variation 2. Descriptions: `Docs\SFX_Library.md`.
 **Again / undo:** after a library rebuild, run again — only new files are added. Undo: delete the bin.
+**Shortcut:** **Ctrl+Alt+S** (with *Keyboard Shortcuts* on).
 **Problems:** `The SFX library isn't built yet` → run `.\Tools\make_sfx.ps1`. Tip: the other SFX scripts import what
 they need themselves, so this is only for browsing.
 
@@ -401,6 +430,7 @@ they need themselves, so this is only for browsing.
 **You'll see:** bin **SPP Music** with sub-bins *01 Slow Build, 02 Temple Bells, 03 Wind, 04 Flute*; the clips are **Purple**.
 Console lists every track with length and mood. Keys and uses: `Docs\Music_Library.md`.
 **Again / undo:** again → only new tracks. Undo: delete the bin.
+**Shortcut:** **Ctrl+Alt+M** (with *Keyboard Shortcuts* on).
 **Problems:** `The music library isn't built yet` → `.\Tools\make_music.ps1`.
 
 ## SFX - Auto Sound for Titles

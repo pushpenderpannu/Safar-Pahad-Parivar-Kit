@@ -27,17 +27,21 @@ Resolve → **Workspace → Scripts → Safar Pahad Parivar → 1 Setup →**
 ## 2. Shot-type colours (select clips → Workspace → Scripts → Safar Pahad Parivar → 2 Marking & Moments → Tag Shot Type)
 Works on selected **timeline** clips (also tags their source), or selected **media pool** clips.
 
-| Colour | Shot type |
-|---|---|
-| 🟧 Orange | Hero shot |
-| 🟨 Yellow | A-roll / family talk |
-| 🟩 Green | B-roll / scenery |
-| 🟦 Blue | Road / drive |
-| Teal | Drone / aerial |
-| 🟪 Purple | Timelapse |
-| Pink | Kids moment |
-| Tan | Stay / food / local life |
-| Chocolate | Reject |
+| Key | Colour | Shot type |
+|---|---|---|
+| **4** | 🟧 Orange | Hero shot |
+| **5** | 🟨 Yellow | A-roll / family talk |
+| **6** | 🟩 Green | B-roll / scenery |
+| **7** | 🟦 Blue | Road / drive |
+| – | Teal | Drone / aerial |
+| – | 🟪 Purple | Timelapse |
+| **8** | Pink | Kids moment |
+| – | Tan | Stay / food / local life |
+| **9** | Chocolate | Reject |
+| **0** | (none) | Clear tag |
+
+Keys work after **1 Setup → Keyboard Shortcuts - On or Off** (Edit/Cut/Media page, not while typing). Also
+**Ctrl+Alt+B** brand graphics · **Ctrl+Alt+M** music library · **Ctrl+Alt+S** SFX library · **Ctrl+Alt+Shift+K** pause.
 Each tag also writes a **keyword**, so you can build Smart Bins (e.g. *Keywords contains "Hero Shot"*).
 
 ## 3. Render presets (Deliver page)

@@ -13,7 +13,7 @@ Set-Location $PSScriptRoot
 $py = Join-Path $env:LOCALAPPDATA "Programs\Python\Python313\python.exe"; if (-not (Test-Path $py)) { $py = "python" }
 if (-not (Test-Path ".venv\Scripts\python.exe")) { & $py -m venv .venv }
 $v = ".\.venv\Scripts\python.exe"
-& $v -m pip install --no-cache-dir faster-whisper numpy scipy pillow pillow-heif nvidia-cublas-cu12 "nvidia-cudnn-cu12==9.*"
+& $v -m pip install --no-cache-dir faster-whisper numpy scipy pillow pillow-heif comtypes nvidia-cublas-cu12 "nvidia-cudnn-cu12==9.*"
 & $v -m pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
 & $v -m pip install --no-cache-dir panns-inference librosa
 
