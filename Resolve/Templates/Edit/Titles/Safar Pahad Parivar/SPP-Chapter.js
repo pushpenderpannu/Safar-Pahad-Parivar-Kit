@@ -1,4 +1,4 @@
-const DEFAULTS={"number": 2, "total": 5, "titleHi": "दारमा घाटी की ओर", "titleEn": "INTO THE DARMA VALLEY", "meta": "दिन 2 · धारचूला → दुग्तू", "labelHi": "अध्याय", "labelEn": "CHAPTER", "hindiDigits": false, "position": "centre", "backdrop": true, "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e", "rolling": true};
+const DEFAULTS={"number": 2, "total": 5, "titleHi": "दारमा घाटी की ओर", "titleEn": "INTO THE DARMA VALLEY", "meta": "दिन 2 · धारचूला → दुग्तू", "labelHi": "अध्याय", "labelEn": "CHAPTER", "hindiDigits": false, "position": "centre", "backdrop": false, "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e", "rolling": true};
 const DURATION=5;
 const CHOICES={"position": ["centre", "bottom-left", "top-left"]};
 const CSS=`
@@ -11,8 +11,8 @@ const CSS=`
 .lab{display:flex;flex-direction:column;align-items:flex-start}
 .lh{font-size:calc(var(--u)*40);font-weight:800;color:var(--snow);line-height:1.2;text-shadow:0 calc(var(--u)*2) calc(var(--u)*10) rgba(0,0,0,.45)}
 .le{font-size:calc(var(--u)*17);font-weight:700;color:var(--accent);letter-spacing:.34em;white-space:nowrap}
-.clip{overflow:hidden;padding:calc(var(--u)*10) calc(var(--u)*6) calc(var(--u)*4);margin-top:calc(var(--u)*8)}
-.th{font-size:calc(var(--u)*96);font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 calc(var(--u)*4) calc(var(--u)*24) rgba(0,0,0,.5)}
+.clip{overflow:hidden;padding:calc(var(--u)*34) calc(var(--u)*50) calc(var(--u)*30);margin:calc(var(--u)*-16) calc(var(--u)*-44) calc(var(--u)*-26)}
+.th{font-size:calc(var(--u)*96);font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 calc(var(--u)*3) calc(var(--u)*14) rgba(0,0,0,.42)}
 .te{font-size:calc(var(--u)*24);font-weight:700;color:var(--snow);opacity:.92;white-space:nowrap;text-shadow:0 calc(var(--u)*2) calc(var(--u)*10) rgba(0,0,0,.5)}
 .meta{font-size:calc(var(--u)*24);font-weight:500;color:rgba(245,248,252,.88);white-space:nowrap;margin-top:calc(var(--u)*10);text-shadow:0 calc(var(--u)*2) calc(var(--u)*10) rgba(0,0,0,.5)}
 .prog{display:block;height:calc(var(--u)*40);margin-top:calc(var(--u)*24);overflow:visible}`;
@@ -180,7 +180,7 @@ else{this.$.num.classList.remove("roll");this.$.num._rk=null;setT(this.$.num,thi
 this.$.dv.style.transform=`scaleY(${eo(seg(t,0.2,0.6))})`;
 const lb=eo(seg(t,0.3,0.8)); this.$.lh.style.opacity=this.$.le.style.opacity=String(lb);
 this.$.lh.style.transform=this.$.le.style.transform=`translateX(${Math.round(-14*this._u*(1-lb))}px)`;
-const h=eo(seg(t,0.35,0.95)); this.$.th.style.transform=`translateY(${Math.round(112*this._u*(1-h))}px)`;
+const h=eo(seg(t,0.35,0.95)); this.$.th.style.transform=`translateY(${Math.round(150*this._u*(1-h))}px)`;
 const e=eo(seg(t,0.7,1.3)); this.$.te.style.opacity=String(e*0.92); this.$.te.style.letterSpacing=(0.6-0.3*e).toFixed(3)+"em";
 const m=eo(seg(t,0.9,1.4)); this.$.meta.style.opacity=String(m); this.$.meta.style.transform=`translateY(${Math.round(10*this._u*(1-m))}px)`;
 if(this._N>=2){const g=this._gap,cur=this._cur,pk=eo(seg(t,0.9,1.9)),x=(cur-1)*g*pk;

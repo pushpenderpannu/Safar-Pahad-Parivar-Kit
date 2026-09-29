@@ -1,4 +1,4 @@
-const DEFAULTS={"kicker": "एक पारिवारिक सफ़र · A FAMILY JOURNEY", "titleHi": "हिमालय की सैर", "titleEn": "HIMALAYA KI SAIR", "line": "कुमाऊँ · दारमा · मुंस्यारी — जून 2026", "showMark": true, "position": "centre", "backdrop": true, "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e"};
+const DEFAULTS={"kicker": "एक पारिवारिक सफ़र · A FAMILY JOURNEY", "titleHi": "हिमालय की सैर", "titleEn": "HIMALAYA KI SAIR", "line": "कुमाऊँ · दारमा · मुंस्यारी — जून 2026", "showMark": true, "position": "centre", "backdrop": false, "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e"};
 const DURATION=7;
 const CHOICES={"position": ["centre", "bottom-left"]};
 const CSS=`
@@ -6,9 +6,9 @@ const CSS=`
 .wrap{position:absolute;display:flex;flex-direction:column}
 .mk{display:block;width:calc(var(--u)*460);height:calc(var(--u)*88);overflow:visible;margin-bottom:calc(var(--u)*18)}
 .kick{font-size:calc(var(--u)*22);font-weight:700;color:var(--accent);white-space:nowrap;text-shadow:0 calc(var(--u)*2) calc(var(--u)*8) rgba(0,0,0,.5)}
-.clip{padding:calc(var(--u)*8) calc(var(--u)*10) calc(var(--u)*6)}
+.clip{padding:calc(var(--u)*60) calc(var(--u)*90);margin:calc(var(--u)*-52) calc(var(--u)*-80) calc(var(--u)*-54)}
 .th{font-size:calc(var(--u)*150);font-weight:800;color:var(--snow);line-height:1.2;white-space:nowrap;
-    text-shadow:0 calc(var(--u)*4) calc(var(--u)*30) rgba(0,0,0,.45),0 0 calc(var(--u)*60) rgba(7,18,43,.35)}
+    text-shadow:0 calc(var(--u)*3) calc(var(--u)*16) rgba(0,0,0,.38)}
 .rule{height:calc(var(--u)*4);width:calc(var(--u)*240);background:var(--accent);border-radius:calc(var(--u)*2);margin:calc(var(--u)*10) 0 calc(var(--u)*16)}
 .te{font-size:calc(var(--u)*30);font-weight:700;color:var(--snow);white-space:nowrap;text-shadow:0 calc(var(--u)*2) calc(var(--u)*12) rgba(0,0,0,.5)}
 .ln{font-size:calc(var(--u)*26);font-weight:500;color:rgba(245,248,252,.88);white-space:nowrap;margin-top:calc(var(--u)*12);text-shadow:0 calc(var(--u)*2) calc(var(--u)*10) rgba(0,0,0,.5)}`;
@@ -135,7 +135,7 @@ this.$.snow=svgEl("path",{d:"M212 32 L224 42 L236 28 L248 42 L260 32",fill:"none
 this.$.trail=svgEl("path",{d:"M236 88 C 220 78, 252 70, 237 60 C 228 55, 244 50, 238 44",fill:"none",stroke:"var(--accent)","stroke-width":"3","stroke-linecap":"round","stroke-dasharray":"0.1 7"},this.$.mk);
 this.$.sun=svgEl("circle",{cx:"338",cy:"16",r:"8",fill:"var(--accent)"},this.$.mk);
 this.$.kick=el("div","kick mix",this.$.wrap);
-const c=el("div","clip",this.$.wrap); this.$.th=el("div","th deva",c);
+this.$.cl=el("div","clip",this.$.wrap); this.$.th=el("div","th deva",this.$.cl);
 this.$.rule=el("div","rule",this.$.wrap); this.$.te=el("div","te pop",this.$.wrap); this.$.ln=el("div","ln mix",this.$.wrap);
 }
 _apply(){
@@ -162,8 +162,10 @@ const sn=eo(seg(t,0.9,1.4)); this.$.snow.setAttribute("stroke-dasharray","1 1");
 this.$.trail.style.opacity=String(eo(seg(t,1.1,1.6)));
 const su=eb(seg(t,1.0,1.5)); this.$.sun.setAttribute("r",String(Math.max(0,8*su))); this.$.sun.style.opacity=String(clamp(su,0,1));
 const k=eo(seg(t,0.4,1.1)); this.$.kick.style.opacity=String(k); this.$.kick.style.letterSpacing=(0.42-0.2*k).toFixed(3)+"em";
-const w=eo(seg(t,0.6,1.7)); const edge=(1-w)*100;
-this.$.th.style.clipPath=p===0?`inset(-20% ${(edge/2).toFixed(2)}% -20% ${(edge/2).toFixed(2)}%)`:`inset(-20% ${edge.toFixed(2)}% -20% 0)`;
+const w=eo(seg(t,0.6,1.7)), cl=this.$.cl; let mk="none";
+if(w<0.999){if(p===0){const a=(1-w)*50;mk=`linear-gradient(90deg,transparent ${(a-6).toFixed(2)}%,#000 ${(a+6).toFixed(2)}%,#000 ${(94-a).toFixed(2)}%,transparent ${(106-a).toFixed(2)}%)`;}
+  else{const e=w*112-6;mk=`linear-gradient(90deg,#000 ${(e-6).toFixed(2)}%,transparent ${(e+6).toFixed(2)}%)`;}}
+cl.style.maskImage=mk; cl.style.webkitMaskImage=mk;
 this.$.th.style.transform=`translateY(${Math.round(26*this._u*(1-w))}px)`; this.$.th.style.opacity=String(clamp(w*1.4,0,1));
 const ru=eo(seg(t,1.2,1.9)); this.$.rule.style.transform=`scaleX(${ru})`; this.$.rule.style.transformOrigin=p===0?"50% 50%":"0% 50%";
 const e=eo(seg(t,1.4,2.2)); this.$.te.style.opacity=String(e); this.$.te.style.letterSpacing=(0.6-0.24*e).toFixed(3)+"em";

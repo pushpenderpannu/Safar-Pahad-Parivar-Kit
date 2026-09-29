@@ -6,8 +6,8 @@ const CSS=`
 .wrap{position:absolute;display:flex;flex-direction:column}
 .kick{display:flex;align-items:center;gap:calc(var(--u)*14);font-size:calc(var(--u)*22);font-weight:700;color:var(--accent);white-space:nowrap;text-shadow:0 calc(var(--u)*2) calc(var(--u)*8) rgba(0,0,0,.5)}
 .kb{display:inline-block;width:calc(var(--u)*44);height:calc(var(--u)*3);background:var(--accent);border-radius:calc(var(--u)*2);transform-origin:50% 50%}
-.clip{overflow:hidden;padding:calc(var(--u)*6) calc(var(--u)*4) calc(var(--u)*4)}
-.th{font-size:calc(var(--u)*104);font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 calc(var(--u)*4) calc(var(--u)*24) rgba(0,0,0,.5)}
+.clip{overflow:hidden;padding:calc(var(--u)*30) calc(var(--u)*50) calc(var(--u)*30);margin:calc(var(--u)*-24) calc(var(--u)*-46) calc(var(--u)*-26)}
+.th{font-size:calc(var(--u)*104);font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 calc(var(--u)*3) calc(var(--u)*14) rgba(0,0,0,.42)}
 .te{font-size:calc(var(--u)*22);font-weight:500;color:var(--snow);opacity:.9;white-space:nowrap;text-shadow:0 calc(var(--u)*2) calc(var(--u)*10) rgba(0,0,0,.5)}`;
 
 const clamp=(v,a,b)=>Math.max(a,Math.min(v,b));
@@ -146,7 +146,7 @@ this.$.bd.style.opacity=String(eo(seg(t,0,0.5)));
 this.$.wrap.style.transform=(p===4?"translate(-50%,-50%) ":"")+`scale(${sc})`;
 const kb=eo(seg(t,0.05,0.45)); this.$.kb1.style.transform=this.$.kb2.style.transform=`scaleX(${kb})`;
 const kt=eo(seg(t,0.15,0.5)); this.$.kt.style.opacity=String(kt); this.$.kt.style.letterSpacing=(0.5-0.28*kt).toFixed(3)+"em";
-const h=eo(seg(t,0.2,0.8)); this.$.th.style.transform=`translateY(${Math.round(110*this._u*(1-h))}px)`;
+const h=eo(seg(t,0.2,0.8)); this.$.th.style.transform=`translateY(${Math.round(160*this._u*(1-h))}px)`;
 const e=eo(seg(t,0.55,1.1)); this.$.te.style.opacity=String(e*0.92); this.$.te.style.letterSpacing=(0.6-0.3*e).toFixed(3)+"em";
 }
 

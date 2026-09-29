@@ -386,8 +386,8 @@ TEMPLATES.append(dict(
 .wrap{{position:absolute;display:flex;flex-direction:column}}
 .kick{{display:flex;align-items:center;gap:{U(14)};font-size:{U(22)};font-weight:700;color:var(--accent);white-space:nowrap;text-shadow:0 {U(2)} {U(8)} rgba(0,0,0,.5)}}
 .kb{{display:inline-block;width:{U(44)};height:{U(3)};background:var(--accent);border-radius:{U(2)};transform-origin:50% 50%}}
-.clip{{overflow:hidden;padding:{U(6)} {U(4)} {U(4)}}}
-.th{{font-size:{U(104)};font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 {U(4)} {U(24)} rgba(0,0,0,.5)}}
+.clip{{overflow:hidden;padding:{U(30)} {U(50)} {U(30)};margin:{U(-24)} {U(-46)} {U(-26)}}}
+.th{{font-size:{U(104)};font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 {U(3)} {U(14)} rgba(0,0,0,.42)}}
 .te{{font-size:{U(22)};font-weight:500;color:var(--snow);opacity:.9;white-space:nowrap;text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.5)}}""",
     build="""
 this.$.bd=el("div","bd",scene); this.$.wrap=el("div","wrap",scene);
@@ -409,7 +409,7 @@ this.$.bd.style.opacity=String(eo(seg(t,0,0.5)));
 this.$.wrap.style.transform=(p===4?"translate(-50%,-50%) ":"")+`scale(${sc})`;
 const kb=eo(seg(t,0.05,0.45)); this.$.kb1.style.transform=this.$.kb2.style.transform=`scaleX(${kb})`;
 const kt=eo(seg(t,0.15,0.5)); this.$.kt.style.opacity=String(kt); this.$.kt.style.letterSpacing=(0.5-0.28*kt).toFixed(3)+"em";
-const h=eo(seg(t,0.2,0.8)); this.$.th.style.transform=`translateY(${Math.round(110*this._u*(1-h))}px)`;
+const h=eo(seg(t,0.2,0.8)); this.$.th.style.transform=`translateY(${Math.round(160*this._u*(1-h))}px)`;
 const e=eo(seg(t,0.55,1.1)); this.$.te.style.opacity=String(e*0.92); this.$.te.style.letterSpacing=(0.6-0.3*e).toFixed(3)+"em";""",
 ))
 
@@ -726,7 +726,7 @@ TEMPLATES.append(dict(
         "line": {"type": "string", "title": "Place / date line (blank = hide)", "default": "कुमाऊँ · दारमा · मुंस्यारी — जून 2026"},
         "showMark": {"type": "boolean", "title": "Draw the mountain line", "default": True},
         "position": select_prop("Position", ["centre", "bottom-left"], 0),
-        "backdrop": {"type": "boolean", "title": "Darken Background", "default": True},
+        "backdrop": {"type": "boolean", "title": "Darken Background", "default": False},
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 7, "default": 0},
         "accentColor": color_prop("Accent Colour"),
@@ -736,9 +736,9 @@ TEMPLATES.append(dict(
 .wrap{{position:absolute;display:flex;flex-direction:column}}
 .mk{{display:block;width:{U(460)};height:{U(88)};overflow:visible;margin-bottom:{U(18)}}}
 .kick{{font-size:{U(22)};font-weight:700;color:var(--accent);white-space:nowrap;text-shadow:0 {U(2)} {U(8)} rgba(0,0,0,.5)}}
-.clip{{padding:{U(8)} {U(10)} {U(6)}}}
+.clip{{padding:{U(60)} {U(90)};margin:{U(-52)} {U(-80)} {U(-54)}}}
 .th{{font-size:{U(150)};font-weight:800;color:var(--snow);line-height:1.2;white-space:nowrap;
-    text-shadow:0 {U(4)} {U(30)} rgba(0,0,0,.45),0 0 {U(60)} rgba(7,18,43,.35)}}
+    text-shadow:0 {U(3)} {U(16)} rgba(0,0,0,.38)}}
 .rule{{height:{U(4)};width:{U(240)};background:var(--accent);border-radius:{U(2)};margin:{U(10)} 0 {U(16)}}}
 .te{{font-size:{U(30)};font-weight:700;color:var(--snow);white-space:nowrap;text-shadow:0 {U(2)} {U(12)} rgba(0,0,0,.5)}}
 .ln{{font-size:{U(26)};font-weight:500;color:rgba(245,248,252,.88);white-space:nowrap;margin-top:{U(12)};text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.5)}}""",
@@ -750,7 +750,7 @@ this.$.snow=svgEl("path",{d:"M212 32 L224 42 L236 28 L248 42 L260 32",fill:"none
 this.$.trail=svgEl("path",{d:"M236 88 C 220 78, 252 70, 237 60 C 228 55, 244 50, 238 44",fill:"none",stroke:"var(--accent)","stroke-width":"3","stroke-linecap":"round","stroke-dasharray":"0.1 7"},this.$.mk);
 this.$.sun=svgEl("circle",{cx:"338",cy:"16",r:"8",fill:"var(--accent)"},this.$.mk);
 this.$.kick=el("div","kick mix",this.$.wrap);
-const c=el("div","clip",this.$.wrap); this.$.th=el("div","th deva",c);
+this.$.cl=el("div","clip",this.$.wrap); this.$.th=el("div","th deva",this.$.cl);
 this.$.rule=el("div","rule",this.$.wrap); this.$.te=el("div","te pop",this.$.wrap); this.$.ln=el("div","ln mix",this.$.wrap);""",
     apply="""
 const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e");
@@ -775,8 +775,10 @@ const sn=eo(seg(t,0.9,1.4)); this.$.snow.setAttribute("stroke-dasharray","1 1");
 this.$.trail.style.opacity=String(eo(seg(t,1.1,1.6)));
 const su=eb(seg(t,1.0,1.5)); this.$.sun.setAttribute("r",String(Math.max(0,8*su))); this.$.sun.style.opacity=String(clamp(su,0,1));
 const k=eo(seg(t,0.4,1.1)); this.$.kick.style.opacity=String(k); this.$.kick.style.letterSpacing=(0.42-0.2*k).toFixed(3)+"em";
-const w=eo(seg(t,0.6,1.7)); const edge=(1-w)*100;
-this.$.th.style.clipPath=p===0?`inset(-20% ${(edge/2).toFixed(2)}% -20% ${(edge/2).toFixed(2)}%)`:`inset(-20% ${edge.toFixed(2)}% -20% 0)`;
+const w=eo(seg(t,0.6,1.7)), cl=this.$.cl; let mk="none";
+if(w<0.999){if(p===0){const a=(1-w)*50;mk=`linear-gradient(90deg,transparent ${(a-6).toFixed(2)}%,#000 ${(a+6).toFixed(2)}%,#000 ${(94-a).toFixed(2)}%,transparent ${(106-a).toFixed(2)}%)`;}
+  else{const e=w*112-6;mk=`linear-gradient(90deg,#000 ${(e-6).toFixed(2)}%,transparent ${(e+6).toFixed(2)}%)`;}}
+cl.style.maskImage=mk; cl.style.webkitMaskImage=mk;
 this.$.th.style.transform=`translateY(${Math.round(26*this._u*(1-w))}px)`; this.$.th.style.opacity=String(clamp(w*1.4,0,1));
 const ru=eo(seg(t,1.2,1.9)); this.$.rule.style.transform=`scaleX(${ru})`; this.$.rule.style.transformOrigin=p===0?"50% 50%":"0% 50%";
 const e=eo(seg(t,1.4,2.2)); this.$.te.style.opacity=String(e); this.$.te.style.letterSpacing=(0.6-0.24*e).toFixed(3)+"em";
@@ -798,7 +800,7 @@ TEMPLATES.append(dict(
         "labelEn": {"type": "string", "title": "Label (English)", "default": "CHAPTER"},
         "hindiDigits": {"type": "boolean", "title": "Hindi digits (२ instead of 2)", "default": False},
         "position": select_prop("Position", ["centre", "bottom-left", "top-left"], 0),
-        "backdrop": {"type": "boolean", "title": "Darken Background", "default": True},
+        "backdrop": {"type": "boolean", "title": "Darken Background", "default": False},
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 5, "default": 0},
         "accentColor": color_prop("Accent Colour"),
@@ -814,8 +816,8 @@ TEMPLATES.append(dict(
 .lab{{display:flex;flex-direction:column;align-items:flex-start}}
 .lh{{font-size:{U(40)};font-weight:800;color:var(--snow);line-height:1.2;text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.45)}}
 .le{{font-size:{U(17)};font-weight:700;color:var(--accent);letter-spacing:.34em;white-space:nowrap}}
-.clip{{overflow:hidden;padding:{U(10)} {U(6)} {U(4)};margin-top:{U(8)}}}
-.th{{font-size:{U(96)};font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 {U(4)} {U(24)} rgba(0,0,0,.5)}}
+.clip{{overflow:hidden;padding:{U(34)} {U(50)} {U(30)};margin:{U(-16)} {U(-44)} {U(-26)}}}
+.th{{font-size:{U(96)};font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 {U(3)} {U(14)} rgba(0,0,0,.42)}}
 .te{{font-size:{U(24)};font-weight:700;color:var(--snow);opacity:.92;white-space:nowrap;text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.5)}}
 .meta{{font-size:{U(24)};font-weight:500;color:rgba(245,248,252,.88);white-space:nowrap;margin-top:{U(10)};text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.5)}}
 .prog{{display:block;height:{U(40)};margin-top:{U(24)};overflow:visible}}""",
@@ -866,7 +868,7 @@ else{this.$.num.classList.remove("roll");this.$.num._rk=null;setT(this.$.num,thi
 this.$.dv.style.transform=`scaleY(${eo(seg(t,0.2,0.6))})`;
 const lb=eo(seg(t,0.3,0.8)); this.$.lh.style.opacity=this.$.le.style.opacity=String(lb);
 this.$.lh.style.transform=this.$.le.style.transform=`translateX(${Math.round(-14*this._u*(1-lb))}px)`;
-const h=eo(seg(t,0.35,0.95)); this.$.th.style.transform=`translateY(${Math.round(112*this._u*(1-h))}px)`;
+const h=eo(seg(t,0.35,0.95)); this.$.th.style.transform=`translateY(${Math.round(150*this._u*(1-h))}px)`;
 const e=eo(seg(t,0.7,1.3)); this.$.te.style.opacity=String(e*0.92); this.$.te.style.letterSpacing=(0.6-0.3*e).toFixed(3)+"em";
 const m=eo(seg(t,0.9,1.4)); this.$.meta.style.opacity=String(m); this.$.meta.style.transform=`translateY(${Math.round(10*this._u*(1-m))}px)`;
 if(this._N>=2){const g=this._gap,cur=this._cur,pk=eo(seg(t,0.9,1.9)),x=(cur-1)*g*pk;

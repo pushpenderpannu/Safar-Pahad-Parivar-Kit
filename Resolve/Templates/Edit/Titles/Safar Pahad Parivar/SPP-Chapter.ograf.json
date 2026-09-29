@@ -67,7 +67,7 @@
       "backdrop": {
         "type": "boolean",
         "title": "Darken Background",
-        "default": true
+        "default": false
       },
       "scale": {
         "type": "number",
