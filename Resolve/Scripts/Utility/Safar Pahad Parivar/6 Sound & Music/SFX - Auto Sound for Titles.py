@@ -90,6 +90,7 @@ def main():
     global PEAK
     PEAK = {os.path.basename(e["file"]).lower(): e.get("peak") for e in (S.catalog() or [])}
     fps = float(tl.GetSetting("timelineFrameRate"))
+    C.fit_titles(tl, quiet=True)            # trimmed titles: exit moved to their clip end (the out-sound follows)
     pool = S.Pool(proj)
     # 1) remove previous auto sounds
     old = []

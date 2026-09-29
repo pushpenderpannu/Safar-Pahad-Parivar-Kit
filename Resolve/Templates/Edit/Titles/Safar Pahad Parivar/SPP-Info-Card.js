@@ -1,4 +1,4 @@
-const DEFAULTS={"placeHi": "मुंस्यारी", "placeEn": "MUNSIYARI · UTTARAKHAND", "showAltitude": true, "altitude": 2200, "countUp": true, "showDate": true, "date": "26 जून 2026", "showTime": true, "time": "09:58 AM", "weather": "sun", "temperature": "14°C", "position": "bottom-left", "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e", "rolling": true, "fromPrevious": true, "fromAltitude": 0, "fromDate": "", "fromTime": "", "fromWeather": "none"};
+const DEFAULTS={"placeHi": "मुंस्यारी", "placeEn": "MUNSIYARI · UTTARAKHAND", "showAltitude": true, "altitude": 2200, "countUp": true, "showDate": true, "date": "26 जून 2026", "showTime": true, "time": "09:58 AM", "weather": "sun", "temperature": "14°C", "position": "bottom-left", "scale": 1.0, "outAt": 0, "accentColor": "#f4b03e", "rolling": true, "fromAltitude": 0, "fromDate": "", "fromTime": "", "fromWeather": "none"};
 const DURATION=8;
 const CHOICES={"weather": ["none", "sun", "part-cloud", "cloud", "rain", "snow", "fog", "night"], "position": ["bottom-left", "bottom-right", "top-left", "top-right"], "fromWeather": ["none", "sun", "part-cloud", "cloud", "rain", "snow", "fog", "night"]};
 const CSS=`
@@ -166,30 +166,32 @@ _frame(t,out){
 const s=this._state,sc=s.scale||1,u=this._u;
 const oa=(typeof s.outAt==="number"&&s.outAt>0)?s.outAt:DURATION-1.0, o=seg(t,oa,oa+0.9);
 this.$.scene.style.opacity=String(1-eo(seg(t,oa+0.7,oa+0.95)));
+// a card trimmed short (earlier exit) plays its entrance faster, so it still gets time on screen
+const T=t/clamp((oa-0.6)/(DURATION-1.6),0.55,1);
 this.$.card.style.transform=`scale(${sc})`;
 // 1. gold bar grows up from below
-const b=eo(seg(t,0,0.45))*(1-eo(seg(o,0.55,0.95))); this.$.bar.style.transform=`scaleY(${b.toFixed(4)})`;
+const b=eo(seg(T,0,0.45))*(1-eo(seg(o,0.55,0.95))); this.$.bar.style.transform=`scaleY(${b.toFixed(4)})`;
 // 2. the dark panel opens out of the bar
-const pk=eo(seg(t,0.35,0.85))*(1-eo(seg(o,0.35,0.75))); this.$.panel.style.transform=`scaleX(${pk.toFixed(4)})`; this.$.panel.style.opacity=pk>0.001?"1":"0";
+const pk=eo(seg(T,0.35,0.85))*(1-eo(seg(o,0.35,0.75))); this.$.panel.style.transform=`scaleX(${pk.toFixed(4)})`; this.$.panel.style.opacity=pk>0.001?"1":"0";
 // 3. location: weather icon pops, Hindi place and English line slide in from the right
-const wk=eb(seg(t,0.75,1.15)),wo=eo(seg(o,0.15,0.45)); this.$.wx.style.opacity=String(clamp(wk,0,1)*(1-wo));
+const wk=eb(seg(T,0.75,1.15)),wo=eo(seg(o,0.15,0.45)); this.$.wx.style.opacity=String(clamp(wk,0,1)*(1-wo));
 this.$.wx.style.transform=`scale(${(0.4+0.6*wk).toFixed(4)})`;
-if(this._wxFrom){const x=eo(seg(t,2.1,2.8)); this.$.w0.style.opacity=String(1-x); this.$.w1.style.opacity=String(x);
+if(this._wxFrom){const x=eo(seg(T,2.1,2.8)); this.$.w0.style.opacity=String(1-x); this.$.w1.style.opacity=String(x);
   this.$.w0.style.transform=`rotate(${(-90*x).toFixed(1)}deg) scale(${(1-0.4*x).toFixed(3)})`; this.$.w1.style.transform=`rotate(${(90*(1-x)).toFixed(1)}deg) scale(${(0.6+0.4*x).toFixed(3)})`;}
 else{this.$.w1.style.opacity="1"; this.$.w1.style.transform="none";}
-const hi=eo(seg(t,0.8,1.35)),ho=eo(seg(o,0.15,0.5)); this.$.hi.style.opacity=String(hi*(1-ho));
+const hi=eo(seg(T,0.8,1.35)),ho=eo(seg(o,0.15,0.5)); this.$.hi.style.opacity=String(hi*(1-ho));
 this.$.hi.style.transform=`translateX(${Math.round((1-hi)*70*u-ho*40*u)}px)`;
-const en=eo(seg(t,1.05,1.6)),eno=eo(seg(o,0.1,0.45)); this.$.en.style.opacity=String(en*(1-eno));
+const en=eo(seg(T,1.05,1.6)),eno=eo(seg(o,0.1,0.45)); this.$.en.style.opacity=String(en*(1-eno));
 this.$.en.style.transform=`translateX(${Math.round((1-en)*60*u-eno*40*u)}px)`; this.$.en.style.letterSpacing=(0.5-0.2*en).toFixed(3)+"em";
 // 4. then altitude, date, time, temperature - one after another, each slides up into place.
 //    With a 'From' value (the previous card) it then runs from there to here: the clock ticks on, the date turns day
 //    by day, the altitude climbs or drops - glowing gold while it moves. Without one it simply stays as it is.
 const items=[this.$.alt,this.$.date,this.$.time,this.$.temp],st={}; let j=0;
 items.forEach((m,i)=>{if(m.style.display==="none")return; const a0=1.75+0.38*j; st[i]=a0; j++;
-  const q=eo(seg(t,a0,a0+0.45)),qo=eo(seg(o,0.05*(3-Math.min(j,3)),0.3+0.05*(3-Math.min(j,3))));
+  const q=eo(seg(T,a0,a0+0.45)),qo=eo(seg(o,0.05*(3-Math.min(j,3)),0.3+0.05*(3-Math.min(j,3))));
   m.style.opacity=String(q*(1-qo)); m.style.transform=`translateY(${Math.round((1-q)*22*u+qo*12*u)}px)`;});
 const av=this.$.alt.querySelector(".av"),dv=this.$.date.querySelector(".dv"),tv=this.$.time.querySelector(".tv"),pv=this.$.temp.querySelector(".pv");
-const run=(a0,dur)=>eo(seg(t,a0+0.35,a0+0.35+dur)), glow=(n,c)=>{n.style.color=(c>0&&c<1)?"var(--accent)":"";};
+const run=(a0,dur)=>eo(seg(T,a0+0.35,a0+0.35+dur)), glow=(n,c)=>{n.style.color=(c>0&&c<1)?"var(--accent)":"";};
 // altitude
 if(this._alt){const [x0,x1]=this._alt,c=run(st[0]??1.75,1.6),v=x0+(x1-x0)*c; glow(av,c);
   if(s.rolling!==false)rollOdo(av,v,Math.max(x0,x1));else{av.classList.remove("roll");av._rk=null;setT(av,fmtM(v));}}

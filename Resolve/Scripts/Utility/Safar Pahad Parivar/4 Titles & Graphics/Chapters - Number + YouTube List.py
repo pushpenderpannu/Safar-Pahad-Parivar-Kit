@@ -94,6 +94,7 @@ def main():
     except Exception:
         copied = False
     print("Numbered %d chapter title(s) and added purple markers." % n)
+    C.fit_titles(tl)
     print("YouTube chapters%s:\n" % (" (copied - paste into the description)" if copied else ""))
     print(txt)
     print("Saved: " + out)

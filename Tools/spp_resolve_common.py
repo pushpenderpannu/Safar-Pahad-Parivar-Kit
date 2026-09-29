@@ -110,3 +110,37 @@ WEATHER_WORDS = ["none", "sun", "part-cloud", "cloud", "rain", "snow", "fog", "n
 def set_choice(tool, index, word):
     """Choice fields are typed words in Resolve 21 (e.g. weather 'rain')."""
     tool.SetInput(f"DynParamText{index}", str(word))
+
+
+# ------------------------------------------------------------------ titles: exit animation follows the clip length
+# Resolve never tells an OGraf title how long its clip is - the title only knows its default length. When a title is
+# trimmed shorter, its exit would fall after the clip end and it would just vanish. fit_titles() moves the exit so it
+# finishes on the clip's last frame.  {template: (index of "Animate Out At", default length s, exit length s)}
+OUT_PARAM = {"SPP-Info-Card": (13, 8, 1.0), "SPP-Altitude-Counter": (9, 8, 0.6), "SPP-Peak-Callout": (10, 6, 0.6),
+             "SPP-Popup-Title": (6, 5, 0.6), "SPP-Credits": (11, 10, 0.6), "SPP-Route-Map": (12, 40, 0.6),
+             "SPP-Film-Title": (8, 7, 0.6), "SPP-Chapter": (11, 5, 0.6)}
+
+
+def fit_titles(tl, quiet=False):
+    """Set 'Animate Out At' on every trimmed SPP title so it animates out right at its clip end. Returns count."""
+    fps = float(tl.GetSetting("timelineFrameRate"))
+    n = 0
+    for name, (idx, full, outlen) in OUT_PARAM.items():
+        for it, tool, trk in templates_on(tl, name):
+            dur = it.GetDuration() / fps
+            key = "DynParamNum%d" % idx
+            try:
+                cur = float(tool.GetInput(key) or 0)
+            except Exception:
+                cur = 0.0
+            if dur < full - 0.05:                                   # trimmed shorter than the template
+                want = round(max(0.3, dur - outlen - 0.04), 2)
+                if cur <= 0 or cur > want + 0.01:                    # default, or it would be cut off
+                    tool.SetInput(key, want)
+                    n += 1
+            elif cur > full - outlen:                                # back to full length: default exit again
+                tool.SetInput(key, 0.0)
+                n += 1
+    if not quiet:
+        print("Fitted the exit animation of %d title(s) to their clip length." % n if n else "All titles already end with their exit animation.")
+    return n

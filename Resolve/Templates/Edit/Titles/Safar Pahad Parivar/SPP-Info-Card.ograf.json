@@ -39,7 +39,7 @@
       },
       "countUp": {
         "type": "boolean",
-        "title": "Count from the 'From' values (off = just slide in)",
+        "title": "Count on from the previous card (off = values just slide in)",
         "default": true
       },
       "showDate": {
@@ -101,11 +101,6 @@
       "rolling": {
         "type": "boolean",
         "title": "Rolling-dial altitude",
-        "default": true
-      },
-      "fromPrevious": {
-        "type": "boolean",
-        "title": "Fill 'From' with the previous card (Fill from GPS script)",
         "default": true
       },
       "fromAltitude": {

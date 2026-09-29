@@ -4,7 +4,7 @@
 # To refresh a card later: clear its "Place (Hindi)" field and run again.
 # Then every card gets the previous card's altitude / date / time / weather as its 'From' values, so on screen the
 # clock runs on from where the last card was, the date turns, the altitude climbs (the first card just slides in).
-# A card with "Fill 'From' with the previous card" unticked keeps its own 'From' values (blank = just slide in).
+# A card with "Count on from the previous card" unticked is left alone - its values just slide in.
 import json, os, sys
 try:
     resolve
@@ -64,16 +64,17 @@ elif C.engine_ok():
     for card, tool, track in sorted(cards, key=lambda c: c[0].GetStart()):
         cur = {"alt": tool.GetInput("DynParamNum3") or 0, "date": tool.GetInput("DynParamText6") or "",
                "time": tool.GetInput("DynParamText8") or "", "wx": tool.GetInput("DynParamText9") or "none"}
-        chk = tool.GetInput("DynParamCheck16")
+        chk = tool.GetInput("DynParamCheck4")                # "Count on from the previous card"
         if chk is None or int(chk):
             if prev:
-                C.set_dyn(tool, 17, float(prev["alt"] or 0))
-                C.set_dyn(tool, 18, prev["date"])
-                C.set_dyn(tool, 19, prev["time"])
-                C.set_choice(tool, 20, prev["wx"])
+                C.set_dyn(tool, 16, float(prev["alt"] or 0))
+                C.set_dyn(tool, 17, prev["date"])
+                C.set_dyn(tool, 18, prev["time"])
+                C.set_choice(tool, 19, prev["wx"])
                 chained += 1
             else:                                   # the first card: nothing before it - it just slides in
-                C.set_dyn(tool, 17, 0.0); C.set_dyn(tool, 18, ""); C.set_dyn(tool, 19, ""); C.set_choice(tool, 20, "none")
+                C.set_dyn(tool, 16, 0.0); C.set_dyn(tool, 17, ""); C.set_dyn(tool, 18, ""); C.set_choice(tool, 19, "none")
         prev = cur
     if chained:
         print("%d card(s) now count on from the previous card (date / time / altitude / weather)." % chained)
+    C.fit_titles(tl)

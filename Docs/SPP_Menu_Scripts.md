@@ -10,7 +10,7 @@ changes in Resolve afterwards, how to redo / undo it, and what to do if it doesn
 - **1 Setup**: [Setup Render Presets](#setup-render-presets) · [New Timeline - YouTube 16x9](#new-timeline---youtube-16x9) · [New Timeline - Shorts 9x16](#new-timeline---shorts-9x16) · [Import Brand Graphics](#import-brand-graphics)
 - **2 Marking & Moments**: [Tag Shot Type 0–9](#tag-shot-type-09) · [Moments - Analyse Trip](#moments---analyse-trip) · [Moments - Add Markers](#moments---add-markers) · [Moments - Best Moments Timeline](#moments---best-moments-timeline) · [Moments - Search Transcript](#moments---search-transcript)
 - **3 Picture**: [Reflection - Scan Trip](#reflection---scan-trip) · [Reflection - Clean Selected Clips](#reflection---clean-selected-clips) · [Reflection - Show Original or Cleaned](#reflection---show-original-or-cleaned) · [SPP Glass Glare](#spp-glass-glare-colour-page-not-a-menu-script)
-- **4 Titles & Graphics**: [Info Cards - Fill from GPS](#info-cards---fill-from-gps) · [Route Map - Build from Timeline](#route-map---build-from-timeline) · [Chapters - Number + YouTube List](#chapters---number--youtube-list)
+- **4 Titles & Graphics**: [Info Cards - Fill from GPS](#info-cards---fill-from-gps) · [Route Map - Build from Timeline](#route-map---build-from-timeline) · [Chapters - Number + YouTube List](#chapters---number--youtube-list) · [Titles - Fit Exit to Clip Length](#titles---fit-exit-to-clip-length)
 - **5 Captions & Voice**: [Captions - Sync Words to VO](#captions---sync-words-to-vo) · [Phone Voice - Selected Clips](#phone-voice---selected-clips)
 - **6 Sound & Music**: [SFX - Import Library](#sfx---import-library) · [Music - Import Library](#music---import-library) · [SFX - Auto Sound for Titles](#sfx---auto-sound-for-titles) · [SFX - Remove Auto Sounds](#sfx---remove-auto-sounds) · [SFX - Land at Playhead](#sfx---land-at-playhead) · [SFX - Loop Fill (In to Out)](#sfx---loop-fill-in-to-out) · [Music - Key Transition](#music---key-transition) · [Distance - Selected Clips](#distance---selected-clips)
 
@@ -281,7 +281,8 @@ Menu **Workspace → Scripts → Safar Pahad Parivar → 4 Titles & Graphics** �
 **Then:** every card also gets the previous card's altitude / date / time / weather as its *From* values, so on screen
 the time runs on from the last card (the date turns past midnight), the altitude climbs and the weather icon changes.
 The first card has nothing before it and simply slides in. Console: `3 card(s) now count on from the previous card`.
-A card with *Fill 'From' with the previous card* unticked keeps its own *From* values (blank = values just slide in).
+A card with *Count on from the previous card* unticked is left alone — its values just slide in. Trimmed titles also get
+their exit fitted to their clip end (see *Titles - Fit Exit to Clip Length*).
 **Again / undo:** cards already filled are skipped. To refresh one: clear its *Place (Hindi)* and run again. Check the
 Hindi spelling — names come from OpenStreetMap; just type over them.
 **Problems:** `no footage under it` → move the card over a footage clip. `can't find the trip folder` → footage isn't
@@ -330,6 +331,20 @@ right after it: the film's name in Hindi and English with a place / date line an
 (*Position: centre* over a wide shot, or *bottom-left* over action). **SPP Chapter** is the card that opens each
 chapter: big number, *अध्याय · CHAPTER*, chapter name, a day / route line (*दिन 2 · धारचूला → दुग्तू*) and the trail.
 Both work in 16:9 and Shorts; *Darken Background* keeps them readable over snow and sky.
+
+## Titles - Fit Exit to Clip Length
+**Use it for:** titles you made shorter (Ctrl+D, or dragging the end) — so they animate out instead of vanishing at the cut.
+**Before:** SPP titles on the timeline. (Resolve doesn't tell a title how long its clip is; the title only knows its
+default length. Titles can be made shorter, not longer.)
+**How:** run it after changing title lengths.
+**You'll see:** each trimmed title's *Animate Out At* set so the exit ends on its last frame (a short Info Card also
+plays its entrance faster, so it still holds on screen). Titles back at full length get their default exit again.
+Console: `Fitted the exit animation of 2 title(s) to their clip length.`
+*Info Cards - Fill from GPS*, *Chapters - Number + YouTube List* and *SFX - Auto Sound for Titles* do this too every time
+they run (so the out-sound lands on the new exit).
+**Again / undo:** run again after every length change. To choose your own exit time, type it in *Animate Out At* — a
+value that fits inside the clip is left alone.
+
 
 ---
 
