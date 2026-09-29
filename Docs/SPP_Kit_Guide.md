@@ -215,6 +215,10 @@ Brand board (colours, fonts, logo): [`Brand/brand_board.png`](../Brand/brand_boa
 ![Inspector](guide_img/inspector.png)
 
 ## 7. Info Card (+ fill from GPS)
+It tells its story in order, so the eye follows it: the **gold bar rises** from below → the **panel opens** out of the bar →
+**where**: weather icon, then the Hindi place and the English line slide in from the right → **when / how high**: altitude,
+date, time and temperature arrive one after another, each rolling to its value. At the end it leaves in reverse (1 s
+before the clip ends, or at *Animate Out At*). Hidden items are skipped, so the sequence never has gaps.
 Place · date · time · altitude · weather · temperature. Each item can be hidden.
 
 ![Info Card](guide_img/info_card.jpg)

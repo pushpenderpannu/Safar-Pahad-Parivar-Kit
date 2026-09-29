@@ -178,13 +178,15 @@ TEMPLATES.append(dict(
         "temperature": {"type": "string", "title": "Temperature (blank = hide)", "default": "14°C"},
         "position": select_prop("Position", ["bottom-left", "bottom-right", "top-left", "top-right"], 0),
         "scale": {"type": "number", "title": "Size", "minimum": 0.5, "maximum": 2.0, "default": 1.0},
-        "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 8, "default": 0},
+        "outAt": {"type": "number", "title": "Animate Out At (s, 0 = 1 s before the end)", "minimum": 0, "maximum": 8, "default": 0},
         "accentColor": color_prop("Accent Colour"),
         "rolling": {"type": "boolean", "title": "Rolling-dial numbers", "default": True},
     },
     css=f"""
-.card{{position:absolute;display:flex;gap:{U(20)};padding:{U(22)} {U(32)} {U(22)} {U(22)};background:rgba(7,18,43,.62);border-radius:{U(18)};box-shadow:0 {U(10)} {U(40)} rgba(0,0,0,.35)}}
-.bar{{width:{U(6)};border-radius:{U(3)};background:var(--accent);transform-origin:50% 0}}
+.card{{position:absolute;display:flex;gap:{U(20)};padding:{U(22)} {U(32)} {U(22)} {U(22)}}}
+.panel{{position:absolute;inset:0;background:rgba(7,18,43,.62);border-radius:{U(18)};box-shadow:0 {U(10)} {U(40)} rgba(0,0,0,.35);transform-origin:0 50%}}
+.bar,.body{{position:relative}}
+.bar{{width:{U(6)};border-radius:{U(3)};background:var(--accent);transform-origin:50% 100%}}
 .top{{display:flex;align-items:center;gap:{U(18)}}}
 .wx{{width:{U(66)};height:{U(66)};flex:none}} .wx svg{{width:100%;height:100%;overflow:visible}}
 .hi{{font-size:{U(60)};font-weight:800;color:var(--snow);line-height:1.22;white-space:nowrap;text-shadow:0 {U(2)} {U(10)} rgba(0,0,0,.35)}}
@@ -193,7 +195,7 @@ TEMPLATES.append(dict(
 .m{{display:inline-flex;align-items:center;gap:{U(9)};white-space:nowrap}} .m svg{{width:{U(22)};height:{U(22)}}}
 .m b{{font-weight:700}}""",
     build=f"""
-this.$.card=el("div","card",scene); this.$.bar=el("div","bar",this.$.card);
+this.$.card=el("div","card",scene); this.$.panel=el("div","panel",this.$.card); this.$.bar=el("div","bar",this.$.card);
 const body=el("div","body",this.$.card); const top=el("div","top",body);
 this.$.wx=el("div","wx",top); const ti=el("div","",top);
 this.$.hi=el("div","hi deva",ti); this.$.en=el("div","en pop",ti);
@@ -215,19 +217,33 @@ const anyMeta=s.showAltitude||(s.showDate&&s.date)||(s.showTime&&s.time)||s.temp
 this._side=this._corner(this.$.card,this._ch("position"),90,84,60,560,250);
 this.$.card.style.transformOrigin=(this._side==="right"?"100% ":"0% ")+((this._ch("position"))>=2?"0%":"100%");""",
     frame="""
-const s=this._state,dir=this._side==="right"?1:-1,sc=s.scale||1;
-const k=eo(seg(t,0.05,0.5)); this.$.card.style.opacity=String(k);
-this.$.card.style.transform=`translateX(${Math.round(dir*40*this._u*(1-k)+dir*30*this._u*(1-out))}px) scale(${sc})`;
-this.$.bar.style.transform=`scaleY(${eo(seg(t,0,0.4))})`;
-const h=eo(seg(t,0.2,0.65)); this.$.hi.style.opacity=String(h); this.$.hi.style.transform=`translateY(${Math.round(16*this._u*(1-h))}px)`;
-const e=eo(seg(t,0.35,0.9)); this.$.en.style.opacity=String(e); this.$.en.style.letterSpacing=(0.62-0.32*e).toFixed(3)+"em";
-const wk=eb(seg(t,0.25,0.75)); this.$.wx.style.opacity=String(clamp(wk,0,1)); this.$.wx.style.transform=`scale(${0.4+0.6*wk}) rotate(${(t*6).toFixed(2)}deg)`;
-[this.$.alt,this.$.date,this.$.time,this.$.temp].forEach((m,i)=>{const q=eo(seg(t,0.55+0.1*i,0.95+0.1*i));m.style.opacity=String(q);m.style.transform=`translateY(${Math.round(10*this._u*(1-q))}px)`;});
+// the card tells its story in order: gold bar rises -> panel opens -> WHERE (icon, place) -> WHEN / HOW HIGH (one by one)
+const s=this._state,sc=s.scale||1,u=this._u;
+const oa=(typeof s.outAt==="number"&&s.outAt>0)?s.outAt:DURATION-1.0, o=seg(t,oa,oa+0.9);
+this.$.scene.style.opacity=String(1-eo(seg(t,oa+0.7,oa+0.95)));
+this.$.card.style.transform=`scale(${sc})`;
+// 1. gold bar grows up from below
+const b=eo(seg(t,0,0.45))*(1-eo(seg(o,0.55,0.95))); this.$.bar.style.transform=`scaleY(${b.toFixed(4)})`;
+// 2. the dark panel opens out of the bar
+const pk=eo(seg(t,0.35,0.85))*(1-eo(seg(o,0.35,0.75))); this.$.panel.style.transform=`scaleX(${pk.toFixed(4)})`; this.$.panel.style.opacity=pk>0.001?"1":"0";
+// 3. location: weather icon pops, Hindi place and English line slide in from the right
+const wk=eb(seg(t,0.75,1.15)),wo=eo(seg(o,0.15,0.45)); this.$.wx.style.opacity=String(clamp(wk,0,1)*(1-wo));
+this.$.wx.style.transform=`scale(${(0.4+0.6*wk).toFixed(4)}) rotate(${(t*6).toFixed(2)}deg)`;
+const hi=eo(seg(t,0.8,1.35)),ho=eo(seg(o,0.15,0.5)); this.$.hi.style.opacity=String(hi*(1-ho));
+this.$.hi.style.transform=`translateX(${Math.round((1-hi)*70*u-ho*40*u)}px)`;
+const en=eo(seg(t,1.05,1.6)),eno=eo(seg(o,0.1,0.45)); this.$.en.style.opacity=String(en*(1-eno));
+this.$.en.style.transform=`translateX(${Math.round((1-en)*60*u-eno*40*u)}px)`; this.$.en.style.letterSpacing=(0.5-0.2*en).toFixed(3)+"em";
+// 4. then altitude, date, time, temperature - one after another, each rolls to its value as it arrives
+const items=[this.$.alt,this.$.date,this.$.time,this.$.temp],st={}; let j=0;
+items.forEach((m,i)=>{if(m.style.display==="none")return; const a0=1.75+0.38*j; st[i]=a0; j++;
+  const q=eo(seg(t,a0,a0+0.4)),qo=eo(seg(o,0.05*(3-Math.min(j,3)),0.3+0.05*(3-Math.min(j,3))));
+  m.style.opacity=String(q*(1-qo)); m.style.transform=`translateX(${Math.round((1-q)*50*u-qo*30*u)}px)`;});
 const av=this.$.alt.querySelector(".av"),dv=this.$.date.querySelector(".dv"),tv=this.$.time.querySelector(".tv"),pv=this.$.temp.querySelector(".pv");
+const A=st[0]??1.75,Dt=st[1]??1.75,Tm=st[2]??1.75,Tp=st[3]??1.75;
 if(s.rolling!==false){
-  if(s.countUp){const a=eo(seg(t,0.6,2.1));rollOdo(av,(s.altitude||0)*a,s.altitude||0);}else rollSlot(av,fmtM(s.altitude||0),seg(t,0.6,1.8));
-  rollSlot(dv,s.date||"",seg(t,0.7,2.0),0.06); rollSlot(tv,s.time||"",seg(t,0.8,2.1)); rollSlot(pv,s.temperature||"",seg(t,0.9,2.0));}
-else{const a=s.countUp?eo(seg(t,0.6,1.9)):1;[av,dv,tv,pv].forEach(n=>{n.classList.remove("roll");n._rk=null;});
+  if(s.countUp){const a=eo(seg(t,A,A+1.6));rollOdo(av,(s.altitude||0)*a,s.altitude||0);}else rollSlot(av,fmtM(s.altitude||0),seg(t,A,A+1.1));
+  rollSlot(dv,s.date||"",seg(t,Dt,Dt+1.1),0.06); rollSlot(tv,s.time||"",seg(t,Tm,Tm+1.0)); rollSlot(pv,s.temperature||"",seg(t,Tp,Tp+0.9));}
+else{const a=s.countUp?eo(seg(t,A,A+1.4)):1;[av,dv,tv,pv].forEach(n=>{n.classList.remove("roll");n._rk=null;});
   setT(av,fmtM((s.altitude||0)*a));setT(dv,s.date||"");setT(tv,s.time||"");setT(pv,s.temperature||"");}""",
 ))
 

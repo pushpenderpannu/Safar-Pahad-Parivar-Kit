@@ -86,7 +86,7 @@
       },
       "outAt": {
         "type": "number",
-        "title": "Animate Out At (s, 0 = end)",
+        "title": "Animate Out At (s, 0 = 1 s before the end)",
         "minimum": 0,
         "maximum": 8,
         "default": 0

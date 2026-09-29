@@ -155,7 +155,7 @@ def main():
             elif tpl == "SPP-Route-Map":
                 route_sounds(tool, s0, e0, put, K)
             outat = num(tool, OUTAT[tpl], 0)
-            t_out = s0 + f(outat if outat > 0 else DUR[tpl] - 0.6)
+            t_out = s0 + f(outat if outat > 0 else DUR[tpl] - (1.0 if tpl == "SPP-Info-Card" else 0.6))
             if t_out < e0 - f(0.2):
                 put(*K["out"], t_out)
     # 3) SPP intro / end card clips
