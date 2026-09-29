@@ -16,6 +16,7 @@ time.sleep(1.0)
 CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Info-Card", [300, 700, 1000, 1300, 1600, 3000, 7700], (1920, 1080), "bg_a.jpg", {}, "169"),
     ("SPP-Info-Card", [3000], (1080, 1920), "bg_b.jpg", {"position": "top-right", "weather": "snow"}, "916"),
+    ("SPP-Info-Card", [2300, 3000, 3700, 4500], (1920, 1080), "bg_a.jpg", {"fromAltitude": 1650, "fromDate": "24 जून 2026", "fromTime": "04:10 PM", "fromWeather": "cloud"}, "from"),
     ("SPP-Altitude-Counter", [500, 1000, 1400, 1800, 4000], (1920, 1080), "bg_b.jpg", {}, "169"),
     ("SPP-Altitude-Counter", [4000], (1920, 1080), "bg_b.jpg", {"position": 4, "scale": 1.4}, "center"),
     ("SPP-Peak-Callout", [200, 600, 1000, 3000], (1920, 1080), "bg_a.jpg", {"targetX": 34, "targetY": 12, "labelDX": 14, "labelDY": 18}, "dot"),

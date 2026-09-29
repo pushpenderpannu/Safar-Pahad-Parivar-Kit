@@ -217,8 +217,14 @@ Brand board (colours, fonts, logo): [`Brand/brand_board.png`](../Brand/brand_boa
 ## 7. Info Card (+ fill from GPS)
 It tells its story in order, so the eye follows it: the **gold bar rises** from below → the **panel opens** out of the bar →
 **where**: weather icon, then the Hindi place and the English line slide in from the right → **when / how high**: altitude,
-date, time and temperature arrive one after another, each rolling to its value. At the end it leaves in reverse (1 s
-before the clip ends, or at *Animate Out At*). Hidden items are skipped, so the sequence never has gaps.
+date, time and temperature slide up one after another. At the end it leaves in reverse (1 s before the clip ends, or at
+*Animate Out At*). Hidden items are skipped, so the sequence never has gaps.
+
+**Before → now.** A card can show the journey since the previous card: the clock runs on from the last card's time (past
+midnight the date turns over with it), the altitude climbs or drops, the weather icon turns from the old weather to the
+new — glowing gold while it moves. **Info Cards - Fill from GPS** fills these *From* values from the previous card
+automatically (the first card has none, so it simply slides in). No reference wanted? Untick *Fill 'From' with the
+previous card* and clear the *From* fields — or untick *Count from the 'From' values* — and the values just slide in, fixed.
 Place · date · time · altitude · weather · temperature. Each item can be hidden.
 
 ![Info Card](guide_img/info_card.jpg)

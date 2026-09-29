@@ -278,6 +278,10 @@ Menu **Workspace → Scripts → Safar Pahad Parivar → 4 Titles & Graphics** �
 **How:** run it.
 **You'll see:** every empty card filled; the card animates with the new values. Console per card:
 `card at 86400: धारचूला / Dharchula, 915 m, 23 जून 11:14 AM, 24°C`, then `Filled 3 Info Card(s)`.
+**Then:** every card also gets the previous card's altitude / date / time / weather as its *From* values, so on screen
+the time runs on from the last card (the date turns past midnight), the altitude climbs and the weather icon changes.
+The first card has nothing before it and simply slides in. Console: `3 card(s) now count on from the previous card`.
+A card with *Fill 'From' with the previous card* unticked keeps its own *From* values (blank = values just slide in).
 **Again / undo:** cards already filled are skipped. To refresh one: clear its *Place (Hindi)* and run again. Check the
 Hindi spelling — names come from OpenStreetMap; just type over them.
 **Problems:** `no footage under it` → move the card over a footage clip. `can't find the trip folder` → footage isn't

@@ -39,7 +39,7 @@
       },
       "countUp": {
         "type": "boolean",
-        "title": "Count Altitude Up",
+        "title": "Count from the 'From' values (off = just slide in)",
         "default": true
       },
       "showDate": {
@@ -100,8 +100,35 @@
       },
       "rolling": {
         "type": "boolean",
-        "title": "Rolling-dial numbers",
+        "title": "Rolling-dial altitude",
         "default": true
+      },
+      "fromPrevious": {
+        "type": "boolean",
+        "title": "Fill 'From' with the previous card (Fill from GPS script)",
+        "default": true
+      },
+      "fromAltitude": {
+        "type": "integer",
+        "title": "From altitude (m, 0 = none)",
+        "minimum": 0,
+        "maximum": 9000,
+        "default": 0
+      },
+      "fromDate": {
+        "type": "string",
+        "title": "From date (blank = none)",
+        "default": ""
+      },
+      "fromTime": {
+        "type": "string",
+        "title": "From time (blank = none)",
+        "default": ""
+      },
+      "fromWeather": {
+        "type": "string",
+        "title": "From weather: none / sun / part-cloud / cloud / rain / snow / fog / night",
+        "default": "none"
       }
     }
   },
