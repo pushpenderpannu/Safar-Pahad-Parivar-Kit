@@ -60,11 +60,14 @@ function rollBuild(host,text){if(host._rk===text)return host._rw;host._rk=text;h
       w.appendChild(st);host.appendChild(w);W.push({w,st,d:+ch});}
     else{const c=document.createElement("span");c.className="rc";c.textContent=ch;host.appendChild(c);W.push({c});}}
   host._rw=W;return W;}
-// odometer: value x counts, digits spin and carry like a car's odometer; layout fixed to the final number
+// odometer: value x counts, digits spin and carry like a car's odometer. Digits the value doesn't reach (the "1" of
+// 1,650 when it drops to 900) fold away - with the comma in front of them - so there's never a grey leading 0.
 function rollOdo(host,x,final,fmt){fmt=fmt||(v=>Math.round(v).toLocaleString("en-IN"));
-  const W=rollBuild(host,fmt(final)),ds=W.filter(q=>q.st);const n=ds.length;x=Math.max(0,x);
-  ds.forEach((q,i)=>{const k=n-1-i,P=Math.pow(10,k),r=x%P;let pos=Math.floor(x/P)%10+(k===0?(x%1):Math.max(0,r-(P-1)));
-    q.st.style.transform=`translateY(${(-(pos+10)*RH).toFixed(4)}em)`;q.w.style.opacity=(k>0&&x<P-0.5)?"0.28":"1";});}
+  const W=rollBuild(host,fmt(final)),ds=W.filter(q=>q.st);const n=ds.length;x=Math.max(0,x);let left=0;
+  W.forEach(q=>{if(q.st){const k=n-1-ds.indexOf(q),P=Math.pow(10,k),r=x%P;let pos=Math.floor(x/P)%10+(k===0?(x%1):Math.max(0,r-(P-1)));
+      q.st.style.transform=`translateY(${(-(pos+10)*RH).toFixed(4)}em)`;
+      const v=k===0?1:clamp((x-0.98*P)/(0.02*P),0,1);q.w.style.width=(0.64*v).toFixed(4)+"em";q.w.style.opacity=v.toFixed(3);left=Math.max(left,v);}
+    else{q.c.style.maxWidth=(0.6*left).toFixed(4)+"em";q.c.style.opacity=left.toFixed(3);}});}
 // slot: each digit spins in (two turns) and lands on its value, left to right; other characters fade in
 function rollSlot(host,text,prog,stag){stag=stag??0.08;const W=rollBuild(host,text);
   W.forEach((q,i)=>{const e=eo(seg(prog,i*stag,i*stag+0.62));
@@ -81,7 +84,7 @@ const BASE_CSS=`:host{position:absolute;inset:0;display:block;pointer-events:non
   -webkit-mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent);mask-image:linear-gradient(transparent,#000 14%,#000 86%,transparent)}
 .rs{display:flex;flex-direction:column}
 .rs span{display:block;height:1.18em;line-height:1.18em;font-variant-numeric:tabular-nums}
-.rc{display:inline-block;height:1.18em;line-height:1.18em}`;
+.rc{display:inline-block;height:1.18em;line-height:1.18em;overflow:hidden;vertical-align:bottom}`;
 function fileURL(p){p=(p||"").trim().replace(/^"|"$/g,"");if(!p)return "";if(/^(https?|file):/i.test(p))return p;
   const parts=p.replace(/\\/g,"/").split("/");return "file:///"+parts.map((x,i)=>i===0&&/^[A-Za-z]:$/.test(x)?x:encodeURIComponent(x)).join("/");}
 function el(tag,cls,parent,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;if(parent)parent.appendChild(e);return e;}
