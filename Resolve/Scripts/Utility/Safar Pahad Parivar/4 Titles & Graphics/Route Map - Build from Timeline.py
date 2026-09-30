@@ -56,7 +56,16 @@ def main():
     print(err[-1500:])
     rj = os.path.join(out, "route.json")
     if rc != 0 or not os.path.exists(rj):
-        print("FAILED"); return
+        print("FAILED")
+        if os.path.exists(stops):
+            print("No GPS in the footage? Open %s in Excel, add one row per place\n"
+                  "(Hindi, English, place name, arrive, leave - e.g. धारचूला, Dharchula, Dharchula, 2026-06-24 16:10, 2026-06-25 07:30),\n"
+                  "save, and run this again." % stops)
+            try:
+                os.startfile(os.path.dirname(stops))
+            except Exception:
+                pass
+        return
     maps = C.templates_on(tl, "SPP-Route-Map")
     for it, tool, track in maps:
         tool.SetInput("DynParamText0", rj)

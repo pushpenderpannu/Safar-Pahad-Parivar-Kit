@@ -25,6 +25,18 @@ Hindi name you get the English one — type the Hindi yourself.
    arrival/departure times, running date-time clock, keep earlier names, darken map.
 - The path follows the **real roads** between your GPS points (OpenStreetMap routing). With a Timeline export the line is your exact track.
 - A 9:16 timeline gets a portrait map automatically.
+
+**No GPS and no Timeline.json?** You only need the places and times. Run the script once — it stops with *Fewer than 2
+stops* and opens the folder with an empty `stops.csv`. Fill one row per place in Excel and run again:
+
+| hindi | english | place (name or lat, lon) | arrive (YYYY-MM-DD HH:MM) | leave (YYYY-MM-DD HH:MM) |
+|---|---|---|---|---|
+| धारचूला | Dharchula | Dharchula | 2026-06-24 16:10 | 2026-06-25 07:30 |
+| दुग्तू | Dugtu | Dugtu, Pithoragarh | 2026-06-25 13:05 | 2026-06-26 08:00 |
+| मुंस्यारी | Munsiyari | 30.0679, 80.2383 | 2026-06-26 17:40 | 2026-06-26 17:40 |
+
+The place is looked up on OpenStreetMap (add the district if a name is common, or paste `lat, lon` from Google Maps);
+the line between places follows the real road. Times drive the pauses, the arrive/leave labels and the clock.
 - Credit line (bottom right) is required by the map data licences — leave it on.
 - `route.gpx` is saved next to it for the 3D apps below.
 

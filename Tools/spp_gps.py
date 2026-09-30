@@ -591,7 +591,10 @@ def make_route(idx, tz, out_dir, t_from=None, t_to=None, portrait=False, min_sta
         write_stops_csv(stop_labels([dict(x) for x in stops], tz), tz, os.path.join(out_dir, "stops.csv"))
     stops = stop_labels(stops, tz)
     if len(stops) < 2:
-        raise SystemExit("Fewer than 2 stops found - add a Google Timeline export or lower --min-stay.")
+        where = stops_file or os.path.join(out_dir, "stops.csv")
+        raise SystemExit("Fewer than 2 stops. No GPS for this trip? Type the stops yourself in\n  %s\n"
+                         "one row per place: Hindi name, English name, place (a name like 'Dharchula' or 'lat, lon'),\n"
+                         "arrive and leave time (2026-06-24 16:10) - then run again." % where)
     P = [p for p in idx["points"] if (t_from is None or p[0] >= t_from) and (t_to is None or p[0] <= t_to)]
     # travel path: GPS points between stops, or the road between them when points are sparse
     path = []  # (lat, lon, t or None)
