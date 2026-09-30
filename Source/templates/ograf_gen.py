@@ -659,7 +659,7 @@ TEMPLATES.append(dict(
         "drawStart": {"type": "number", "title": "Route starts drawing at (s)", "minimum": 0, "maximum": 20, "default": 1.2},
         "drawEnd": {"type": "number", "title": "Route finished at (s)", "minimum": 2, "maximum": 40, "default": 12},
         "pause": {"type": "number", "title": "Pause at each stop (s)", "minimum": 0, "maximum": 4, "default": 1.0},
-        "camera": select_prop("Camera", ["whole", "follow"], 1),
+        "camera": select_prop("Camera (whole = map stays still)", ["whole", "follow"], 0),
         "zoom": {"type": "number", "title": "Follow zoom", "minimum": 1.2, "maximum": 4, "default": 2.0},
         "showTimes": {"type": "boolean", "title": "Show arrival / departure times", "default": True},
         "showClock": {"type": "boolean", "title": "Show running date & time", "default": True},
@@ -667,6 +667,7 @@ TEMPLATES.append(dict(
         "dim": {"type": "number", "title": "Darken map", "minimum": 0, "maximum": 0.8, "default": 0.1},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 40, "default": 0},
         "accentColor": color_prop("Accent Colour"),
+        "cinemaBars": {"type": "boolean", "title": "Inside 2.35 cinema bars (output blanking)", "default": False},
     },
     css=f"""
 .cam{{position:absolute;inset:0;transform-origin:0 0;will-change:transform}}
@@ -719,7 +720,9 @@ const R=this._route;
 this.$.msg.style.display=R?"none":"block";
 if(!R){this.$.clock.style.display="none";this.$.credit.style.display="none";this.$.msg.innerHTML=this._err||"SPP Route Map<br>Choose <b>route.json</b> in the Inspector<br><small>(Tools\\spp_gps.py route …)</small>";return;}
 if(this._builtFor!==R){this._builtFor=R;this._buildRoute(R);}
-this.$.clock.style.display=s.showClock&&R.hasTime?"flex":"none"; this.$.credit.style.display="block";""",
+this.$.clock.style.display=s.showClock&&R.hasTime?"flex":"none"; this.$.credit.style.display="block";
+this._lbx=!!s.cinemaBars; const bar=this._bar(),u=this._u;
+this.$.ttl.style.top=Math.round(56*u+bar)+"px"; this.$.clock.style.top=Math.round(186*u+bar)+"px"; this.$.credit.style.bottom=Math.round(16*u+bar)+"px";""",
     frame=r"""
 const s=this._state,R=this._route; if(!R)return;
 const u=this._u,v=this._vertical;
@@ -740,8 +743,7 @@ const sm=this._at(clamp(f-0.02,0,1)),sm2=this._at(clamp(f+0.02,0,1));
 let cx=(sm[0]+hp[0]+sm2[0])/3,cy=(sm[1]+hp[1]+sm2[1])/3;
 cx=0.5+(cx-0.5)*zk; cy=0.5+(cy-0.5)*zk;
 cx=clamp(cx,0.5/z,1-0.5/z); cy=clamp(cy,0.5/z,1-0.5/z);
-const W=this._w,H=this._h,tx=W*(0.5-cx*z),ty=H*(0.5-cy*z);
-this.$.cam.style.transform=`translate(${tx.toFixed(2)}px,${ty.toFixed(2)}px) scale(${z.toFixed(5)})`;
+this.$.cam.style.transform=`translate(${((0.5-cx*z)*100).toFixed(4)}%,${((0.5-cy*z)*100).toFixed(4)}%) scale(${z.toFixed(5)})`;  // % of the frame: never shows an empty edge
 // ---- path
 const px=(p)=>(p[0]*R.w).toFixed(1)+","+(p[1]*R.h).toFixed(1);
 const pts=R.path,iv=[];

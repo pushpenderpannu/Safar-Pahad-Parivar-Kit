@@ -51,6 +51,10 @@ def main():
         print("Using your stops list:", stops)
     if int(tl.GetSetting("timelineResolutionHeight")) > int(tl.GetSetting("timelineResolutionWidth")):
         args.append("--portrait")
+    maps = C.templates_on(tl, "SPP-Route-Map")
+    if any((tool.GetInput("DynParamCheck14") or 0) > 0.5 for it, tool, track in maps):   # 'Inside 2.35 cinema bars' ticked
+        args.append("--cinema")
+        print("Fitting the route inside 2.35 cinema bars")
     print("Making the map... (Resolve will pause)")
     o, err, rc = C.run_gps("route", trip, out, *args)
     print(err[-1500:])

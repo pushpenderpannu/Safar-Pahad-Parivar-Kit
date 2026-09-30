@@ -21,8 +21,11 @@ Hindi name you get the English one — type the Hindi yourself.
 2. Run **Route Map - Build from Timeline** (Resolve pauses 1–3 min the first time; map tiles are cached).
 3. Missing a stop or a wrong name? Open `stops.csv` in that folder in Excel: fix names, add a row for any place GPS missed
    (a place name like `Dharchula` is enough, plus arrive/leave times), delete stops you don't want. Save → run again.
-4. Inspector: title, when the drawing starts/ends, pause at each stop, *Follow the journey* camera + zoom,
+4. Inspector: title, when the drawing starts/ends, pause at each stop, **Camera** (`whole` = the map stays still and the
+   pointer draws the route with a growing tail — the default; `follow` = the camera travels with the pointer, zoomed in),
    arrival/departure times, running date-time clock, keep earlier names, darken map.
+5. **2.35 output blanking:** tick **Inside 2.35 cinema bars**, then run *Route Map - Build from Timeline* again — the title,
+   clock and credit move inside the bars and the map is re-made so the whole route fits between them.
 - The path follows the **real roads** between your GPS points (OpenStreetMap routing). With a Timeline export the line is your exact track.
 - A 9:16 timeline gets a portrait map automatically.
 

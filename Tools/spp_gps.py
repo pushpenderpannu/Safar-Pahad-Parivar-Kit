@@ -581,7 +581,7 @@ def rivers(bbox_ll):
 
 
 def make_route(idx, tz, out_dir, t_from=None, t_to=None, portrait=False, min_stay=40, roads=True, stops_file=None,
-               with_rivers=False):
+               with_rivers=False, cinema=False):
     from PIL import Image, ImageDraw
     if stops_file:
         stops = read_stops_csv(stops_file, tz)          # your list replaces the automatic one
@@ -619,6 +619,7 @@ def make_route(idx, tz, out_dir, t_from=None, t_to=None, portrait=False, min_sta
                         path += [(la, lo, None) for la, lo in rp[1:-1]]
         path.append(anchors[-1])
     W, H = (1080, 1920) if portrait else (3840, 2160)
+    FH = (W / 2.35) * 0.8 / H if cinema and not portrait else 0.72     # fit inside 2.35:1 output-blanking bars
     lats = [p[0] for p in path]; lons = [p[1] for p in path]
     # zoom: the largest one where the route fits ~72% of the frame, then one more level (rendered big, scaled down = sharp)
     def span(z):
@@ -627,12 +628,12 @@ def make_route(idx, tz, out_dir, t_from=None, t_to=None, portrait=False, min_sta
     zf = 4
     for z in range(4, 14):
         xa, ya, xb, yb = span(z)
-        if (xb - xa) <= 0.72 * W and (yb - ya) <= 0.72 * H:
+        if (xb - xa) <= 0.72 * W and (yb - ya) <= FH * H:
             zf = z
     z = min(zf + 1, 13)
     xa, ya, xb, yb = span(z)
     cx, cy = (xa + xb) / 2, (ya + yb) / 2
-    scale = min(0.72 * W / max(xb - xa, 1), 0.72 * H / max(yb - ya, 1))
+    scale = min(0.72 * W / max(xb - xa, 1), FH * H / max(yb - ya, 1))
     scale = max(0.35, min(scale, 2.5))
     bw, bh = W / scale, H / scale
     box = (cx - bw / 2, cy - bh / 2, cx + bw / 2, cy + bh / 2)
@@ -752,6 +753,7 @@ def main():
     ap.add_argument("--min-stay", type=float, default=40)
     ap.add_argument("--from", dest="t_from"); ap.add_argument("--to", dest="t_to")
     ap.add_argument("--portrait", action="store_true")
+    ap.add_argument("--cinema", action="store_true", help="fit the route inside 2.35:1 output-blanking bars")
     ap.add_argument("--no-roads", action="store_true")
     ap.add_argument("--rivers", action="store_true", help="draw rivers (slow; OpenStreetMap servers often time out)")
     ap.add_argument("--stops-file", help="your own stops (CSV made by 'stops --csv' or 'route')")
@@ -790,7 +792,8 @@ def main():
     elif a.cmd == "route":
         if not a.arg:
             raise SystemExit("Give an output folder, e.g. \"<video>\\Graphics\\Route\"")
-        make_route(idx, tz, os.path.abspath(a.arg), tf, tt, a.portrait, a.min_stay, not a.no_roads, a.stops_file, a.rivers)
+        make_route(idx, tz, os.path.abspath(a.arg), tf, tt, a.portrait, a.min_stay, not a.no_roads, a.stops_file, a.rivers,
+                   a.cinema)
         return
     elif a.cmd == "gpx":
         write_gpx(idx, os.path.abspath(a.arg or os.path.join(trip, "trip.gpx")), tz, tf, tt)

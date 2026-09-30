@@ -59,8 +59,8 @@
       },
       "camera": {
         "type": "string",
-        "title": "Camera: whole / follow",
-        "default": "follow"
+        "title": "Camera (whole = map stays still): whole / follow",
+        "default": "whole"
       },
       "zoom": {
         "type": "number",
@@ -104,6 +104,11 @@
         "gddType": "color-rrggbb",
         "pattern": "^#[0-9a-f]{6}$",
         "default": "#f4b03e"
+      },
+      "cinemaBars": {
+        "type": "boolean",
+        "title": "Inside 2.35 cinema bars (output blanking)",
+        "default": false
       }
     }
   },

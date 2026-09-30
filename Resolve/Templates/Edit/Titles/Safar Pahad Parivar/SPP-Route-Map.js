@@ -1,4 +1,4 @@
-const DEFAULTS={"routeFile": "", "titleHi": "हमारा सफ़र", "titleEn": "OUR ROUTE", "drawStart": 1.2, "drawEnd": 12, "pause": 1.0, "camera": "follow", "zoom": 2.0, "showTimes": true, "showClock": true, "keepLabels": true, "dim": 0.1, "outAt": 0, "accentColor": "#f4b03e"};
+const DEFAULTS={"routeFile": "", "titleHi": "हमारा सफ़र", "titleEn": "OUR ROUTE", "drawStart": 1.2, "drawEnd": 12, "pause": 1.0, "camera": "whole", "zoom": 2.0, "showTimes": true, "showClock": true, "keepLabels": true, "dim": 0.1, "outAt": 0, "accentColor": "#f4b03e", "cinemaBars": false};
 const DURATION=40;
 const CHOICES={"camera": ["whole", "follow"]};
 const CSS=`
@@ -181,6 +181,8 @@ this.$.msg.style.display=R?"none":"block";
 if(!R){this.$.clock.style.display="none";this.$.credit.style.display="none";this.$.msg.innerHTML=this._err||"SPP Route Map<br>Choose <b>route.json</b> in the Inspector<br><small>(Tools\\spp_gps.py route …)</small>";return;}
 if(this._builtFor!==R){this._builtFor=R;this._buildRoute(R);}
 this.$.clock.style.display=s.showClock&&R.hasTime?"flex":"none"; this.$.credit.style.display="block";
+this._lbx=!!s.cinemaBars; const bar=this._bar(),u=this._u;
+this.$.ttl.style.top=Math.round(56*u+bar)+"px"; this.$.clock.style.top=Math.round(186*u+bar)+"px"; this.$.credit.style.bottom=Math.round(16*u+bar)+"px";
 }
 _frame(t,out){
 const s=this._state,R=this._route; if(!R)return;
@@ -202,8 +204,7 @@ const sm=this._at(clamp(f-0.02,0,1)),sm2=this._at(clamp(f+0.02,0,1));
 let cx=(sm[0]+hp[0]+sm2[0])/3,cy=(sm[1]+hp[1]+sm2[1])/3;
 cx=0.5+(cx-0.5)*zk; cy=0.5+(cy-0.5)*zk;
 cx=clamp(cx,0.5/z,1-0.5/z); cy=clamp(cy,0.5/z,1-0.5/z);
-const W=this._w,H=this._h,tx=W*(0.5-cx*z),ty=H*(0.5-cy*z);
-this.$.cam.style.transform=`translate(${tx.toFixed(2)}px,${ty.toFixed(2)}px) scale(${z.toFixed(5)})`;
+this.$.cam.style.transform=`translate(${((0.5-cx*z)*100).toFixed(4)}%,${((0.5-cy*z)*100).toFixed(4)}%) scale(${z.toFixed(5)})`;  // % of the frame: never shows an empty edge
 // ---- path
 const px=(p)=>(p[0]*R.w).toFixed(1)+","+(p[1]*R.h).toFixed(1);
 const pts=R.path,iv=[];
