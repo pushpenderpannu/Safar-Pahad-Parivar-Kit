@@ -29,6 +29,14 @@ Hindi name you get the English one — type the Hindi yourself.
 - The path follows the **real roads** between your GPS points (OpenStreetMap routing). With a Timeline export the line is your exact track.
 - A 9:16 timeline gets a portrait map automatically.
 
+**One trip, a map per chapter.** Build the route once for the whole trip (the whole film's timeline), then put an
+SPP Route Map title in each chapter. Each title has **Chapter: from stop** and **Chapter: to stop** — type a stop's name
+(Hindi or English, the start is enough: `dhar`, `मुन`) or its number in `stops.csv` (1 = first row). That title then
+draws only that part of the trip, zoomed to it, with the rest of the trip as a faint dotted line and the other stops hidden.
+Leave both blank for the whole trip. Easier: put each Route Map title after its **SPP Chapter** card and run
+*Route Map - Build from Timeline* — it fills from/to itself from the footage between that chapter card and the next
+(titles where you typed them are left alone; clear both boxes and run again to let it choose).
+
 **No GPS and no Timeline.json?** You only need the places and times. Run the script once — it stops with *Fewer than 2
 stops* and opens the folder with an empty `stops.csv`. Fill one row per place in Excel and run again:
 

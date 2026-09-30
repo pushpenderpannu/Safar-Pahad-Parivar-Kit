@@ -73,9 +73,50 @@ def main():
     maps = C.templates_on(tl, "SPP-Route-Map")
     for it, tool, track in maps:
         tool.SetInput("DynParamText0", rj)
+    chapter_ranges(maps, rj, idx)
     print(("Loaded into %d SPP Route Map title(s)." % len(maps)) if maps else
           "Add an SPP Route Map title (Effects > Titles > Safar Pahad Parivar) and choose:\n  " + rj)
     print("Names wrong or a stop missing? Edit %s and run this again." % stops)
+
+
+def chapter_ranges(maps, rj, idx):
+    """A Route Map title inside a chapter shows only that chapter's part of the trip: 'from stop' / 'to stop' are filled
+    from the footage between its chapter card and the next one. Titles where you typed them yourself are left alone."""
+    chapters = sorted(it.GetStart() for it, tool, track in C.templates_on(tl, "SPP-Chapter"))
+    if not chapters and len(maps) < 2:
+        return
+    R = json.load(open(rj, encoding="utf-8"))
+    st = R.get("stops") or []
+    if len(st) < 3:
+        return
+    fps = float(tl.GetSetting("timelineFrameRate") or 30)
+    rec = {os.path.basename(r["file"]).lower(): r for r in idx["media"] if r.get("t")}
+    clips = []                                  # (timeline start, end, capture start, capture end)
+    for t in range(1, tl.GetTrackCount("video") + 1):
+        for it in tl.GetItemListInTrack("video", t) or []:
+            m = it.GetMediaPoolItem()
+            r = rec.get(os.path.basename(m.GetClipProperty("File Path") or "").lower()) if m else None
+            if r:
+                a = r["t"] + (it.GetLeftOffset() or 0) / fps
+                clips.append((it.GetStart(), it.GetEnd(), a, a + it.GetDuration() / fps))
+    starts = sorted(set([0] + chapters))
+    for it, tool, track in maps:
+        if (tool.GetInput("DynParamText15") or "").strip() or (tool.GetInput("DynParamText16") or "").strip():
+            continue
+        s0 = max([c for c in starts if c <= it.GetStart()] or [0])
+        s1 = min([c for c in chapters if c > it.GetStart()] or [tl.GetEndFrame() + 1])
+        ts = [(a, b) for c0, c1, a, b in clips if c1 > s0 and c0 < s1]
+        if not ts:
+            continue
+        t0, t1 = min(a for a, b in ts), max(b for a, b in ts)
+        i0 = max([i for i, x in enumerate(st) if x["arrive_t"] <= t0 + 600] or [0])
+        i1 = min([i for i, x in enumerate(st) if x["arrive_t"] >= t1 - 600 and i > i0] or [len(st) - 1])
+        if i0 == 0 and i1 == len(st) - 1:
+            continue
+        name = lambda x: x.get("hi") or x.get("en") or ""
+        tool.SetInput("DynParamText15", name(st[i0]))
+        tool.SetInput("DynParamText16", name(st[i1]))
+        print("Route Map at %s: %s -> %s" % (it.GetStart(), name(st[i0]), name(st[i1])))
 
 
 main()

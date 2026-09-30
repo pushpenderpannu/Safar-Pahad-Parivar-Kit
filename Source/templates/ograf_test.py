@@ -40,6 +40,7 @@ CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Route-Map", [14000], (1920, 1080), "bg_a.jpg", {"routeFile": "http://127.0.0.1:8765/route/route.json", "camera": "0"}, "whole"),
     ("SPP-Route-Map", [2000], (1920, 1080), "bg_a.jpg", {}, "empty"),
     ("SPP-Route-Map", [3500, 9500, 14000], (1920, 1080), "bg_a.jpg", {"routeFile": "http://127.0.0.1:8765/route/route.json", "cinemaBars": True}, "default235"),
+    ("SPP-Route-Map", [1000, 4000, 9000, 14000], (1920, 1080), "bg_a.jpg", {"routeFile": "http://127.0.0.1:8765/route/route.json", "fromStop": "2", "toStop": "3"}, "chapter"),
     ("SPP-Film-Title", [300, 800, 1300, 1800, 3000, 6600], (1920, 1080), "bg_a.jpg", {}, "centre"),
     ("SPP-Film-Title", [3000], (1920, 1080), "bg_b.jpg", {"position": "bottom-left"}, "bl"),
     ("SPP-Film-Title", [3000], (1080, 1920), "bg_b.jpg", {}, "916"),

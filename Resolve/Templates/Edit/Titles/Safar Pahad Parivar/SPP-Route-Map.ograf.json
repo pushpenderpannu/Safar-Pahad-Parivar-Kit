@@ -109,6 +109,16 @@
         "type": "boolean",
         "title": "Inside 2.35 cinema bars (output blanking)",
         "default": false
+      },
+      "fromStop": {
+        "type": "string",
+        "title": "Chapter: from stop (name or number, blank = first)",
+        "default": ""
+      },
+      "toStop": {
+        "type": "string",
+        "title": "Chapter: to stop (name or number, blank = last)",
+        "default": ""
       }
     }
   },

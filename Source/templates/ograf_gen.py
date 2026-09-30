@@ -668,6 +668,8 @@ TEMPLATES.append(dict(
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 40, "default": 0},
         "accentColor": color_prop("Accent Colour"),
         "cinemaBars": {"type": "boolean", "title": "Inside 2.35 cinema bars (output blanking)", "default": False},
+        "fromStop": {"type": "string", "title": "Chapter: from stop (name or number, blank = first)", "default": ""},
+        "toStop": {"type": "string", "title": "Chapter: to stop (name or number, blank = last)", "default": ""},
     },
     css=f"""
 .cam{{position:absolute;inset:0;transform-origin:0 0;will-change:transform}}
@@ -730,25 +732,27 @@ const u=this._u,v=this._vertical;
 const ti=eo(seg(t,0.2,0.9)); this.$.ttl.style.opacity=String(ti); this.$.ttl.style.transform=`translateY(${Math.round((1-ti)*-20*u)}px)`;
 // ---- journey schedule -> head fraction
 const st=R.stops,n=st.length,a0=+s.drawStart||0,a1=Math.max(a0+1,+s.drawEnd||a0+10),P=Math.max(0,+s.pause||0);
-const move=Math.max(0.5,(a1-a0)-P*(n-1)); let f=0,k=0,arrived=0,clockT=null;
-{let tc=a0+P; if(t<tc){f=0;arrived=t>=a0?1:0;clockT=st[0].leave_t||null;}else{f=1;arrived=n;clockT=st[n-1].arrive_t||null;
-  for(let i=1;i<n;i++){const df=Math.max(0,st[i].f-st[i-1].f),dur=move*df,te=tc+dur;
+const [i0,i1]=this._range(),F0=st[i0].f,F1=st[i1].f,span=Math.max(1e-6,F1-F0),ns=i1-i0+1;   // chapter = stops i0..i1
+const move=Math.max(0.5,(a1-a0)-P*(ns-1)); let f=F0,k=0,arrived=i0,clockT=null;
+{let tc=a0+P; if(t<tc){f=F0;arrived=t>=a0?i0+1:i0;clockT=st[i0].leave_t||null;}else{f=F1;arrived=i1+1;clockT=st[i1].arrive_t||null;
+  for(let i=i0+1;i<=i1;i++){const df=Math.max(0,st[i].f-st[i-1].f),dur=move*df/span,te=tc+dur;
     if(t<te){const q=(t-tc)/Math.max(dur,1e-6);const e=q<.5?4*q*q*q:1-Math.pow(-2*q+2,3)/2;f=st[i-1].f+df*e;arrived=i;clockT=this._segTime(i-1,i,f);break;}
-    tc=te; if(i<n-1){if(t<tc+P){f=st[i].f;arrived=i+1;clockT=(t-tc<P*0.5)?(st[i].arrive_t||null):(st[i].leave_t||null);break;} tc+=P;}}}}
+    tc=te; if(i<i1){if(t<tc+P){f=st[i].f;arrived=i+1;clockT=(t-tc<P*0.5)?(st[i].arrive_t||null):(st[i].leave_t||null);break;} tc+=P;}}}}
 const hp=this._at(f);
 // ---- camera
 const cam=this._ch("camera"),Z=cam===1?clamp(+s.zoom||2,1.2,4):1;
-const zin=eo(seg(t,a0-0.6,a0+0.8)),zout=eo(seg(t,a1+0.2,a1+1.6)),zk=cam===1?zin*(1-zout):0,z=1+(Z-1)*zk;
+const B=this._fit(i0,i1),zb=B.z;                              // whole view of this chapter's part of the route
+const zin=eo(seg(t,a0-0.6,a0+0.8)),zout=eo(seg(t,a1+0.2,a1+1.6)),zk=cam===1?zin*(1-zout):0,z=zb+(Math.max(Z,zb)-zb)*zk;
 const sm=this._at(clamp(f-0.02,0,1)),sm2=this._at(clamp(f+0.02,0,1));
 let cx=(sm[0]+hp[0]+sm2[0])/3,cy=(sm[1]+hp[1]+sm2[1])/3;
-cx=0.5+(cx-0.5)*zk; cy=0.5+(cy-0.5)*zk;
+cx=B.cx+(cx-B.cx)*zk; cy=B.cy+(cy-B.cy)*zk;
 cx=clamp(cx,0.5/z,1-0.5/z); cy=clamp(cy,0.5/z,1-0.5/z);
 this.$.cam.style.transform=`translate(${((0.5-cx*z)*100).toFixed(4)}%,${((0.5-cy*z)*100).toFixed(4)}%) scale(${z.toFixed(5)})`;  // % of the frame: never shows an empty edge
 // ---- path
 const px=(p)=>(p[0]*R.w).toFixed(1)+","+(p[1]*R.h).toFixed(1);
 const pts=R.path,iv=[];
-for(let i=0;i<pts.length&&pts[i][2]<=f;i++)iv.push(px(pts[i]));
-if(f>0)iv.push(px(hp));
+for(let i=0;i<pts.length&&pts[i][2]<=f;i++)if(pts[i][2]>=F0)iv.push(px(pts[i]));
+if(f>F0){iv.unshift(px(this._at(F0)));iv.push(px(hp));}
 const d=iv.length>1?"M"+iv.join("L"):"";
 this.$.trail.setAttribute("d",d); this.$.trailO.setAttribute("d",d);
 const gi=eo(seg(t,a0-1,a0)); this.$.ghost.style.opacity=String(0.55*gi); this.$.ghostO.style.opacity=String(0.4*gi);
@@ -759,11 +763,12 @@ this.$.ring.setAttribute("cx",(hp[0]*R.w).toFixed(1)); this.$.ring.setAttribute(
 const ph=((t*1.25)%1); this.$.ring.setAttribute("r",(R.sw*(2.2+5*ph)).toFixed(1)); this.$.ring.style.opacity=hv?String(0.8*(1-ph)):"0";
 // ---- stops
 for(let i=0;i<n;i++){const L=this._labs[i],p=this._pins[i];
-  const ta=(i===0?a0:this._arriveT(i,a0,move,P));
+  if(i<i0||i>i1){p.style.opacity="0";L.style.display="none";continue;}   // stops of other chapters
+  const ta=(i===i0?a0:this._arriveT(i,a0,move,P,i0,span));
   const k1=eb(seg(t,ta,ta+0.45)),k0=eo(seg(t,ta,ta+0.3));
   p.style.opacity=String(k0); p.setAttribute("transform",`translate(${(st[i].x*R.w).toFixed(1)},${(st[i].y*R.h).toFixed(1)}) scale(${(0.2+0.8*k1).toFixed(3)})`);
   const later=i<arrived-1&&arrived>i+1;
-  const old=later&&t>=this._arriveT(i+1,a0,move,P)+0.3;
+  const old=later&&t>=this._arriveT(i+1,a0,move,P,i0,span)+0.3;
   L.classList.toggle("small",old);
   L.style.display=(old&&!s.keepLabels)?"none":"block";
   L.style.opacity=String(k0*(old?0.85:1));
@@ -775,7 +780,7 @@ if(s.showClock&&R.hasTime){const tt=clockT;if(tt){const ci=eo(seg(t,a0-0.3,a0+0.
   setT(this.$.clock.lastChild,this._fmtClock(tt));}}
 this.$.credit.style.opacity=String(eo(seg(t,0.5,1.2)));""",
     extra=r"""
-async _prepare(){const key=this._state.routeFile||"";if(key===this._routeKey)return;this._routeKey=key;this._route=null;this._err="";
+async _prepare(){const key=this._state.routeFile||"";if(key===this._routeKey)return;this._routeKey=key;this._route=null;this._err="";this._fitKey=null;
   if(!key)return;
   try{const url=fileURL(key);const r=await fetch(url);if(!r.ok)throw new Error("HTTP "+r.status);const R=await r.json();
     if(!R||!Array.isArray(R.path)||!Array.isArray(R.stops))throw new Error("not a route.json");
@@ -813,7 +818,22 @@ _buildRoute(R){
 _at(f){const P=this._route.path;if(f<=0)return[P[0][0],P[0][1]];if(f>=1){const q=P[P.length-1];return[q[0],q[1]];}
   let lo=0,hi=P.length-1;while(hi-lo>1){const m=(lo+hi)>>1;if(P[m][2]<=f)lo=m;else hi=m;}
   const a=P[lo],b=P[hi],q=(f-a[2])/Math.max(b[2]-a[2],1e-9);return[a[0]+(b[0]-a[0])*q,a[1]+(b[1]-a[1])*q];}
-_arriveT(i,a0,move,P){const st=this._route.stops;let tc=a0+P;for(let j=1;j<=i;j++){tc+=move*Math.max(0,st[j].f-st[j-1].f);if(j<i)tc+=P;}return tc;}
+_arriveT(i,a0,move,P,i0,span){i0=i0||0;span=span||1;const st=this._route.stops;let tc=a0+P;for(let j=i0+1;j<=i;j++){tc+=move*Math.max(0,st[j].f-st[j-1].f)/span;if(j<i)tc+=P;}return tc;}
+_stopIdx(q,def){const st=this._route.stops;q=String(q??"").trim();if(!q)return def;
+  if(/^\d+$/.test(q))return clamp(parseInt(q,10)-1,0,st.length-1);
+  const n=x=>String(x||"").toLowerCase().replace(/[^a-z0-9\u0900-\u097f]/g,"");const k=n(q);
+  let i=st.findIndex(x=>n(x.hi)===k||n(x.en)===k);if(i<0)i=st.findIndex(x=>n(x.hi).startsWith(k)||n(x.en).startsWith(k));
+  if(i<0)i=st.findIndex(x=>n(x.hi).includes(k)||n(x.en).includes(k));return i<0?def:i;}
+_range(){const n=this._route.stops.length;let a=this._stopIdx(this._state.fromStop,0),b=this._stopIdx(this._state.toStop,n-1);
+  if(b<a)[a,b]=[b,a];if(b===a){if(b<n-1)b++;else if(a>0)a--;}return[a,b];}
+_fit(i0,i1){const key=i0+"/"+i1+"/"+(this._lbx?1:0);if(this._fitKey===key)return this._fitV;
+  const R=this._route,st=R.stops,F0=st[i0].f,F1=st[i1].f;let x0=1,x1=0,y0=1,y1=0;
+  for(const p of R.path)if(p[2]>=F0-1e-6&&p[2]<=F1+1e-6){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);y0=Math.min(y0,p[1]);y1=Math.max(y1,p[1]);}
+  for(let i=i0;i<=i1;i++){x0=Math.min(x0,st[i].x);x1=Math.max(x1,st[i].x);y0=Math.min(y0,st[i].y);y1=Math.max(y1,st[i].y);}
+  const band=this._h>0?1-2*this._bar()/this._h:1;
+  let z=(i0===0&&i1===st.length-1)?1:Math.min(0.62/Math.max(x1-x0,1e-3),0.55*band/Math.max(y1-y0,1e-3));
+  z=clamp(z,1,4);const v={z,cx:clamp((x0+x1)/2,0.5/z,1-0.5/z),cy:clamp((y0+y1)/2,0.5/z,1-0.5/z)};
+  this._fitKey=key;this._fitV=v;return v;}
 _segTime(i0,i1,f){const st=this._route.stops,A=st[i0],B=st[i1];
   const pts=[[A.f,A.leave_t]];for(const p of this._route.path){if(p[3]&&p[2]>A.f&&p[2]<B.f&&p[3]>=A.leave_t&&p[3]<=B.arrive_t)pts.push([p[2],p[3]]);}
   pts.push([B.f,B.arrive_t]);
