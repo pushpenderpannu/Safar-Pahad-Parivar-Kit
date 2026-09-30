@@ -31,7 +31,7 @@ Workspace → Scripts → Safar Pahad Parivar
 6. [Titles — how they work](#6-titles--how-they-work)
 7. [Info Card (+ fill from GPS)](#7-info-card--fill-from-gps)
 8. [Altitude Counter](#8-altitude-counter)
-9. [Peak Callout](#9-peak-callout)
+9. [Peak Callout](#9-peak-callout) · [9a. Peak Label (Fusion, tracked)](#9a-peak-label-fusion--for-moving-shots)
 10. [Pop-up Title](#10-pop-up-title)
 10a. [Film Title](#10a-film-title)
 10b. [Chapters](#10b-chapters)
@@ -289,6 +289,29 @@ the other.
   line are lifted automatically, point away from the middle of the group, and flip side near the frame edge.
 - **Marker** `dot` (pulsing) or `arrow` (points down at the summit). **Show Heights**, **Dark Box Behind Names**, **Size**.
 - If the camera moves, keyframe nothing — just keep the callout short (3–4 s) on a steady shot.
+
+## 9a. Peak Label (Fusion — for moving shots)
+When the camera moves, use the **SPP Peak Label** Fusion title and let a tracker carry it. It is only the label — yellow
+tick, Hindi name, English + height line — you do the tracking and draw the line yourself.
+
+**In the Fusion page** (select the footage clip → Fusion):
+1. **Track the summit:** add a **Tracker** after *MediaIn1*, put its box on the summit, press *Track to End* (and *Track
+   to Start*). One Tracker can hold several points (*Add* in the tracker list) — one per peak.
+2. **Add the label:** *Effects → Templates → Titles → Safar Pahad Parivar → SPP Peak Label* → drag it into the node area,
+   then **Merge** it over the footage (Background = Tracker, Foreground = SPP Peak Label → MediaOut1).
+3. **Make it follow:** in the Tracker set **X/Y Offset** to where the name should sit (e.g. up and to the right of the
+   summit). On SPP Peak Label, right-click **Label Point → Connect To → Tracker1 → Offset position** (for point 2:
+   *Tracker1: Offset position 2*…).
+4. **The line:** a **Polygon** (or a *Background* + Polygon mask, *Closed* off, *Border Width* ≈ 0.002, white) from the
+   summit to the Label Point — connect its two points to the tracker the same way (the tracked point and the offset
+   position), so both ends follow.
+5. **Bring it in:** keyframe **Reveal** 0 → 1 over about 0.6 s — the tick draws, then the name, then the English line.
+6. **More peaks:** copy the SPP Peak Label node (Ctrl+C / Ctrl+V), give it the next tracker point.
+
+**Controls:** Hindi Name · English + Height (type it, e.g. `PANCHACHULI II  ·  6,904 m`) · Label Point · **Label Side**
+(right or left of the point) · Reveal · Size · Accent Colour · Yellow Tick on/off · Text Shadow.
+On a steady shot you can also drop **SPP Peak Label** from the Edit page Titles onto a track above the clip and drag
+its Label Point in the viewer — no Fusion page needed.
 
 ## 10. Pop-up Title
 Place / moment title inside a chapter: small kicker, big Hindi headline, English line. For the start of a chapter use
@@ -582,7 +605,6 @@ Save the final file into `<video>\Exports`. Then *File → Export Project* (.drp
 | YouTube doesn't show chapters | 3+ chapters, first at 00:00, each ≥ 10 s — run **Chapters - Number + YouTube List** and read its notes. |
 | No *SPP Film Title* / *SPP Chapter* in Effects → Titles | Run `.\install.ps1`, restart Resolve (titles are only read at start-up). |
 | A title vanishes at its end instead of animating out | Run **Titles - Follow Clip Length** (4 Titles & Graphics) once — after that its exit follows the clip end. |
-| Titles look twice too big on a 4K timeline / a peak name far from its line | Fixed in the Sept-30 templates (run `.\install.ps1`, restart Resolve). If you had set **Size 0.5** to compensate, set it back to **1**. |
 | A menu script "disappeared" | They're in folders now: Workspace → Scripts → Safar Pahad Parivar → 1 Setup … 6 Sound & Music. |
 | Reflection cleaning darkened the landscape / blotches | Run **Reflection - Clean Selected Clips** again with *Gentle*, or switch that clip back with *Show Original or Cleaned*. |
 | Cleaned take is shorter than the clip after trimming | Run **Reflection - Clean Selected Clips** again — it cleans the new range. |
