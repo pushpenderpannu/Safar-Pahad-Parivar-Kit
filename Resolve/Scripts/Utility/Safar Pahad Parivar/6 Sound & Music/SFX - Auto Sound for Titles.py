@@ -26,7 +26,7 @@ import math
 
 DUR = {"SPP-Info-Card": 8, "SPP-Altitude-Counter": 8, "SPP-Peak-Callout": 6, "SPP-Popup-Title": 5, "SPP-Credits": 10, "SPP-Route-Map": 40,
        "SPP-Film-Title": 7, "SPP-Chapter": 5}
-OUTAT = {"SPP-Info-Card": 13, "SPP-Altitude-Counter": 9, "SPP-Peak-Callout": 10, "SPP-Popup-Title": 6, "SPP-Credits": 11, "SPP-Route-Map": 12,
+OUTAT = {"SPP-Info-Card": 13, "SPP-Altitude-Counter": 9, "SPP-Peak-Callout": 17, "SPP-Popup-Title": 6, "SPP-Credits": 11, "SPP-Route-Map": 12,
          "SPP-Film-Title": 8, "SPP-Chapter": 11}
 KITS = {
     "light": {"SPP-Info-Card": ("01 Title Kits", "InfoCard_In", 4), "SPP-Peak-Callout": ("01 Title Kits", "PeakCallout_In", 4),

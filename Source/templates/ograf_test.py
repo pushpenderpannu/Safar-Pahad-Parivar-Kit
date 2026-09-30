@@ -19,8 +19,11 @@ CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Info-Card", [2300, 3000, 3700, 4500], (1920, 1080), "bg_a.jpg", {"fromAltitude": 1650, "fromDate": "24 जून 2026", "fromTime": "04:10 PM", "fromWeather": "cloud"}, "from"),
     ("SPP-Altitude-Counter", [500, 1000, 1400, 1800, 4000], (1920, 1080), "bg_b.jpg", {}, "169"),
     ("SPP-Altitude-Counter", [4000], (1920, 1080), "bg_b.jpg", {"position": 4, "scale": 1.4}, "center"),
-    ("SPP-Peak-Callout", [200, 600, 1000, 3000], (1920, 1080), "bg_a.jpg", {"targetX": 34, "targetY": 12, "labelDX": 14, "labelDY": 18}, "dot"),
-    ("SPP-Peak-Callout", [3000], (1920, 1080), "bg_a.jpg", {"targetX": 92, "targetY": 33, "labelDX": -16, "labelDY": -10, "marker": 1, "peakHi": "पंचाचूली II", "peakEn": "PANCHACHULI II", "heightM": 6904}, "arrow"),
+    ("SPP-Peak-Callout", [300, 700, 1000, 3000], (1920, 1080), "bg_a.jpg", {"p1X": 34, "p1Y": 40}, "one"),
+    ("SPP-Peak-Callout", [900, 1600, 2400, 3500], (1920, 1080), "bg_b.jpg", {"peak1": "पंचाचूली II | PANCHACHULI II | 6904", "p1X": 21.4, "p1Y": 59.3, "peak2": "पंचाचूली III | PANCHACHULI III | 6312", "p2X": 36.7, "p2Y": 65.7, "peak3": "पंचाचूली IV | PANCHACHULI IV | 6334", "p3X": 52.1, "p3Y": 70, "peak4": "पंचाचूली V | PANCHACHULI V | 6437", "p4X": 71.1, "p4Y": 63.9}, "four"),
+    ("SPP-Peak-Callout", [3500], (1920, 1080), "bg_b.jpg", {**{"peak1": "पंचाचूली II | PANCHACHULI II | 6904", "p1X": 21.4, "p1Y": 59.3, "peak2": "पंचाचूली III | PANCHACHULI III | 6312", "p2X": 36.7, "p2Y": 65.7, "peak3": "पंचाचूली IV | PANCHACHULI IV | 6334", "p3X": 52.1, "p3Y": 70, "peak4": "पंचाचूली V | PANCHACHULI V | 6437", "p4X": 71.1, "p4Y": 63.9}, "marker": 1, "labelBox": False}, "fourarrow"),
+    ("SPP-Peak-Callout", [3500], (1920, 1080), "bg_b.jpg", {**{"peak1": "पंचाचूली II | PANCHACHULI II | 6904", "p1X": 21.4, "p1Y": 59.3, "peak2": "पंचाचूली III | PANCHACHULI III | 6312", "p2X": 36.7, "p2Y": 65.7, "peak3": "पंचाचूली IV | PANCHACHULI IV | 6334", "p3X": 52.1, "p3Y": 70, "peak4": "पंचाचूली V | PANCHACHULI V | 6437", "p4X": 71.1, "p4Y": 63.9}, "_rw": 3840}, "4k"),
+    ("SPP-Peak-Callout", [3500], (1080, 1920), "bg_b.jpg", {"peak2": "नंदा देवी | NANDA DEVI | 7816", "p1X": 30, "p2X": 85, "p2Y": 42}, "916"),
     ("SPP-Popup-Title", [300, 700, 3000], (1920, 1080), "bg_b.jpg", {}, "center"),
     ("SPP-Popup-Title", [3000], (1920, 1080), "bg_a.jpg", {"position": 0}, "bl"),
     ("SPP-Credits", [800, 2000, 5000], (1920, 1080), "bg_b.jpg", {}, "169"),
@@ -51,7 +54,9 @@ with sync_playwright() as pw:
         pg = b.new_page(viewport={"width": w, "height": h})
         pg.on("pageerror", lambda e, t=tpl: errors.append(f"{t}: {e}"))
         pg.on("console", lambda m, t=tpl: errors.append(f"{t} console {m.type}: {m.text}") if m.type in ("error", "warning") else None)
+        rw = data.pop("_rw", 0) if isinstance(data, dict) else 0
         url = f"http://127.0.0.1:8765/harness.html?t={tpl}&w={w}&h={h}&bg={bg}&data={urllib.parse.quote(json.dumps(data))}"
+        if rw: url += f"&rw={rw}&rh={rw * h // w}"   # Resolve on a 4K timeline: reports 3840 wide, page is 1920 CSS px
         pg.goto(url); pg.wait_for_function("window.ready===true", timeout=15000)
         tiles = []
         for ms in times:

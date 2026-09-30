@@ -106,7 +106,10 @@ class SPPGraphic extends HTMLElement{
     if(i<0){const d=DEFAULTS[k];i=Math.max(0,L.findIndex(o=>o===d));}return i;}
   async load(p){this._initialData=p?.data||{};this._state={...DEFAULTS,...this._initialData};this._schedule=[];
     const r=p?.renderCharacteristics?.resolution;
-    this._setUnit(r?.width||this.clientWidth||window.innerWidth||1920,r?.height||this.clientHeight||window.innerHeight||1080);
+    // lay out in the page's own CSS pixels: on a 4K timeline Resolve reports 3840x2160 but the page is 1920x1080 CSS px
+    // at 2x - using the reported size made every title 2x too big and put labels at 2x their position.
+    const vw=window.innerWidth||this.clientWidth,vh=window.innerHeight||this.clientHeight;
+    this._setUnit(vw>0&&vh>0?vw:(r?.width||1920),vw>0&&vh>0?vh:(r?.height||1080));
     await sppFonts();
     if(document.fonts&&document.fonts.load){await Promise.all(['800 60px "SPP Deva"','700 30px "SPP Deva"','500 30px "SPP Deva"','700 20px "SPP Pop"','500 20px "SPP Pop"'].map(f=>document.fonts.load(f))).catch(()=>undefined);}
     if(this._prepare)await this._prepare();
@@ -132,6 +135,7 @@ class SPPGraphic extends HTMLElement{
     else{this._currentStep=1;this._setFrame((ts-(lastPlay??0))/1000);}
     return{statusCode:200};}
   _setFrame(t){const sc=this.$.scene,s=this._state;
+    const vw=window.innerWidth,vh=window.innerHeight;if(vw>0&&vh>0&&(vw!==this._w||vh!==this._h)){this._setUnit(vw,vh);this._apply();}
     if(this._currentStep===0||t<0||t>DURATION){sc.style.opacity="0";return;}
     const outAt=(typeof s.outAt==="number"&&s.outAt>0)?s.outAt:DURATION-0.6;
     const out=1-eo(seg(t,outAt,outAt+0.5));

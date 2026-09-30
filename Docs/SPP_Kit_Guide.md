@@ -276,13 +276,18 @@ Big counter from *Start* to *End* altitude over *Count Duration*, with a small m
 Tip: use it when the drive climbs (e.g. Dharchula 915 m → Dugtu 3,200 m). Position `centre` + Size 1.4 for a full-screen moment.
 
 ## 9. Peak Callout
-Names a mountain in the shot with a dot-and-line or an arrow.
+Names **up to 4 mountains in one clip** — one title on one track, however many peaks are in the shot. Each summit gets a
+marker, a white line straight up, a short yellow tick and the name + height right beside it. The peaks appear one after
+the other.
 
 ![Peak Callout](guide_img/peak_callout.jpg)
 
-- **Peak X / Peak Y** — where the summit is, in % of the frame (0,0 = top-left). Scrub to a still frame, estimate, adjust.
-- **Label Offset X / Y** — where the label sits relative to the peak (negative = left / up).
-- **Marker** — `dot` or `arrow`. **Show Height / Height (m)** — e.g. 6,904 m for Panchachuli II.
+- **Peak 1 … Peak 4** — one line each: `Hindi | ENGLISH | metres`, e.g. `पंचाचूली II | PANCHACHULI II | 6904`.
+  Only Hindi is fine too (`नंदा देवी`). Leave a peak blank to hide it.
+- **Peak X / Y** under each — where that summit is, in % of the frame (0,0 = top-left). Scrub to a still frame, estimate, adjust.
+- **Line Length** — how high the names sit above the summits (% of the height). Names that would overlap each other or a
+  line are lifted automatically, point away from the middle of the group, and flip side near the frame edge.
+- **Marker** `dot` (pulsing) or `arrow` (points down at the summit). **Show Heights**, **Dark Box Behind Names**, **Size**.
 - If the camera moves, keyframe nothing — just keep the callout short (3–4 s) on a steady shot.
 
 ## 10. Pop-up Title
@@ -577,6 +582,7 @@ Save the final file into `<video>\Exports`. Then *File → Export Project* (.drp
 | YouTube doesn't show chapters | 3+ chapters, first at 00:00, each ≥ 10 s — run **Chapters - Number + YouTube List** and read its notes. |
 | No *SPP Film Title* / *SPP Chapter* in Effects → Titles | Run `.\install.ps1`, restart Resolve (titles are only read at start-up). |
 | A title vanishes at its end instead of animating out | Run **Titles - Follow Clip Length** (4 Titles & Graphics) once — after that its exit follows the clip end. |
+| Titles look twice too big on a 4K timeline / a peak name far from its line | Fixed in the Sept-30 templates (run `.\install.ps1`, restart Resolve). If you had set **Size 0.5** to compensate, set it back to **1**. |
 | A menu script "disappeared" | They're in folders now: Workspace → Scripts → Safar Pahad Parivar → 1 Setup … 6 Sound & Music. |
 | Reflection cleaning darkened the landscape / blotches | Run **Reflection - Clean Selected Clips** again with *Gentle*, or switch that clip back with *Show Original or Cleaned*. |
 | Cleaned take is shorter than the clip after trimming | Run **Reflection - Clean Selected Clips** again — it cleans the new range. |

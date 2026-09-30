@@ -3,7 +3,7 @@
   "id": "spp-peak-callout",
   "version": "1.0.0",
   "name": "SPP Peak Callout",
-  "description": "Point at a mountain: dot or arrow on the peak, leader line and a name label with height.",
+  "description": "Name up to 4 mountains in one shot: marker on each summit, a line up and the name + height beside it.",
   "author": {
     "name": "Safar Pahad Parivar"
   },
@@ -15,60 +15,103 @@
     "type": "object",
     "additionalProperties": false,
     "properties": {
-      "peakHi": {
+      "peak1": {
         "type": "string",
-        "title": "Peak Name (Hindi)",
-        "default": "पंचाचूली"
+        "title": "Peak 1: Hindi | ENGLISH | metres  (blank = none)",
+        "default": "पंचाचूली II | PANCHACHULI II | 6904"
       },
-      "peakEn": {
-        "type": "string",
-        "title": "Peak Name (English)",
-        "default": "PANCHACHULI"
-      },
-      "showHeight": {
-        "type": "boolean",
-        "title": "Show Height",
-        "default": true
-      },
-      "heightM": {
-        "type": "integer",
-        "title": "Height (m)",
-        "minimum": 0,
-        "maximum": 9000,
-        "default": 6904
-      },
-      "targetX": {
+      "p1X": {
         "type": "number",
-        "title": "Peak X (% of width)",
+        "title": "Peak 1 X (% of width)",
         "minimum": 0,
         "maximum": 100,
         "default": 50
       },
-      "targetY": {
+      "p1Y": {
         "type": "number",
-        "title": "Peak Y (% of height)",
+        "title": "Peak 1 Y (% of height)",
         "minimum": 0,
         "maximum": 100,
-        "default": 38
+        "default": 45
       },
-      "labelDX": {
-        "type": "number",
-        "title": "Label Offset X (%)",
-        "minimum": -60,
-        "maximum": 60,
-        "default": 12
+      "peak2": {
+        "type": "string",
+        "title": "Peak 2: Hindi | ENGLISH | metres  (blank = none)",
+        "default": ""
       },
-      "labelDY": {
+      "p2X": {
         "type": "number",
-        "title": "Label Offset Y (%)",
-        "minimum": -60,
-        "maximum": 60,
-        "default": -16
+        "title": "Peak 2 X (%)",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 65
+      },
+      "p2Y": {
+        "type": "number",
+        "title": "Peak 2 Y (%)",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 50
+      },
+      "peak3": {
+        "type": "string",
+        "title": "Peak 3: Hindi | ENGLISH | metres  (blank = none)",
+        "default": ""
+      },
+      "p3X": {
+        "type": "number",
+        "title": "Peak 3 X (%)",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 35
+      },
+      "p3Y": {
+        "type": "number",
+        "title": "Peak 3 Y (%)",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 50
+      },
+      "peak4": {
+        "type": "string",
+        "title": "Peak 4: Hindi | ENGLISH | metres  (blank = none)",
+        "default": ""
+      },
+      "p4X": {
+        "type": "number",
+        "title": "Peak 4 X (%)",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 80
+      },
+      "p4Y": {
+        "type": "number",
+        "title": "Peak 4 Y (%)",
+        "minimum": 0,
+        "maximum": 100,
+        "default": 55
+      },
+      "showHeight": {
+        "type": "boolean",
+        "title": "Show Heights",
+        "default": true
       },
       "marker": {
         "type": "string",
         "title": "Marker: dot / arrow",
         "default": "dot"
+      },
+      "lift": {
+        "type": "number",
+        "title": "Line Length (% of height)",
+        "minimum": 3,
+        "maximum": 60,
+        "default": 12
+      },
+      "labelBox": {
+        "type": "boolean",
+        "title": "Dark Box Behind Names",
+        "default": true
       },
       "scale": {
         "type": "number",

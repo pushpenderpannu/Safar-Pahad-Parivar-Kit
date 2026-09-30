@@ -118,7 +118,7 @@ def set_choice(tool, index, word):
 # on Resolve recalculates it whenever the clip is made longer or shorter: the entrance keeps its timing at the start,
 # the exit always finishes on the last frame, and the hold in between stretches or shrinks.
 # {template: (index of "Animate Out At", default length s, exit length s)}
-OUT_PARAM = {"SPP-Info-Card": (13, 8, 1.0), "SPP-Altitude-Counter": (9, 8, 0.6), "SPP-Peak-Callout": (10, 6, 0.6),
+OUT_PARAM = {"SPP-Info-Card": (13, 8, 1.0), "SPP-Altitude-Counter": (9, 8, 0.6), "SPP-Peak-Callout": (17, 6, 0.6),
              "SPP-Popup-Title": (6, 5, 0.6), "SPP-Credits": (11, 10, 0.6), "SPP-Route-Map": (12, 40, 0.6),
              "SPP-Film-Title": (8, 7, 0.6), "SPP-Chapter": (11, 5, 0.6)}
 EXPR = "(comp.RenderEnd + 1)/comp:GetPrefs('Comp.FrameFormat.Rate') - %.2f"

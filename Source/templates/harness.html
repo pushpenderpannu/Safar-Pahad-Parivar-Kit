@@ -8,7 +8,7 @@ const mod=await import(`./Safar%20Pahad%20Parivar/${file}.js`);
 customElements.define("spp-g",mod.default);
 const g=document.createElement("spp-g");g.style.cssText="position:absolute;inset:0;";document.body.appendChild(g);
 const data=q.get("data")?JSON.parse(q.get("data")):{};
-await g.load({data,renderType:"non-realtime",renderCharacteristics:{resolution:{width:W,height:H},frameRate:30}});
+await g.load({data,renderType:"non-realtime",renderCharacteristics:{resolution:{width:+q.get("rw")||W,height:+q.get("rh")||H},frameRate:30}});
 await g.setActionsSchedule({schedule:[{timestamp:0,action:{type:"playAction",params:{}}}]});
 window.seek=async(ms)=>{await g.goToTime({timestamp:ms});};
 window.update=async(d)=>{await g.updateAction({data:d});};
