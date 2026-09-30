@@ -122,9 +122,14 @@ class SPPGraphic extends HTMLElement{
     const outAt=(typeof s.outAt==="number"&&s.outAt>0)?s.outAt:DURATION-0.6;
     const out=1-eo(seg(t,outAt,outAt+0.5));
     sc.style.opacity=String(out);this._frame(t,out);}
+  // "bottom-left 2.35" (or "... cinema") = keep the title inside 2.35:1 output blanking bars
+  _posLB(k){const raw=String(this._state[k]??""),re=/2[.,]?35|cinema|scope/ig;this._lbx=re.test(raw);
+    if(!this._lbx)return this._ch(k);const keep=this._state[k];this._state[k]=raw.replace(re,"").trim()||DEFAULTS[k];
+    const i=this._ch(k);this._state[k]=keep;return i;}
+  _bar(){return (this._lbx&&!this._vertical)?Math.max(0,(this._h-this._w/2.35)/2):0;}
   _corner(node,pos,mx,my,mxv,myb,myt){ // place a box in a corner (0 BL,1 BR,2 TL,3 TR,4 centre)
     const v=this._vertical;node.style.left=node.style.right=node.style.top=node.style.bottom="auto";
-    const X=this.px(v?mxv:mx),B=this.px(v?myb:my),T=this.px(v?myt:my);
+    const bar=this._bar(),X=this.px(v?mxv:mx),B=Math.round((v?myb:my)*this._u+bar)+"px",T=Math.round((v?myt:my)*this._u+bar)+"px";
     if(pos===4){node.style.left="50%";node.style.top="50%";return "center";}
     if(pos===0||pos===2)node.style.left=X;else node.style.right=X;
     if(pos===0||pos===1)node.style.bottom=B;else node.style.top=T;
@@ -183,7 +188,7 @@ TEMPLATES.append(dict(
         "time": {"type": "string", "title": "Time", "default": "09:58 AM"},
         "weather": select_prop("Weather", ["none", "sun", "part-cloud", "cloud", "rain", "snow", "fog", "night"], 1),
         "temperature": {"type": "string", "title": "Temperature (blank = hide)", "default": "14°C"},
-        "position": select_prop("Position", ["bottom-left", "bottom-right", "top-left", "top-right"], 0),
+        "position": select_prop("Position (+ 2.35 = inside cinema bars)", ["bottom-left", "bottom-right", "top-left", "top-right"], 0),
         "scale": {"type": "number", "title": "Size", "minimum": 0.3, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = 1 s before the end)", "minimum": 0, "maximum": 8, "default": 0},
         "accentColor": color_prop("Accent Colour"),
@@ -234,8 +239,8 @@ this._alt=(cu&&(s.fromAltitude||0)>0&&(s.fromAltitude|0)!==(s.altitude|0))?[s.fr
 const d0=this._pd(s.fromDate),d1=this._pd(s.date); this._date=(cu&&d0&&d1&&d0.t!==d1.t)?[d0,d1]:null;
 const t0=this._pt(s.fromTime),t1=this._pt(s.time); this._time=(cu&&t0&&t1&&t0.m!==t1.m)?[t0,t1]:null;
 const anyMeta=s.showAltitude||(s.showDate&&s.date)||(s.showTime&&s.time)||s.temperature; this.$.meta.style.display=anyMeta?"flex":"none";
-this._side=this._corner(this.$.card,this._ch("position"),90,84,60,560,250);
-this.$.card.style.transformOrigin=(this._side==="right"?"100% ":"0% ")+((this._ch("position"))>=2?"0%":"100%");""",
+const _p=this._posLB("position");this._side=this._corner(this.$.card,_p,90,84,60,560,250);
+this.$.card.style.transformOrigin=(this._side==="right"?"100% ":"0% ")+(_p>=2?"0%":"100%");""",
     extra=r"""
 _pt(v){v=String(v||"").trim();const m=v.match(/(\d{1,2})\s*[:.]\s*(\d{2})\s*([AaPp][Mm])?/);if(!m)return null;let h=+m[1];const mi=+m[2],ap=m[3]?m[3].toUpperCase():"";
   if(ap==="PM"&&h<12)h+=12;if(ap==="AM"&&h===12)h=0;return{m:h*60+mi,ap:!!ap,pad:m[1].length===2,src:v,pre:v.slice(0,m.index),post:v.slice(m.index+m[0].length).replace(/^\s*[AaPp][Mm]/,"")};}
@@ -314,7 +319,7 @@ TEMPLATES.append(dict(
         "labelEn": {"type": "string", "title": "Label (English)", "default": "ALTITUDE"},
         "place": {"type": "string", "title": "Place (optional)", "default": "मुंस्यारी · MUNSIYARI"},
         "showProfile": {"type": "boolean", "title": "Show Mountain Profile", "default": True},
-        "position": select_prop("Position", ["bottom-left", "bottom-right", "top-left", "top-right", "centre"], 3),
+        "position": select_prop("Position (+ 2.35 = inside cinema bars)", ["bottom-left", "bottom-right", "top-left", "top-right", "centre"], 3),
         "scale": {"type": "number", "title": "Size", "minimum": 0.3, "maximum": 2.5, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 8, "default": 0},
         "accentColor": color_prop("Accent Colour"),
@@ -339,7 +344,7 @@ const defs=svgEl("defs",{{}},this.$.prof); const g=svgEl("linearGradient",{{id:"
 svgEl("stop",{{offset:"0","stop-color":"#f5f8fc","stop-opacity":"0.28"}},g); svgEl("stop",{{offset:"1","stop-color":"#f5f8fc","stop-opacity":"0"}},g);
 const P=[[0,86],[40,78],[70,82],[105,66],[135,70],[170,52],[200,58],[235,40],[262,46],[295,28],[322,34],[352,18],[380,24],[412,8]];
 const d="M"+P.map(p=>p.join(" ")).join(" L");
-this._P=P;
+this._P=P; this._Pd=P.map(q=>[q[0],94-q[1]]);  // downhill: the same profile, descending
 this.$.fill=svgEl("path",{{d:"",fill:"url(#pg)"}},this.$.prof);
 this.$.line=svgEl("path",{{d:"",fill:"none",stroke:"#f5f8fc","stroke-width":"3","stroke-linejoin":"round","stroke-linecap":"round"}},this.$.prof);
 this.$.dot=svgEl("circle",{{r:"6",fill:"var(--accent)"}},this.$.prof);""",
@@ -348,16 +353,15 @@ const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e")
 setT(this.$.lab.querySelector(".lh"),s.labelHi||""); setT(this.$.lab.querySelector(".le"),s.labelEn||"");
 setT(this.$.pl,s.place||""); this.$.pl.style.display=s.place?"block":"none";
 this.$.prof.style.display=s.showProfile?"block":"none";
-this._side=this._corner(this.$.box,this._ch("position"),90,84,60,560,250);
-const p=this._ch("position"); this.$.box.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));""",
+const p=this._posLB("position");this._side=this._corner(this.$.box,p,90,84,60,560,250); this.$.box.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));""",
     frame="""
-const s=this._state,sc=s.scale||1,p=this._ch("position");
+const s=this._state,sc=s.scale||1,p=this._posLB("position");
 const k=eo(seg(t,0,0.45)); this.$.box.style.opacity=String(k);
 const base=p===4?"translate(-50%,-50%) ":""; this.$.box.style.transform=`${base}translateY(${Math.round(24*this._u*(1-k))}px) scale(${sc*(0.96+0.04*k)})`;
 const c=eo(seg(t,0.45,0.45+(s.countSeconds||3)));
 const a0=s.startAltitude||0,a1=s.endAltitude||0;
 if(s.rolling!==false)rollOdo(this.$.nv,a0+(a1-a0)*c,Math.max(a0,a1));else{this.$.nv.classList.remove("roll");this.$.nv._rk=null;setT(this.$.nv,fmtM(a0+(a1-a0)*c));}
-const P=this._P,X=412*c,pts=[P[0]];
+const P=a1<a0?this._Pd:this._P,X=412*c,pts=[P[0]];
 for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];if(b[0]<=X){pts.push(b);}else{const f=(X-a[0])/(b[0]-a[0]);if(f>0)pts.push([X,a[1]+(b[1]-a[1])*f]);break;}}
 const fx=v=>v.toFixed(2),path="M"+pts.map(q=>fx(q[0])+" "+fx(q[1])).join(" L"),last=pts[pts.length-1];
 this.$.line.setAttribute("d",pts.length>1?path:""); this.$.fill.setAttribute("d",pts.length>1?path+` L${fx(last[0])} 92 L0 92 Z`:"");
@@ -481,7 +485,7 @@ TEMPLATES.append(dict(
         "kicker": {"type": "string", "title": "Kicker (small line, blank = hide)", "default": "अध्याय 2 · CHAPTER 2"},
         "titleHi": {"type": "string", "title": "Headline (Hindi)", "default": "दारमा वैली"},
         "titleEn": {"type": "string", "title": "English Line (blank = hide)", "default": "INTO THE DARMA VALLEY"},
-        "position": select_prop("Position", ["bottom-left", "bottom-right", "top-left", "top-right", "centre"], 4),
+        "position": select_prop("Position (+ 2.35 = inside cinema bars)", ["bottom-left", "bottom-right", "top-left", "top-right", "centre"], 4),
         "backdrop": {"type": "boolean", "title": "Darken Background", "default": True},
         "scale": {"type": "number", "title": "Size", "minimum": 0.3, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 5, "default": 0},
@@ -504,13 +508,13 @@ const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e")
 setT(this.$.kt,s.kicker||""); this.$.kick.style.display=s.kicker?"flex":"none";
 setT(this.$.th,s.titleHi||""); setT(this.$.te,s.titleEn||""); this.$.te.style.display=s.titleEn?"block":"none";
 this.$.bd.style.display=s.backdrop?"block":"none";
-const p=this._ch("position"); this._side=this._corner(this.$.wrap,p,110,110,70,560,280);
+const p=this._posLB("position"); this._side=this._corner(this.$.wrap,p,110,110,70,560,280);
 const al=p===4?"center":(this._side==="right"?"flex-end":"flex-start"); this.$.wrap.style.alignItems=al; this.$.wrap.style.textAlign=p===4?"center":this._side;
 this.$.kb2.style.display=p===4?"inline-block":"none";
 this.$.wrap.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));
 this.$.bd.style.background=p===4?"":`linear-gradient(${p>=2?"180deg":"0deg"}, rgba(7,18,43,.6), rgba(7,18,43,0) 45%)`;""",
     frame="""
-const s=this._state,p=this._ch("position"),sc=s.scale||1;
+const s=this._state,p=this._posLB("position"),sc=s.scale||1;
 this.$.bd.style.opacity=String(eo(seg(t,0,0.5)));
 this.$.wrap.style.transform=(p===4?"translate(-50%,-50%) ":"")+`scale(${sc})`;
 const kb=eo(seg(t,0.05,0.45)); this.$.kb1.style.transform=this.$.kb2.style.transform=`scaleX(${kb})`;
@@ -583,7 +587,7 @@ TEMPLATES.append(dict(
         "srt": {"type": "string", "gddType": "multi-line", "title": "SRT text (paste subtitles here)", "default": SAMPLE_SRT},
         "clipStart": {"type": "number", "title": "This clip starts at timeline time (s)", "minimum": 0, "maximum": 7200, "default": 0},
         "style": select_prop("Animation", ["pop", "karaoke", "fade"], 0),
-        "position": select_prop("Position", ["bottom", "raised", "centre", "top"], 0),
+        "position": select_prop("Position (+ 2.35 = inside cinema bars)", ["bottom", "raised", "centre", "top"], 0),
         "size": {"type": "number", "title": "Size", "minimum": 0.3, "maximum": 2.0, "default": 1.0},
         "plate": {"type": "boolean", "title": "Dark plate behind text", "default": False},
         "textColor": color_prop("Text Colour", "#f5f8fc"),
@@ -604,11 +608,12 @@ this._cues=[]; this._srtKey=null; this._cueIdx=-2; this._words=[];""",
 const s=this._state; this.style.setProperty("--txt",s.textColor||"#f5f8fc"); this.style.setProperty("--hl",s.highlightColor||"#f4b03e");
 if(this._srtKey!==s.srt){this._srtKey=s.srt;this._cues=parseSRT(s.srt||"");this._cueIdx=-2;}
 this.$.box.classList.toggle("plate",!!s.plate);
-const v=this._vertical,p=this._ch("position"),sz=(s.size||1)*(v?60:54);
+const v=this._vertical,p=this._posLB("position"),sz=(s.size||1)*(v?60:54),bar=this._bar();
 this.$.box.style.fontSize=Math.round(sz*this._u)+"px";
 this.$.cap.style.width=(v?88:80)+"%";
 this.$.cap.style.top=this.$.cap.style.bottom="auto";
-if(p===0)this.$.cap.style.bottom=(v?14:8)+"%"; else if(p===1)this.$.cap.style.bottom=(v?30:20)+"%";
+if(bar&&p!==2){if(p===3)this.$.cap.style.top=Math.round(bar+this._h*0.03)+"px";else this.$.cap.style.bottom=Math.round(bar+this._h*(p===1?0.1:0.03))+"px";}
+else if(p===0)this.$.cap.style.bottom=(v?14:8)+"%"; else if(p===1)this.$.cap.style.bottom=(v?30:20)+"%";
 else if(p===3)this.$.cap.style.top=(v?16:7)+"%"; else this.$.cap.style.top="50%";
 this._pos=p;""",
     frame=r"""
@@ -831,7 +836,7 @@ TEMPLATES.append(dict(
         "titleEn": {"type": "string", "title": "Film Title (English, blank = hide)", "default": "HIMALAYA KI SAIR"},
         "line": {"type": "string", "title": "Place / date line (blank = hide)", "default": "कुमाऊँ · दारमा · मुंस्यारी — जून 2026"},
         "showMark": {"type": "boolean", "title": "Draw the mountain line", "default": True},
-        "position": select_prop("Position", ["centre", "bottom-left"], 0),
+        "position": select_prop("Position (+ 2.35 = inside cinema bars)", ["centre", "bottom-left"], 0),
         "backdrop": {"type": "boolean", "title": "Darken Background", "default": False},
         "scale": {"type": "number", "title": "Size", "minimum": 0.3, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 7, "default": 0},
@@ -864,10 +869,10 @@ setT(this.$.kick,s.kicker||""); this.$.kick.style.display=s.kicker?"block":"none
 setT(this.$.th,s.titleHi||""); setT(this.$.te,s.titleEn||""); this.$.te.style.display=s.titleEn?"block":"none";
 setT(this.$.ln,s.line||""); this.$.ln.style.display=s.line?"block":"none";
 this.$.mk.style.display=s.showMark===false?"none":"block"; this.$.bd.style.display=s.backdrop?"block":"none";
-const p=this._ch("position"); this._pos=p;
+const p=this._posLB("position"); this._pos=p;
 if(p===0){this.$.wrap.style.left="50%";this.$.wrap.style.top="50%";this.$.wrap.style.bottom="auto";this.$.wrap.style.alignItems="center";this.$.wrap.style.textAlign="center";
   this.$.bd.style.background="radial-gradient(75% 65% at 50% 50%, rgba(7,18,43,.62), rgba(7,18,43,.12) 80%)";}
-else{this.$.wrap.style.left=this.px(this._vertical?70:120);this.$.wrap.style.top="auto";this.$.wrap.style.bottom=this.px(this._vertical?420:120);
+else{this.$.wrap.style.left=this.px(this._vertical?70:120);this.$.wrap.style.top="auto";this.$.wrap.style.bottom=Math.round((this._vertical?420:120)*this._u+this._bar())+"px";
   this.$.wrap.style.alignItems="flex-start";this.$.wrap.style.textAlign="left";
   this.$.bd.style.background="linear-gradient(0deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}
 this.$.wrap.style.transformOrigin=p===0?"50% 50%":"0% 100%";""",
@@ -905,7 +910,7 @@ TEMPLATES.append(dict(
         "labelHi": {"type": "string", "title": "Label (Hindi)", "default": "अध्याय"},
         "labelEn": {"type": "string", "title": "Label (English)", "default": "CHAPTER"},
         "hindiDigits": {"type": "boolean", "title": "Hindi digits (२ instead of 2)", "default": False},
-        "position": select_prop("Position", ["centre", "bottom-left", "top-left"], 0),
+        "position": select_prop("Position (+ 2.35 = inside cinema bars)", ["centre", "bottom-left", "top-left"], 0),
         "backdrop": {"type": "boolean", "title": "Darken Background", "default": False},
         "scale": {"type": "number", "title": "Size", "minimum": 0.3, "maximum": 2.0, "default": 1.0},
         "outAt": {"type": "number", "title": "Animate Out At (s, 0 = end)", "minimum": 0, "maximum": 5, "default": 0},
@@ -956,13 +961,13 @@ if(key!==this._progKey){this._progKey=key; this.$.pDots.innerHTML=""; this._dots
   for(let i=0;i<N;i++){const d=svgEl("circle",{cx:String(i*gap),cy:"0",r:"7"},this.$.pDots);this._dots.push(d);}
   this._gap=gap; this._N=N; this._cur=cur;}
 this.$.prog.style.display=N>=2?"block":"none";
-const p=this._ch("position"); this._pos=p;
+const p=this._posLB("position"); this._pos=p;
 const w=this.$.wrap.style; w.left=w.top=w.bottom="auto";
 if(p===0){w.left="50%";w.top="50%";w.alignItems="center";w.textAlign="center";
   this.$.bd.style.background="radial-gradient(75% 65% at 50% 50%, rgba(7,18,43,.6), rgba(7,18,43,.1) 80%)";}
 else{w.left=this.px(this._vertical?70:120);w.alignItems="flex-start";w.textAlign="left";
-  if(p===1){w.bottom=this.px(this._vertical?420:110);this.$.bd.style.background="linear-gradient(0deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}
-  else{w.top=this.px(this._vertical?260:100);this.$.bd.style.background="linear-gradient(180deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}}
+  if(p===1){w.bottom=Math.round((this._vertical?420:110)*this._u+this._bar())+"px";this.$.bd.style.background="linear-gradient(0deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}
+  else{w.top=Math.round((this._vertical?260:100)*this._u+this._bar())+"px";this.$.bd.style.background="linear-gradient(180deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}}
 w.transformOrigin=p===0?"50% 50%":(p===1?"0% 100%":"0% 0%");""",
     frame="""
 const s=this._state,p=this._pos,sc=(s.scale||1)*(this._vertical&&p===0?0.8:1);

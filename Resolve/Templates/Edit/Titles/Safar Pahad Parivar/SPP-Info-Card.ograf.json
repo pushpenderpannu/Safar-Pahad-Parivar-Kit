@@ -74,7 +74,7 @@
       },
       "position": {
         "type": "string",
-        "title": "Position: bottom-left / bottom-right / top-left / top-right",
+        "title": "Position (+ 2.35 = inside cinema bars): bottom-left / bottom-right / top-left / top-right",
         "default": "bottom-left"
       },
       "scale": {

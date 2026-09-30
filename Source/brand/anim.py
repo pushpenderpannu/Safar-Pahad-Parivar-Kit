@@ -74,6 +74,8 @@ def render(name, html, w, h, dur, fps=30, anim_until=None, scale=2):
     return fdir
 
 W, H = 1920, 1080
+ONLY235 = "--only-235" in sys.argv          # just the 2.35:1 (cinema bars) versions
+BAR = round((H - W / 2.35) / 2)             # 131 px bars top and bottom at 1080
 
 # ---------------- INTRO (5s) ----------------
 intro_body = f"""<div id="scrim"></div><div id="wrap">
@@ -100,7 +102,8 @@ function render(t){
   l.style.opacity=0.85*k2*out; l.style.letterSpacing=(0.8-0.38*k2)+'em';
   document.getElementById('pre').style.opacity=ease(seg(t,3.3,3.8))*out;
 }"""
-render("SPP_Intro_5s_4K", page(intro_body, intro_css, intro_js, W, H), W, H, dur=5.0)
+if not ONLY235:
+    render("SPP_Intro_5s_4K", page(intro_body, intro_css, intro_js, W, H), W, H, dur=5.0)   # centred - already fits 2.35 bars
 
 # ---------------- END CARD (15s, animates 2.2s then holds) ----------------
 box = lambda x, lab_d, lab_e, idn: f"""<div class="slot" id="{idn}" style="left:{x}px">
@@ -133,7 +136,20 @@ function render(t){
   document.getElementById('brand').style.opacity=ease(seg(t,1.3,1.9));
   drawMark(t,0.2);
 }"""
-render("SPP_EndCard_15s_4K", page(end_body, end_css, end_js, W, H), W, H, dur=15.0, anim_until=2.6)
+if not ONLY235:
+    render("SPP_EndCard_15s_4K", page(end_body, end_css, end_js, W, H), W, H, dur=15.0, anim_until=2.6)
+
+# 2.35:1 version: everything inside the cinema bars (heading lower, smaller video slots, smaller logo ring)
+end235_body = f"""<div id="scrim"></div>
+  <div id="head"><div id="h1">फिर मिलेंगे, अगले सफ़र पर</div><div id="h2">SEE YOU ON THE NEXT JOURNEY</div></div>
+  {box(150,'अगला वीडियो','NEXT VIDEO','s1')}{box(1130,'आपके लिए','FOR YOU','s2')}
+  <div id="foot"><div id="ring"></div>
+    <div id="brand"><div id="markbox">{MARK}</div><div id="handle">@safar.pahad.parivar</div></div></div>"""
+end235_css = end_css + f"""
+#head{{top:{BAR + 22}px}} #h1{{font-size:58px}} #h2{{font-size:19px}}
+.slot{{top:{BAR + 150}px;width:640px}} .frame{{width:640px;height:360px}}
+#foot{{bottom:{BAR + 18}px;gap:34px}} #ring{{width:150px;height:150px}} #markbox{{width:130px}} #handle{{font-size:26px}}"""
+render("SPP_EndCard_15s_4K_2.35", page(end235_body, end235_css, end_js, W, H), W, H, dur=15.0, anim_until=2.6)
 
 # ---------------- WATERMARKS (static full-frame PNGs) ----------------
 def wm(w, h, css_pos, name, size=1.0):
@@ -148,5 +164,7 @@ def wm(w, h, css_pos, name, size=1.0):
         pg.goto("file://" + hp); pg.wait_for_timeout(400); pg.evaluate("setup()")
         pg.screenshot(path=os.path.join(OUT, name + ".png"), omit_background=True); b.close()
     print("watermark", name)
-wm(1920, 1080, "right:52px;bottom:40px", "SPP_Watermark_16x9_4K")
-wm(1080, 1920, "left:50%;top:150px;transform:translateX(-50%)", "SPP_Watermark_Shorts_9x16", size=1.1)
+if not ONLY235:
+    wm(1920, 1080, "right:52px;bottom:40px", "SPP_Watermark_16x9_4K")
+    wm(1080, 1920, "left:50%;top:150px;transform:translateX(-50%)", "SPP_Watermark_Shorts_9x16", size=1.1)
+wm(1920, 1080, f"right:52px;bottom:{BAR + 34}px", "SPP_Watermark_16x9_4K_2.35")

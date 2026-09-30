@@ -124,9 +124,14 @@ class SPPGraphic extends HTMLElement{
     const outAt=(typeof s.outAt==="number"&&s.outAt>0)?s.outAt:DURATION-0.6;
     const out=1-eo(seg(t,outAt,outAt+0.5));
     sc.style.opacity=String(out);this._frame(t,out);}
+  // "bottom-left 2.35" (or "... cinema") = keep the title inside 2.35:1 output blanking bars
+  _posLB(k){const raw=String(this._state[k]??""),re=/2[.,]?35|cinema|scope/ig;this._lbx=re.test(raw);
+    if(!this._lbx)return this._ch(k);const keep=this._state[k];this._state[k]=raw.replace(re,"").trim()||DEFAULTS[k];
+    const i=this._ch(k);this._state[k]=keep;return i;}
+  _bar(){return (this._lbx&&!this._vertical)?Math.max(0,(this._h-this._w/2.35)/2):0;}
   _corner(node,pos,mx,my,mxv,myb,myt){ // place a box in a corner (0 BL,1 BR,2 TL,3 TR,4 centre)
     const v=this._vertical;node.style.left=node.style.right=node.style.top=node.style.bottom="auto";
-    const X=this.px(v?mxv:mx),B=this.px(v?myb:my),T=this.px(v?myt:my);
+    const bar=this._bar(),X=this.px(v?mxv:mx),B=Math.round((v?myb:my)*this._u+bar)+"px",T=Math.round((v?myt:my)*this._u+bar)+"px";
     if(pos===4){node.style.left="50%";node.style.top="50%";return "center";}
     if(pos===0||pos===2)node.style.left=X;else node.style.right=X;
     if(pos===0||pos===1)node.style.bottom=B;else node.style.top=T;
@@ -151,10 +156,10 @@ setT(this.$.kick,s.kicker||""); this.$.kick.style.display=s.kicker?"block":"none
 setT(this.$.th,s.titleHi||""); setT(this.$.te,s.titleEn||""); this.$.te.style.display=s.titleEn?"block":"none";
 setT(this.$.ln,s.line||""); this.$.ln.style.display=s.line?"block":"none";
 this.$.mk.style.display=s.showMark===false?"none":"block"; this.$.bd.style.display=s.backdrop?"block":"none";
-const p=this._ch("position"); this._pos=p;
+const p=this._posLB("position"); this._pos=p;
 if(p===0){this.$.wrap.style.left="50%";this.$.wrap.style.top="50%";this.$.wrap.style.bottom="auto";this.$.wrap.style.alignItems="center";this.$.wrap.style.textAlign="center";
   this.$.bd.style.background="radial-gradient(75% 65% at 50% 50%, rgba(7,18,43,.62), rgba(7,18,43,.12) 80%)";}
-else{this.$.wrap.style.left=this.px(this._vertical?70:120);this.$.wrap.style.top="auto";this.$.wrap.style.bottom=this.px(this._vertical?420:120);
+else{this.$.wrap.style.left=this.px(this._vertical?70:120);this.$.wrap.style.top="auto";this.$.wrap.style.bottom=Math.round((this._vertical?420:120)*this._u+this._bar())+"px";
   this.$.wrap.style.alignItems="flex-start";this.$.wrap.style.textAlign="left";
   this.$.bd.style.background="linear-gradient(0deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}
 this.$.wrap.style.transformOrigin=p===0?"50% 50%":"0% 100%";

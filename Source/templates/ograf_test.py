@@ -19,6 +19,7 @@ CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Info-Card", [2300, 3000, 3700, 4500], (1920, 1080), "bg_a.jpg", {"fromAltitude": 1650, "fromDate": "24 जून 2026", "fromTime": "04:10 PM", "fromWeather": "cloud"}, "from"),
     ("SPP-Altitude-Counter", [500, 1000, 1400, 1800, 4000], (1920, 1080), "bg_b.jpg", {}, "169"),
     ("SPP-Altitude-Counter", [4000], (1920, 1080), "bg_b.jpg", {"position": 4, "scale": 1.4}, "center"),
+    ("SPP-Altitude-Counter", [1000, 1800, 4000], (1920, 1080), "bg_b.jpg", {"startAltitude": 3200, "endAltitude": 915}, "down"),
     ("SPP-Peak-Callout", [300, 700, 1000, 3000], (1920, 1080), "bg_a.jpg", {"p1X": 34, "p1Y": 40}, "one"),
     ("SPP-Peak-Callout", [900, 1600, 2400, 3500], (1920, 1080), "bg_b.jpg", {"peak1": "पंचाचूली II | PANCHACHULI II | 6904", "p1X": 21.4, "p1Y": 59.3, "peak2": "पंचाचूली III | PANCHACHULI III | 6312", "p2X": 36.7, "p2Y": 65.7, "peak3": "पंचाचूली IV | PANCHACHULI IV | 6334", "p3X": 52.1, "p3Y": 70, "peak4": "पंचाचूली V | PANCHACHULI V | 6437", "p4X": 71.1, "p4Y": 63.9}, "four"),
     ("SPP-Peak-Callout", [3500], (1920, 1080), "bg_b.jpg", {**{"peak1": "पंचाचूली II | PANCHACHULI II | 6904", "p1X": 21.4, "p1Y": 59.3, "peak2": "पंचाचूली III | PANCHACHULI III | 6312", "p2X": 36.7, "p2Y": 65.7, "peak3": "पंचाचूली IV | PANCHACHULI IV | 6334", "p3X": 52.1, "p3Y": 70, "peak4": "पंचाचूली V | PANCHACHULI V | 6437", "p4X": 71.1, "p4Y": 63.9}, "marker": 1, "labelBox": False}, "fourarrow"),
@@ -45,6 +46,10 @@ CASES = [  # (template, times ms, resolution, bg, data, tag)
     ("SPP-Chapter", [2500], (1920, 1080), "bg_a.jpg", {"position": "bottom-left", "number": 4, "total": 6, "hindiDigits": True}, "bl"),
     ("SPP-Chapter", [2500], (1920, 1080), "bg_a.jpg", {"position": "top-left", "total": 0, "meta": ""}, "tl"),
     ("SPP-Chapter", [2500], (1080, 1920), "bg_b.jpg", {"number": 1}, "916"),
+    ("SPP-Info-Card", [3000], (1920, 1080), "bg_a.jpg", {"position": "bottom-left 2.35"}, "lb235"),
+    ("SPP-Chapter", [2500], (1920, 1080), "bg_a.jpg", {"position": "bottom-left 2.35"}, "lb235"),
+    ("SPP-Film-Title", [3000], (1920, 1080), "bg_b.jpg", {"position": "bottom-left 2.35"}, "lb235"),
+    ("SPP-Captions", [2000], (1920, 1080), "bg_a.jpg", {"position": "bottom 2.35", "srt": "1\n00:00:01,000 --> 00:00:04,000\nये नज़ारा बेमिसाल था\n"}, "lb235"),
 ]
 errors = []
 if os.environ.get("SPP_ONLY"): CASES = [c for c in CASES if c[0] == os.environ["SPP_ONLY"]]

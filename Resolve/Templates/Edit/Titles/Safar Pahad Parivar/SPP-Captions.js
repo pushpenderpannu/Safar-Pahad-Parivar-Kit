@@ -121,9 +121,14 @@ class SPPGraphic extends HTMLElement{
     const outAt=(typeof s.outAt==="number"&&s.outAt>0)?s.outAt:DURATION-0.6;
     const out=1-eo(seg(t,outAt,outAt+0.5));
     sc.style.opacity=String(out);this._frame(t,out);}
+  // "bottom-left 2.35" (or "... cinema") = keep the title inside 2.35:1 output blanking bars
+  _posLB(k){const raw=String(this._state[k]??""),re=/2[.,]?35|cinema|scope/ig;this._lbx=re.test(raw);
+    if(!this._lbx)return this._ch(k);const keep=this._state[k];this._state[k]=raw.replace(re,"").trim()||DEFAULTS[k];
+    const i=this._ch(k);this._state[k]=keep;return i;}
+  _bar(){return (this._lbx&&!this._vertical)?Math.max(0,(this._h-this._w/2.35)/2):0;}
   _corner(node,pos,mx,my,mxv,myb,myt){ // place a box in a corner (0 BL,1 BR,2 TL,3 TR,4 centre)
     const v=this._vertical;node.style.left=node.style.right=node.style.top=node.style.bottom="auto";
-    const X=this.px(v?mxv:mx),B=this.px(v?myb:my),T=this.px(v?myt:my);
+    const bar=this._bar(),X=this.px(v?mxv:mx),B=Math.round((v?myb:my)*this._u+bar)+"px",T=Math.round((v?myt:my)*this._u+bar)+"px";
     if(pos===4){node.style.left="50%";node.style.top="50%";return "center";}
     if(pos===0||pos===2)node.style.left=X;else node.style.right=X;
     if(pos===0||pos===1)node.style.bottom=B;else node.style.top=T;
@@ -139,11 +144,12 @@ _apply(){
 const s=this._state; this.style.setProperty("--txt",s.textColor||"#f5f8fc"); this.style.setProperty("--hl",s.highlightColor||"#f4b03e");
 if(this._srtKey!==s.srt){this._srtKey=s.srt;this._cues=parseSRT(s.srt||"");this._cueIdx=-2;}
 this.$.box.classList.toggle("plate",!!s.plate);
-const v=this._vertical,p=this._ch("position"),sz=(s.size||1)*(v?60:54);
+const v=this._vertical,p=this._posLB("position"),sz=(s.size||1)*(v?60:54),bar=this._bar();
 this.$.box.style.fontSize=Math.round(sz*this._u)+"px";
 this.$.cap.style.width=(v?88:80)+"%";
 this.$.cap.style.top=this.$.cap.style.bottom="auto";
-if(p===0)this.$.cap.style.bottom=(v?14:8)+"%"; else if(p===1)this.$.cap.style.bottom=(v?30:20)+"%";
+if(bar&&p!==2){if(p===3)this.$.cap.style.top=Math.round(bar+this._h*0.03)+"px";else this.$.cap.style.bottom=Math.round(bar+this._h*(p===1?0.1:0.03))+"px";}
+else if(p===0)this.$.cap.style.bottom=(v?14:8)+"%"; else if(p===1)this.$.cap.style.bottom=(v?30:20)+"%";
 else if(p===3)this.$.cap.style.top=(v?16:7)+"%"; else this.$.cap.style.top="50%";
 this._pos=p;
 }

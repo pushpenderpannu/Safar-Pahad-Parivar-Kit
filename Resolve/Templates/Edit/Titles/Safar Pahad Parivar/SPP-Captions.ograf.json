@@ -35,7 +35,7 @@
       },
       "position": {
         "type": "string",
-        "title": "Position: bottom / raised / centre / top",
+        "title": "Position (+ 2.35 = inside cinema bars): bottom / raised / centre / top",
         "default": "bottom"
       },
       "size": {

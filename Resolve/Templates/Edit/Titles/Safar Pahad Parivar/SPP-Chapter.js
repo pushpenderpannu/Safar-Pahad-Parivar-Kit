@@ -128,9 +128,14 @@ class SPPGraphic extends HTMLElement{
     const outAt=(typeof s.outAt==="number"&&s.outAt>0)?s.outAt:DURATION-0.6;
     const out=1-eo(seg(t,outAt,outAt+0.5));
     sc.style.opacity=String(out);this._frame(t,out);}
+  // "bottom-left 2.35" (or "... cinema") = keep the title inside 2.35:1 output blanking bars
+  _posLB(k){const raw=String(this._state[k]??""),re=/2[.,]?35|cinema|scope/ig;this._lbx=re.test(raw);
+    if(!this._lbx)return this._ch(k);const keep=this._state[k];this._state[k]=raw.replace(re,"").trim()||DEFAULTS[k];
+    const i=this._ch(k);this._state[k]=keep;return i;}
+  _bar(){return (this._lbx&&!this._vertical)?Math.max(0,(this._h-this._w/2.35)/2):0;}
   _corner(node,pos,mx,my,mxv,myb,myt){ // place a box in a corner (0 BL,1 BR,2 TL,3 TR,4 centre)
     const v=this._vertical;node.style.left=node.style.right=node.style.top=node.style.bottom="auto";
-    const X=this.px(v?mxv:mx),B=this.px(v?myb:my),T=this.px(v?myt:my);
+    const bar=this._bar(),X=this.px(v?mxv:mx),B=Math.round((v?myb:my)*this._u+bar)+"px",T=Math.round((v?myt:my)*this._u+bar)+"px";
     if(pos===4){node.style.left="50%";node.style.top="50%";return "center";}
     if(pos===0||pos===2)node.style.left=X;else node.style.right=X;
     if(pos===0||pos===1)node.style.bottom=B;else node.style.top=T;
@@ -168,13 +173,13 @@ if(key!==this._progKey){this._progKey=key; this.$.pDots.innerHTML=""; this._dots
   for(let i=0;i<N;i++){const d=svgEl("circle",{cx:String(i*gap),cy:"0",r:"7"},this.$.pDots);this._dots.push(d);}
   this._gap=gap; this._N=N; this._cur=cur;}
 this.$.prog.style.display=N>=2?"block":"none";
-const p=this._ch("position"); this._pos=p;
+const p=this._posLB("position"); this._pos=p;
 const w=this.$.wrap.style; w.left=w.top=w.bottom="auto";
 if(p===0){w.left="50%";w.top="50%";w.alignItems="center";w.textAlign="center";
   this.$.bd.style.background="radial-gradient(75% 65% at 50% 50%, rgba(7,18,43,.6), rgba(7,18,43,.1) 80%)";}
 else{w.left=this.px(this._vertical?70:120);w.alignItems="flex-start";w.textAlign="left";
-  if(p===1){w.bottom=this.px(this._vertical?420:110);this.$.bd.style.background="linear-gradient(0deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}
-  else{w.top=this.px(this._vertical?260:100);this.$.bd.style.background="linear-gradient(180deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}}
+  if(p===1){w.bottom=Math.round((this._vertical?420:110)*this._u+this._bar())+"px";this.$.bd.style.background="linear-gradient(0deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}
+  else{w.top=Math.round((this._vertical?260:100)*this._u+this._bar())+"px";this.$.bd.style.background="linear-gradient(180deg, rgba(7,18,43,.7), rgba(7,18,43,0) 60%)";}}
 w.transformOrigin=p===0?"50% 50%":(p===1?"0% 100%":"0% 0%");
 }
 _frame(t,out){

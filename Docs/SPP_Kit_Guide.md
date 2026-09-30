@@ -220,6 +220,11 @@ Chapter 1.
 Watermark: `SPP_Watermark_16x9_4K.png` (or `_Shorts_9x16`) on the top video track for the whole film, opacity ~70 %.
 Brand board (colours, fonts, logo): [`Brand/brand_board.png`](../Brand/brand_board.png).
 
+**Cinema bars (2.35:1 output blanking):** use `SPP_EndCard_15s_4K_2.35.mov` and `SPP_Watermark_16x9_4K_2.35.png`
+instead — everything sits inside the bars (smaller video boxes, heading and logo moved in). The intro is centred and
+already fits. For the titles, type **2.35** after the position, e.g. Position `bottom-left 2.35` (Info Card, Chapter,
+Film Title, Pop-up Title, Altitude Counter, Captions) — the title moves up / down by exactly the bar height.
+
 ## 6. Titles — how they work
 ![Titles panel](guide_img/titles_panel.jpg)
 
@@ -276,6 +281,7 @@ Big counter from *Start* to *End* altitude over *Count Duration*, with a small m
 ![Altitude Counter](guide_img/altitude_counter.jpg)
 
 Tip: use it when the drive climbs (e.g. Dharchula 915 m → Dugtu 3,200 m). Position `centre` + Size 1.4 for a full-screen moment.
+Going **down**? Put the higher number in *Start* (3,200 → 915): the counter rolls down and the profile line descends.
 
 ## 9. Peak Callout
 Names **up to 4 mountains in one clip** — one title on one track, however many peaks are in the shot. Each summit gets a

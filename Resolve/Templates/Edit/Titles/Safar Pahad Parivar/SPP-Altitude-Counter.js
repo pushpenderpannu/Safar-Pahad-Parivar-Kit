@@ -122,9 +122,14 @@ class SPPGraphic extends HTMLElement{
     const outAt=(typeof s.outAt==="number"&&s.outAt>0)?s.outAt:DURATION-0.6;
     const out=1-eo(seg(t,outAt,outAt+0.5));
     sc.style.opacity=String(out);this._frame(t,out);}
+  // "bottom-left 2.35" (or "... cinema") = keep the title inside 2.35:1 output blanking bars
+  _posLB(k){const raw=String(this._state[k]??""),re=/2[.,]?35|cinema|scope/ig;this._lbx=re.test(raw);
+    if(!this._lbx)return this._ch(k);const keep=this._state[k];this._state[k]=raw.replace(re,"").trim()||DEFAULTS[k];
+    const i=this._ch(k);this._state[k]=keep;return i;}
+  _bar(){return (this._lbx&&!this._vertical)?Math.max(0,(this._h-this._w/2.35)/2):0;}
   _corner(node,pos,mx,my,mxv,myb,myt){ // place a box in a corner (0 BL,1 BR,2 TL,3 TR,4 centre)
     const v=this._vertical;node.style.left=node.style.right=node.style.top=node.style.bottom="auto";
-    const X=this.px(v?mxv:mx),B=this.px(v?myb:my),T=this.px(v?myt:my);
+    const bar=this._bar(),X=this.px(v?mxv:mx),B=Math.round((v?myb:my)*this._u+bar)+"px",T=Math.round((v?myt:my)*this._u+bar)+"px";
     if(pos===4){node.style.left="50%";node.style.top="50%";return "center";}
     if(pos===0||pos===2)node.style.left=X;else node.style.right=X;
     if(pos===0||pos===1)node.style.bottom=B;else node.style.top=T;
@@ -142,7 +147,7 @@ const defs=svgEl("defs",{},this.$.prof); const g=svgEl("linearGradient",{id:"pg"
 svgEl("stop",{offset:"0","stop-color":"#f5f8fc","stop-opacity":"0.28"},g); svgEl("stop",{offset:"1","stop-color":"#f5f8fc","stop-opacity":"0"},g);
 const P=[[0,86],[40,78],[70,82],[105,66],[135,70],[170,52],[200,58],[235,40],[262,46],[295,28],[322,34],[352,18],[380,24],[412,8]];
 const d="M"+P.map(p=>p.join(" ")).join(" L");
-this._P=P;
+this._P=P; this._Pd=P.map(q=>[q[0],94-q[1]]);  // downhill: the same profile, descending
 this.$.fill=svgEl("path",{d:"",fill:"url(#pg)"},this.$.prof);
 this.$.line=svgEl("path",{d:"",fill:"none",stroke:"#f5f8fc","stroke-width":"3","stroke-linejoin":"round","stroke-linecap":"round"},this.$.prof);
 this.$.dot=svgEl("circle",{r:"6",fill:"var(--accent)"},this.$.prof);
@@ -152,17 +157,16 @@ const s=this._state; this.style.setProperty("--accent",s.accentColor||"#f4b03e")
 setT(this.$.lab.querySelector(".lh"),s.labelHi||""); setT(this.$.lab.querySelector(".le"),s.labelEn||"");
 setT(this.$.pl,s.place||""); this.$.pl.style.display=s.place?"block":"none";
 this.$.prof.style.display=s.showProfile?"block":"none";
-this._side=this._corner(this.$.box,this._ch("position"),90,84,60,560,250);
-const p=this._ch("position"); this.$.box.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));
+const p=this._posLB("position");this._side=this._corner(this.$.box,p,90,84,60,560,250); this.$.box.style.transformOrigin=p===4?"50% 50%":((this._side==="right"?"100% ":"0% ")+(p>=2?"0%":"100%"));
 }
 _frame(t,out){
-const s=this._state,sc=s.scale||1,p=this._ch("position");
+const s=this._state,sc=s.scale||1,p=this._posLB("position");
 const k=eo(seg(t,0,0.45)); this.$.box.style.opacity=String(k);
 const base=p===4?"translate(-50%,-50%) ":""; this.$.box.style.transform=`${base}translateY(${Math.round(24*this._u*(1-k))}px) scale(${sc*(0.96+0.04*k)})`;
 const c=eo(seg(t,0.45,0.45+(s.countSeconds||3)));
 const a0=s.startAltitude||0,a1=s.endAltitude||0;
 if(s.rolling!==false)rollOdo(this.$.nv,a0+(a1-a0)*c,Math.max(a0,a1));else{this.$.nv.classList.remove("roll");this.$.nv._rk=null;setT(this.$.nv,fmtM(a0+(a1-a0)*c));}
-const P=this._P,X=412*c,pts=[P[0]];
+const P=a1<a0?this._Pd:this._P,X=412*c,pts=[P[0]];
 for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i];if(b[0]<=X){pts.push(b);}else{const f=(X-a[0])/(b[0]-a[0]);if(f>0)pts.push([X,a[1]+(b[1]-a[1])*f]);break;}}
 const fx=v=>v.toFixed(2),path="M"+pts.map(q=>fx(q[0])+" "+fx(q[1])).join(" L"),last=pts[pts.length-1];
 this.$.line.setAttribute("d",pts.length>1?path:""); this.$.fill.setAttribute("d",pts.length>1?path+` L${fx(last[0])} 92 L0 92 Z`:"");
