@@ -64,7 +64,7 @@
       "scale": {
         "type": "number",
         "title": "Size",
-        "minimum": 0.5,
+        "minimum": 0.3,
         "maximum": 2.5,
         "default": 1.0
       },
