@@ -14,6 +14,7 @@ Workspace → Scripts → Safar Pahad Parivar
 │                       Reflection - Show Original or Cleaned
 ├─ 4 Titles & Graphics  Info Cards - Fill from GPS · Route Map - Build from Timeline
 │                       Chapters - Number + YouTube List · Titles - Follow Clip Length
+│                       Titles - Set Size for All
 ├─ 5 Captions & Voice   Captions - Sync Words to VO · Phone Voice - Selected Clips
 └─ 6 Sound & Music      SFX - Import Library · Music - Import Library
                         SFX - Auto Sound for Titles / Remove Auto Sounds
@@ -78,6 +79,7 @@ The scripts sit in six folders, in the order you use them while making a video:
 | | **Route Map - Build from Timeline** | an SPP Route Map clip on the timeline | real-road route, stops, times for the trip |
 | | **Chapters - Number + YouTube List** | SPP Chapter titles on the timeline | numbers the chapters, adds markers, copies the YouTube chapter list |
 | | **Titles - Follow Clip Length** | — (all SPP titles) | entrance fixed, exit always on the clip's last frame, hold stretches (once; then automatic) |
+| | **Titles - Set Size for All** | — | one Size per title type for the whole timeline, and as the default for new ones |
 | **5 Captions & Voice** | **Captions - Sync Words to VO** | subtitles + a track named **VO** | word-by-word timing + stress into SPP Captions |
 | | **Phone Voice - Selected Clips** | audio clips | phone / walkie-talkie voice |
 | **6 Sound & Music** | **SFX - Import Library** · **Music - Import Library** | — | puts the libraries into the *SPP SFX* / *SPP Music* bins |

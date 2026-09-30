@@ -51,6 +51,12 @@ if (Test-Path $SrcLut) {
 Set-Content -Path (Join-Path $DstScr "Utility\Safar Pahad Parivar\kit_path.txt") -Value $Kit -Encoding UTF8
 Write-Host "`nKit path recorded."
 
+# Your own title sizes (Titles - Set Size for All) -> default Size of new titles
+$Py = Join-Path $Kit "Tools\.venv\Scripts\python.exe"
+if ((Test-Path $Py) -and (Test-Path (Join-Path $Kit "Settings\title_sizes.json"))) {
+  & $Py (Join-Path $Kit "Tools\spp_title_sizes.py") apply-defaults
+}
+
 Write-Host @"
 
 Done. Next:

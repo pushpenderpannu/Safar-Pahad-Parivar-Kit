@@ -10,7 +10,7 @@ changes in Resolve afterwards, how to redo / undo it, and what to do if it doesn
 - **1 Setup**: [Setup Render Presets](#setup-render-presets) · [New Timeline - YouTube 16x9](#new-timeline---youtube-16x9) · [New Timeline - Shorts 9x16](#new-timeline---shorts-9x16) · [Import Brand Graphics](#import-brand-graphics) · [Keyboard Shortcuts - On or Off](#keyboard-shortcuts---on-or-off)
 - **2 Marking & Moments**: [Tag Shot Type 0–9](#tag-shot-type-09) · [Moments - Analyse Trip](#moments---analyse-trip) · [Moments - Add Markers](#moments---add-markers) · [Moments - Best Moments Timeline](#moments---best-moments-timeline) · [Moments - Search Transcript](#moments---search-transcript)
 - **3 Picture**: [Reflection - Scan Trip](#reflection---scan-trip) · [Reflection - Clean Selected Clips](#reflection---clean-selected-clips) · [Reflection - Show Original or Cleaned](#reflection---show-original-or-cleaned) · [SPP Glass Glare](#spp-glass-glare-colour-page-not-a-menu-script)
-- **4 Titles & Graphics**: [Info Cards - Fill from GPS](#info-cards---fill-from-gps) · [Route Map - Build from Timeline](#route-map---build-from-timeline) · [Chapters - Number + YouTube List](#chapters---number--youtube-list) · [Titles - Follow Clip Length](#titles---follow-clip-length)
+- **4 Titles & Graphics**: [Info Cards - Fill from GPS](#info-cards---fill-from-gps) · [Route Map - Build from Timeline](#route-map---build-from-timeline) · [Chapters - Number + YouTube List](#chapters---number--youtube-list) · [Titles - Follow Clip Length](#titles---follow-clip-length) · [Titles - Set Size for All](#titles---set-size-for-all)
 - **5 Captions & Voice**: [Captions - Sync Words to VO](#captions---sync-words-to-vo) · [Phone Voice - Selected Clips](#phone-voice---selected-clips)
 - **6 Sound & Music**: [SFX - Import Library](#sfx---import-library) · [Music - Import Library](#music---import-library) · [SFX - Auto Sound for Titles](#sfx---auto-sound-for-titles) · [SFX - Remove Auto Sounds](#sfx---remove-auto-sounds) · [SFX - Land at Playhead](#sfx---land-at-playhead) · [SFX - Loop Fill (In to Out)](#sfx---loop-fill-in-to-out) · [Music - Key Transition](#music---key-transition) · [Distance - Selected Clips](#distance---selected-clips)
 
@@ -374,6 +374,18 @@ still holds on screen.
 **Again / undo:** want your own exit time? Right-click *Animate Out At* → **Remove Expression**, type the time; the script
 leaves typed values alone (set it to 0 and run again to make it follow the clip again).
 Titles can be made shorter, not longer than their default length (Info Card 8 s, Film Title 7 s, Chapter 5 s …).
+
+## Titles - Set Size for All
+**Use it for:** one size for all titles of a kind — e.g. every Info Card at 0.5 — instead of setting each one.
+**Before:** a timeline open (SPP titles on it, or not yet).
+**How:** run it. A window lists each title type — Info Card, Film Title, Chapter, Altitude Counter, Peak Callout,
+Pop-up Title, Captions — with how many are on this timeline and their size. Change the number for the types you want,
+**Apply**.
+**You'll see:** every title of those types on the timeline takes the new Size. Console `Info Card -> 0.50 (10 on the
+timeline updated)`. With *Also use these sizes for new titles* ticked (default), new titles you drag in from Effects start
+at that size after you restart Resolve (kept in `Settings\title_sizes.json`; `install.ps1` re-applies it).
+**Again / undo:** run again with another number. Types you don't touch keep their own per-title sizes; you can still
+change one title in the Inspector afterwards.
 
 ---
 
