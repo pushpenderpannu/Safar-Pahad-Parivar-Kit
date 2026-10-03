@@ -10,7 +10,7 @@ changes in Resolve afterwards, how to redo / undo it, and what to do if it doesn
 - **1 Setup**: [Setup Render Presets](#setup-render-presets) · [New Timeline - YouTube 16x9](#new-timeline---youtube-16x9) · [New Timeline - Shorts 9x16](#new-timeline---shorts-9x16) · [Import Brand Graphics](#import-brand-graphics) · [Keyboard Shortcuts - On or Off](#keyboard-shortcuts---on-or-off)
 - **2 Marking & Moments**: [Tag Shot Type 0–9](#tag-shot-type-09) · [Moments - Analyse Trip](#moments---analyse-trip) · [Moments - Add Markers](#moments---add-markers) · [Moments - Best Moments Timeline](#moments---best-moments-timeline) · [Moments - Search Transcript](#moments---search-transcript)
 - **3 Picture**: [Reflection - Scan Trip](#reflection---scan-trip) · [Reflection - Clean Selected Clips](#reflection---clean-selected-clips) · [Reflection - Show Original or Cleaned](#reflection---show-original-or-cleaned) · [SPP Glass Glare](#spp-glass-glare-colour-page-not-a-menu-script)
-- **4 Titles & Graphics**: [Info Cards - Fill from GPS](#info-cards---fill-from-gps) · [Route Map - Build from Timeline](#route-map---build-from-timeline) · [Chapters - Number + YouTube List](#chapters---number--youtube-list) · [Titles - Follow Clip Length](#titles---follow-clip-length) · [Titles - Set Size for All](#titles---set-size-for-all)
+- **4 Titles & Graphics**: [Info Cards - Fill from GPS](#info-cards---fill-from-gps) · [Route Map - Build from Timeline](#route-map---build-from-timeline) · [Route Map - Google Earth Fly-over](#route-map---google-earth-fly-over) · [Chapters - Number + YouTube List](#chapters---number--youtube-list) · [Titles - Follow Clip Length](#titles---follow-clip-length) · [Titles - Set Size for All](#titles---set-size-for-all)
 - **5 Captions & Voice**: [Captions - Sync Words to VO](#captions---sync-words-to-vo) · [Phone Voice - Selected Clips](#phone-voice---selected-clips)
 - **6 Sound & Music**: [SFX - Import Library](#sfx---import-library) · [Music - Import Library](#music---import-library) · [SFX - Auto Sound for Titles](#sfx---auto-sound-for-titles) · [SFX - Remove Auto Sounds](#sfx---remove-auto-sounds) · [SFX - Land at Playhead](#sfx---land-at-playhead) · [SFX - Loop Fill (In to Out)](#sfx---loop-fill-in-to-out) · [Music - Key Transition](#music---key-transition) · [Distance - Selected Clips](#distance---selected-clips)
 
@@ -329,6 +329,16 @@ the timeline (V3); internet (roads + map tiles).
 Shorts timeline → the map is made in portrait.
 **Problems:** `None of the footage is inside a trip folder` → import from `<trip>\Footage`. Straight lines / few stops →
 add stops in `stops.csv` or a Google Timeline export.
+
+## Route Map - Google Earth Fly-over
+**Use it for:** a real 3D satellite fly-over of your drive (Google Earth Studio), for the whole trip and per chapter.
+**Before:** *Route Map - Build from Timeline* has run for this timeline. Chrome + a Google account for Earth Studio.
+**How:** run it. Takes a minute the first time (terrain heights download).
+**You'll see:** the folder `<trip>\Route Maps\<timeline>\Google Earth\` opens with `.esp` (Earth Studio project) and `.kml`
+(gold road + stop pins) — one pair for the whole trip and one per SPP Route Map title that has *from / to stop* set.
+Then: earth.google.com/studio → Import the `.esp` → Add → KML → Render → image sequence into Resolve. Keep "Google Earth" on
+screen (monetised YouTube is allowed with that credit). Details: `Docs\Maps_GPS_and_Terrain.md` §6a.
+**Again / undo:** run again after changing stops or chapters — files are overwritten.
 
 ## Chapters - Number + YouTube List
 **Use it for:** chapters in the film and on YouTube (the chapter list in the description that splits the progress bar).

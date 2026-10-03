@@ -74,9 +74,24 @@ $py = ".\Tools\.venv\Scripts\python.exe"
 | **Mult.dev** (web + app) | Clean 2D route animations | Free 5 videos (low-res, watermark); one-time Pro packs; GPX/real roads need Pro; no 3D |
 | **MapAnim** (web/app) | 2D/3D route + photos, GPX | Free tier, 4K export |
 | **Blender + BlenderGIS** (PC) | Full-control 3D terrain from real elevation data | Free, steep learning curve |
-| **Google Earth Studio** | Beautiful 3D camera moves | Free, but Google does **not** licence it for commercial use — avoid on a monetised channel |
+| **Google Earth Studio** | Real satellite 3D fly-overs — the kit makes the project for you (§6a) | Free; YouTube videos allowed **even monetised**, with “Google Earth” on screen the whole time (Google geo guidelines). No licence for ads / paid commercial work |
 Recommendation: SPP Route Map for the story map inside the edit (on-brand, editable, free); AvoMap for an occasional
 hero 3D fly-over of Darma/Panchachuli from `route.gpx`.
+
+## 6a. Google Earth fly-over (real 3D satellite view) — made from your route
+**Workspace → Scripts → Safar Pahad Parivar → 4 Titles & Graphics → Route Map - Google Earth Fly-over** (after
+*Route Map - Build from Timeline*). It writes, in `<trip>\Route Maps\<timeline>\Google Earth\`:
+- `SPP Flyover - whole trip.esp` + `.kml` — 30 s, and one 20 s fly-over per chapter for every SPP Route Map title with
+  *from / to stop* set.
+- **.esp** = a Google Earth Studio project: the camera flies along your road, about 3 km behind and 1.5 km above the
+  highest ground around it (terrain-aware, so it never dives into a ridge), looking ahead and down; turns are smoothed.
+- **.kml** = the road as a gold line + stop pins with names.
+
+Then, in Chrome (Google account needed): open **earth.google.com/studio** → **Import** the `.esp` → **Add → KML** the
+`.kml` with the same name → play / adjust keyframes → **Render** (image sequence) → import into Resolve.
+Keep **“Google Earth”** visible on screen for the whole shot (Google's attribution rule; it is burned in by Earth Studio's
+attribution option or add it as text).
+Command line: `Tools\.venv\Scripts\python.exe Tools\spp_earth_studio.py route.json out --from Dharchula --to Dugtu --seconds 25 --height 1200 --behind 2500`.
 
 Sources (checked Sept 2026, vendor sites — confirm current terms): mult.dev/articles/best-travel-map-animation-tools-in-2026,
 travelanimator.com/hub/compare-travel-animator-and-mult-dev, avomap.com, mapanim.com/blog/best-travel-map-animation-apps-and-tools-2026,
