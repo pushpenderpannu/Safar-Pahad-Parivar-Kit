@@ -8,8 +8,8 @@ Writes, for the whole trip or one chapter (from stop -> to stop):
 Earth Studio (earth.google.com/studio, free, Google account, Chrome) then renders it as an image sequence you drop
 into Resolve. Google requires the on-screen credit "Google Earth" while its imagery is shown.
 
-    python spp_earth_studio.py route.json out_folder [--from Dharchula] [--to Dugtu] [--seconds 30] [--fps 30]
-                               [--height 1500] [--behind 3000] [--size 3840x2160]
+    python spp_earth_studio.py route.json out_folder [--from Dharchula] [--to Dugtu] [--seconds 60] [--fps 30]
+                               [--height 4000] [--behind 7000] [--size 3840x2160]
 """
 import argparse, io, json, math, os, re, sys, urllib.request
 
@@ -137,7 +137,7 @@ def segment(R, frm=None, to=None):
 # ------------------------------------------------------------------ camera path
 def camera(pts, n=240, height=1500.0, behind=3000.0):
     path, total = resample(pts, max(n * 3, 50))
-    w = max(3, int(len(path) * min(0.06, 4000.0 / max(total, 1))))      # smooth over ~4 km (bends -> sweeps)
+    w = max(3, int(len(path) * min(0.08, max(4000.0, behind) / max(total, 1))))   # smooth over ~the camera distance
     sm = smooth(path, w)
     tgt, _ = resample(sm, n)
     out = []
@@ -249,7 +249,7 @@ def kml(pts, pins, name):
             % (esc(name), ACCENT_KML, ACCENT_KML, coords, marks))
 
 
-def make(route_json, out_dir, frm=None, to=None, seconds=30.0, fps=30, height=1500.0, behind=3000.0, size="3840x2160",
+def make(route_json, out_dir, frm=None, to=None, seconds=60.0, fps=30, height=4000.0, behind=7000.0, size="3840x2160",
          name=None):
     R = json.load(open(route_json, encoding="utf-8"))
     pts, pins, (a, b) = segment(R, frm, to)
@@ -273,9 +273,9 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("route_json"); ap.add_argument("out_dir")
     ap.add_argument("--from", dest="frm"); ap.add_argument("--to")
-    ap.add_argument("--seconds", type=float, default=30); ap.add_argument("--fps", type=int, default=30)
-    ap.add_argument("--height", type=float, default=1500, help="camera height above the ridges (m)")
-    ap.add_argument("--behind", type=float, default=3000, help="camera distance behind the car (m)")
+    ap.add_argument("--seconds", type=float, default=60); ap.add_argument("--fps", type=int, default=30)
+    ap.add_argument("--height", type=float, default=4000, help="camera height above the ridges (m)")
+    ap.add_argument("--behind", type=float, default=7000, help="camera distance behind the car (m)")
     ap.add_argument("--size", default="3840x2160")
     ap.add_argument("--name")
     a = ap.parse_args()

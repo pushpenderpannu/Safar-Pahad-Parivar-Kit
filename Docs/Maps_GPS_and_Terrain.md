@@ -81,9 +81,9 @@ hero 3D fly-over of Darma/Panchachuli from `route.gpx`.
 ## 6a. Google Earth fly-over (real 3D satellite view) — made from your route
 **Workspace → Scripts → Safar Pahad Parivar → 4 Titles & Graphics → Route Map - Google Earth Fly-over** (after
 *Route Map - Build from Timeline*). It writes, in `<trip>\Route Maps\<timeline>\Google Earth\`:
-- `SPP Flyover - whole trip.esp` + `.kml` — 30 s, and one 20 s fly-over per chapter for every SPP Route Map title with
+- `SPP Flyover - whole trip.esp` + `.kml` — 60 s, and one 40 s fly-over per chapter for every SPP Route Map title with
   *from / to stop* set.
-- **.esp** = a Google Earth Studio project: the camera flies along your road, about 3 km behind and 1.5 km above the
+- **.esp** = a Google Earth Studio project: the camera flies along your road, about 7 km behind and 4 km above the
   highest ground around it (terrain-aware, so it never dives into a ridge), looking ahead and down; turns are smoothed.
 - **.kml** = the road as a gold line + stop pins with names.
 
@@ -91,7 +91,7 @@ Then, in Chrome (Google account needed): open **earth.google.com/studio** → **
 `.kml` with the same name → play / adjust keyframes → **Render** (image sequence) → import into Resolve.
 Keep **“Google Earth”** visible on screen for the whole shot (Google's attribution rule; it is burned in by Earth Studio's
 attribution option or add it as text).
-Command line: `Tools\.venv\Scripts\python.exe Tools\spp_earth_studio.py route.json out --from Dharchula --to Dugtu --seconds 25 --height 1200 --behind 2500`.
+Command line: `Tools\.venv\Scripts\python.exe Tools\spp_earth_studio.py route.json out --from Dharchula --to Dugtu --seconds 90 --height 6000 --behind 10000`.
 
 Sources (checked Sept 2026, vendor sites — confirm current terms): mult.dev/articles/best-travel-map-animation-tools-in-2026,
 travelanimator.com/hub/compare-travel-animator-and-mult-dev, avomap.com, mapanim.com/blog/best-travel-map-animation-apps-and-tools-2026,

@@ -51,13 +51,13 @@ def main():
     print("Making Google Earth Studio fly-overs (a minute or two the first time - terrain heights are downloaded)...")
     if not C.engine_ok():
         return
-    make(rj, out, None, None, 30, fps, size, "SPP Flyover - whole trip")
+    make(rj, out, None, None, 60, fps, size, "SPP Flyover - whole trip")
     seen = set()
     for it, tool, track in C.templates_on(tl, "SPP-Route-Map"):
         a, b = (tool.GetInput("DynParamText15") or "").strip(), (tool.GetInput("DynParamText16") or "").strip()
         if (a or b) and (a, b) not in seen:
             seen.add((a, b))
-            make(rj, out, a, b, 20, fps, size)
+            make(rj, out, a, b, 40, fps, size)
     print("\nNext, in Chrome (Google account needed):")
     print("  1. Open Google Earth Studio, choose 'Import' and pick an .esp from:\n     " + out)
     print("  2. Add > KML > the .kml with the same name (gold road line + stop pins).")
