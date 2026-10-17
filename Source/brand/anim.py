@@ -75,6 +75,7 @@ def render(name, html, w, h, dur, fps=30, anim_until=None, scale=2):
 
 W, H = 1920, 1080
 ONLY235 = "--only-235" in sys.argv          # just the 2.35:1 (cinema bars) versions
+ENDS = "--end-cards" in sys.argv            # just the two end cards (16:9 and 2.35)
 BAR = round((H - W / 2.35) / 2)             # 131 px bars top and bottom at 1080
 
 # ---------------- INTRO (5s) ----------------
@@ -102,7 +103,7 @@ function render(t){
   l.style.opacity=0.85*k2*out; l.style.letterSpacing=(0.8-0.38*k2)+'em';
   document.getElementById('pre').style.opacity=ease(seg(t,3.3,3.8))*out;
 }"""
-if not ONLY235:
+if not ONLY235 and not ENDS:
     render("SPP_Intro_5s_4K", page(intro_body, intro_css, intro_js, W, H), W, H, dur=5.0)   # centred - already fits 2.35 bars
 
 # ---------------- END CARD (15s, animates 2.2s then holds) ----------------
@@ -124,6 +125,11 @@ end_css = f"""#scrim{{position:absolute;inset:0;background:rgba(7,18,43,.82);opa
 #foot{{position:absolute;left:0;right:0;bottom:70px;display:flex;align-items:center;justify-content:center;gap:40px}}
 #ring{{width:200px;height:200px;border-radius:50%;border:3px solid rgba(245,248,252,.55);opacity:0}}
 #brand{{opacity:0}} #markbox{{width:170px}} #handle{{font-family:Pop;font-weight:700;font-size:30px;color:{SNOW};margin-top:8px}}"""
+# channel icon (Graphics\Channel Image.jpg, if present) inside the round frame - same picture as the YouTube channel icon
+_chan = os.path.join(OUT, "Channel Image.jpg")
+if os.path.exists(_chan):
+    end_css += ("#ring{background:url(data:image/jpeg;base64,%s) center/cover no-repeat;border:4px solid rgba(245,248,252,.9);"
+                "box-shadow:0 0 0 2px rgba(244,176,62,.55),0 10px 30px rgba(0,0,0,.45)}" % b64(_chan))
 end_js = """
 function setup(){setupMark();}
 function render(t){
@@ -164,7 +170,8 @@ def wm(w, h, css_pos, name, size=1.0):
         pg.goto("file://" + hp); pg.wait_for_timeout(400); pg.evaluate("setup()")
         pg.screenshot(path=os.path.join(OUT, name + ".png"), omit_background=True); b.close()
     print("watermark", name)
-if not ONLY235:
+if not ONLY235 and not ENDS:
     wm(1920, 1080, "right:52px;bottom:40px", "SPP_Watermark_16x9_4K")
     wm(1080, 1920, "left:50%;top:150px;transform:translateX(-50%)", "SPP_Watermark_Shorts_9x16", size=1.1)
-wm(1920, 1080, f"right:52px;bottom:{BAR + 34}px", "SPP_Watermark_16x9_4K_2.35")
+if not ENDS:
+    wm(1920, 1080, f"right:52px;bottom:{BAR + 34}px", "SPP_Watermark_16x9_4K_2.35")
