@@ -1,7 +1,7 @@
 # Safar Pahad Parivar — Editing Kit (cheat sheet)
 
 **Inside Resolve** (Workspace → Scripts → Safar Pahad Parivar → folder): **1 Setup** (render presets, timelines, brand graphics) ·
-**2 Marking & Moments** (shot tags, moments) · **3 Picture** (reflections) · **4 Titles & Graphics** (GPS fill, route map, chapters) ·
+**2 Marking & Moments** (shot tags, moments) · **3 Picture** (reflections, colour node tree) · **4 Titles & Graphics** (GPS fill, route map, chapters) ·
 **5 Captions & Voice** · **6 Sound & Music** (libraries, auto sounds, loops, key transitions, distance).
 **Outside Resolve** (PowerShell in the kit folder): once per PC `.\install.ps1`, `.\Tools\setup_word_timing.ps1`, `.\Tools\make_sfx.ps1`,
 `.\Tools\make_music.ps1`; per trip `.\Tools\new_video.ps1` and `spp_sort_media.py`. Read: `<trip>\_spp_moments\Moments.md`.
@@ -122,6 +122,12 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - **Reflection - Show Original or Cleaned**: before / after (nothing selected = every cleaned clip).
 - Milky glare: Color page → **ResolveFX Color → DCTL → SPP Glass Glare** on node 1 (amount 0.08–0.12, *Show glare map* to aim).
 - At the shoot: black dash mat · silicone lens hood · lens flat on the glass · CPL filter · dark tops in the front seats.
+
+## 9b. Colour grading: the SPP node tree
+- **Color - Add CST Nodes (by Clip)** → every clip: 01 CST IN · 02 EXPOSURE + WB · 03 CONTRAST · 04 COLOUR + SAT · 05 WINDOW / SKY · 06 CST OUT.
+- Grade only 02–05. Node 03 start: **Pivot ≈ 0.50**, Contrast **1.25–1.35** (8-bit) / **1.35–1.50** (HLG); blacks to 64–100, sky under ~940.
+- Clip grey after an old run → node 06 → *Use Custom Max. Input* 100 (8-bit) / 1000 (HDR). Windscreen glare → *SPP Glass Glare* on a node before 01.
+- Full method: *Color Grading Field Guide*, chapter 5A (measured values) + chapters 6–11.
 
 ## 10. Sound effects (bin *SPP SFX*, 269 sounds / 846 files — `Docs\SFX_Library.md`)
 - Build once: `.\Tools\make_sfx.ps1` → **SFX - Import Library**.

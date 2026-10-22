@@ -12,6 +12,7 @@ Workspace → Scripts → Safar Pahad Parivar
 │                       Moments - Add Markers / Best Moments Timeline / Search Transcript
 ├─ 3 Picture            Reflection - Scan Trip / Clean Selected Clips
 │                       Reflection - Show Original or Cleaned
+│                       Color - Add CST Nodes (by Clip)
 ├─ 4 Titles & Graphics  Info Cards - Fill from GPS · Route Map - Build from Timeline
 │                       Chapters - Number + YouTube List · Titles - Follow Clip Length
 │                       Titles - Set Size for All
@@ -75,6 +76,7 @@ The scripts sit in six folders, in the order you use them while making a video:
 | **3 Picture** | **Reflection - Scan Trip** | trip footage in the project | colours the clips with windshield / window reflections |
 | | **Reflection - Clean Selected Clips** | video clips shot through the glass | removes dashboard / phone reflections → cleaned take on the same clip (background) |
 | | **Reflection - Show Original or Cleaned** | cleaned clips (or none = all) | before / after switch |
+| | **Color - Add CST Nodes (by Clip)** | clips on the timeline | CST IN → 4 grading nodes → CST OUT per clip (HLG / PQ / Rec.709 picked automatically) |
 | **4 Titles & Graphics** | **Info Cards - Fill from GPS** | — (all empty SPP Info Cards) | place, altitude, date, time, weather from the GPS of the shot underneath |
 | | **Route Map - Build from Timeline** | an SPP Route Map clip on the timeline | real-road route, stops, times for the trip |
 | | **Chapters - Number + YouTube List** | SPP Chapter titles on the timeline | numbers the chapters, adds markers, copies the YouTube chapter list |

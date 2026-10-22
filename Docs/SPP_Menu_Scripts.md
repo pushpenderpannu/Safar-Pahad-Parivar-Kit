@@ -9,7 +9,7 @@ changes in Resolve afterwards, how to redo / undo it, and what to do if it doesn
 - [B. Running a script and reading its messages](#b-running-a-script-and-reading-its-messages)
 - **1 Setup**: [Setup Render Presets](#setup-render-presets) · [New Timeline - YouTube 16x9](#new-timeline---youtube-16x9) · [New Timeline - Shorts 9x16](#new-timeline---shorts-9x16) · [Import Brand Graphics](#import-brand-graphics) · [Keyboard Shortcuts - On or Off](#keyboard-shortcuts---on-or-off)
 - **2 Marking & Moments**: [Tag Shot Type 0–9](#tag-shot-type-09) · [Moments - Analyse Trip](#moments---analyse-trip) · [Moments - Add Markers](#moments---add-markers) · [Moments - Best Moments Timeline](#moments---best-moments-timeline) · [Moments - Search Transcript](#moments---search-transcript)
-- **3 Picture**: [Reflection - Scan Trip](#reflection---scan-trip) · [Reflection - Clean Selected Clips](#reflection---clean-selected-clips) · [Reflection - Show Original or Cleaned](#reflection---show-original-or-cleaned) · [SPP Glass Glare](#spp-glass-glare-colour-page-not-a-menu-script)
+- **3 Picture**: [Reflection - Scan Trip](#reflection---scan-trip) · [Reflection - Clean Selected Clips](#reflection---clean-selected-clips) · [Color - Add CST Nodes (by Clip)](#color---add-cst-nodes-by-clip) · [Reflection - Show Original or Cleaned](#reflection---show-original-or-cleaned) · [SPP Glass Glare](#spp-glass-glare-colour-page-not-a-menu-script)
 - **4 Titles & Graphics**: [Info Cards - Fill from GPS](#info-cards---fill-from-gps) · [Route Map - Build from Timeline](#route-map---build-from-timeline) · [Route Map - Google Earth Fly-over](#route-map---google-earth-fly-over) · [Chapters - Number + YouTube List](#chapters---number--youtube-list) · [Titles - Follow Clip Length](#titles---follow-clip-length) · [Titles - Set Size for All](#titles---set-size-for-all)
 - **5 Captions & Voice**: [Captions - Sync Words to VO](#captions---sync-words-to-vo) · [Phone Voice - Selected Clips](#phone-voice---selected-clips)
 - **6 Sound & Music**: [SFX - Import Library](#sfx---import-library) · [Music - Import Library](#music---import-library) · [SFX - Auto Sound for Titles](#sfx---auto-sound-for-titles) · [SFX - Remove Auto Sounds](#sfx---remove-auto-sounds) · [SFX - Land at Playhead](#sfx---land-at-playhead) · [SFX - Loop Fill (In to Out)](#sfx---loop-fill-in-to-out) · [Music - Key Transition](#music---key-transition) · [Distance - Selected Clips](#distance---selected-clips)
@@ -291,6 +291,19 @@ still → *Apply Grade*.
 **You'll see:** deeper blacks and colour in the lower part of the frame; whites stay white.
 **Undo:** switch the node off (Ctrl+D) or delete it.
 **Tip:** on a bad shot use both — *Reflection - Clean Selected Clips* first (removes shapes), then this (removes the veil).
+
+## Color - Add CST Nodes (by Clip)
+**Use it for:** giving every clip on the timeline the same labelled grading node tree in one go, with the right colour-space conversion for each clip.
+**Before:** a timeline with your clips; project colour science **DaVinci YRGB** (not Color Managed — the script stops and tells you).
+**How:** run it → **Add Nodes**. Tick *Replace clips that already have a grade* only for clips you haven't graded (their grade is lost).
+**You'll see:** each clip gets **01 CST IN → 02 EXPOSURE + WB → 03 CONTRAST → 04 COLOUR + SAT → 05 WINDOW / SKY → 06 CST OUT**.
+CST IN is picked per clip: 8-bit phone video = Rec.709 / Gamma 2.4, 10-bit HDR (OnePlus *H.265 Main 10*) = Rec.2020 / Rec.2100 HLG,
+HDR10 = Rec.2100 ST2084 — all into DaVinci Wide Gamut / Intermediate. CST OUT = Rec.709 / **Gamma 2.2** (for YouTube viewing), DaVinci tone mapping
+with custom max. input 100 nits (8-bit) or 1000 nits (HDR). Console: how many clips of each kind.
+Grade in **02–05**, leave 01 and 06 alone. Starting values for this tree: *Color Grading Field Guide*, chapter 5A (Pivot ≈ 0.50, Contrast 1.25–1.35 for 8-bit, 1.35–1.50 for HLG).
+**Again / undo:** run again — graded clips are skipped. Undo with Ctrl+Z, or right-click a clip thumbnail → Reset Grades.
+The node trees are `Resolve\Grades\SPP CST - *.drx` in the kit.
+**Problems:** a clip looks grey/washed after an *older* run → node 06 → *Use Custom Max. Input* → 100 (8-bit) / 1000 (HDR). Shot through the windscreen → add *SPP Glass Glare* on a node **before** 01 (Shift+S).
 
 ---
 
