@@ -9,7 +9,7 @@ changes in Resolve afterwards, how to redo / undo it, and what to do if it doesn
 - [B. Running a script and reading its messages](#b-running-a-script-and-reading-its-messages)
 - **1 Setup**: [Setup Render Presets](#setup-render-presets) · [New Timeline - YouTube 16x9](#new-timeline---youtube-16x9) · [New Timeline - Shorts 9x16](#new-timeline---shorts-9x16) · [Import Brand Graphics](#import-brand-graphics) · [Keyboard Shortcuts - On or Off](#keyboard-shortcuts---on-or-off)
 - **2 Marking & Moments**: [Tag Shot Type 0–9](#tag-shot-type-09) · [Moments - Analyse Trip](#moments---analyse-trip) · [Moments - Add Markers](#moments---add-markers) · [Moments - Best Moments Timeline](#moments---best-moments-timeline) · [Moments - Search Transcript](#moments---search-transcript)
-- **3 Picture**: [Reflection - Scan Trip](#reflection---scan-trip) · [Reflection - Clean Selected Clips](#reflection---clean-selected-clips) · [Color - Add CST Nodes (by Clip)](#color---add-cst-nodes-by-clip) · [Reflection - Show Original or Cleaned](#reflection---show-original-or-cleaned) · [SPP Glass Glare](#spp-glass-glare-colour-page-not-a-menu-script)
+- **3 Picture**: [Reflection - Scan Trip](#reflection---scan-trip) · [Reflection - Clean Selected Clips](#reflection---clean-selected-clips) · [Color - Add CST Nodes (by Clip)](#color---add-cst-nodes-by-clip) · [Render Cache - Whole Timeline](#render-cache---whole-timeline-on-or-off) · [Reflection - Show Original or Cleaned](#reflection---show-original-or-cleaned) · [SPP Glass Glare](#spp-glass-glare-colour-page-not-a-menu-script)
 - **4 Titles & Graphics**: [Info Cards - Fill from GPS](#info-cards---fill-from-gps) · [Route Map - Build from Timeline](#route-map---build-from-timeline) · [Route Map - Google Earth Fly-over](#route-map---google-earth-fly-over) · [Chapters - Number + YouTube List](#chapters---number--youtube-list) · [Titles - Follow Clip Length](#titles---follow-clip-length) · [Titles - Set Size for All](#titles---set-size-for-all)
 - **5 Captions & Voice**: [Captions - Sync Words to VO](#captions---sync-words-to-vo) · [Phone Voice - Selected Clips](#phone-voice---selected-clips)
 - **6 Sound & Music**: [SFX - Import Library](#sfx---import-library) · [Music - Import Library](#music---import-library) · [SFX - Auto Sound for Titles](#sfx---auto-sound-for-titles) · [SFX - Remove Auto Sounds](#sfx---remove-auto-sounds) · [SFX - Land at Playhead](#sfx---land-at-playhead) · [SFX - Loop Fill (In to Out)](#sfx---loop-fill-in-to-out) · [Music - Key Transition](#music---key-transition) · [Distance - Selected Clips](#distance---selected-clips)
@@ -304,6 +304,13 @@ Grade in **02–05**, leave 01 and 06 alone. Starting values for this tree: *Col
 **Again / undo:** run again — graded clips are skipped. Undo with Ctrl+Z, or right-click a clip thumbnail → Reset Grades.
 The node trees are `Resolve\Grades\SPP CST - *.drx` in the kit.
 **Problems:** a clip looks grey/washed after an *older* run → node 06 → *Use Custom Max. Input* → 100 (8-bit) / 1000 (HDR). Shot through the windscreen → add *SPP Glass Glare* on a node **before** 01 (Shift+S).
+
+## Render Cache - Whole Timeline (On or Off)
+**Use it for:** smooth playback of graded clips (CST and other heavy nodes) without right-clicking every clip.
+**How:** run it → every video clip gets *Render Cache Color Output*. Stop playback and leave Resolve idle for a few seconds: the
+red bar above the timeline turns blue as clips are rendered in the background. Run again → off for all clips.
+**Tip:** turn it on when the grade is mostly done; while you keep changing nodes the cache keeps re-rendering. If the project's
+render cache was off, the script sets it to Smart. Old cache files: Playback → Delete Render Cache → All.
 
 ---
 
