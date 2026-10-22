@@ -27,6 +27,9 @@ def build(label, w, h, fps="30"):
     tl.SetSetting("timelineResolutionWidth", str(w))
     tl.SetSetting("timelineResolutionHeight", str(h))
     tl.SetSetting("timelineFrameRate", fps)
+    # square pixels always (a project set to Cinemascope / anamorphic would squeeze phone clips into the middle)
+    tl.SetSetting("timelinePixelAspectRatio", "square")
+    tl.SetSetting("timelineOutputPixelAspectRatio", "square")
     tl.SetSetting("timelineInputResMismatchBehavior", "scaleToCrop" if h > w else "scaleToFit")
     while tl.GetTrackCount("video") < len(VIDEO_TRACKS):
         tl.AddTrack("video")
