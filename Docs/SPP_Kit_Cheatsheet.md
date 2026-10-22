@@ -127,6 +127,8 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - **Color - Add CST Nodes (by Clip)** → every clip: 01 CST IN · 02 EXPOSURE + WB · 03 CONTRAST · 04 COLOUR + SAT · 05 WINDOW / SKY · 06 CST OUT.
 - Grade only 02–05. Node 03 start: **Pivot ≈ 0.50**, Contrast **1.25–1.35** (8-bit) / **1.35–1.50** (HLG); blacks to 64–100, sky under ~940.
 - Clip grey after an old run → node 06 → *Use Custom Max. Input* 100 (8-bit) / 1000 (HDR). Windscreen glare → *SPP Glass Glare* on a node before 01.
+- **Night look** (day for night, Group Post-Clip node): Gain 0.30 / 0.36 / 0.50 · Offset 22.00 / 22.50 / 24.00 · Sat 18 → then window the sky down + vignette. Best on overcast / after-sunset shots. Guide ch. 13A.
+- **Rust & Blue** (orange–teal): Soft = Gain 1.05 / 1.00 / 0.93 + Offset 23.00 / 24.50 / 27.00 · Bold = Gain 1.04 / 1.00 / 0.94 + Offset 22.00 / 24.50 / 28.00. Keep snow white, skin on the line. Guide ch. 13B.
 - Full method: *Color Grading Field Guide*, chapter 5A (measured values) + chapters 6–11.
 
 ## 10. Sound effects (bin *SPP SFX*, 269 sounds / 846 files — `Docs\SFX_Library.md`)
