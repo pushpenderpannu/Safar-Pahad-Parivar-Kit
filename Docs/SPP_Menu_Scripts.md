@@ -307,8 +307,8 @@ The node trees are `Resolve\Grades\SPP CST - *.drx` in the kit.
 
 ## Render Cache - Whole Timeline (On or Off)
 **Use it for:** smooth playback of graded clips (CST and other heavy nodes) without right-clicking every clip.
-**How:** run it → every video clip gets *Render Cache Color Output*. Stop playback and leave Resolve idle for a few seconds: the
-red bar above the timeline turns blue as clips are rendered in the background. Run again → off for all clips.
+**How:** run it → **Turn ON** → every video clip gets *Render Cache Color Output*. Stop playback and leave Resolve idle for a few seconds: the
+red bar above the timeline turns blue as clips are rendered in the background. Run again → **Turn OFF** for all clips.
 **Tip:** turn it on when the grade is mostly done; while you keep changing nodes the cache keeps re-rendering. If the project's
 render cache was off, the script sets it to Smart. Old cache files: Playback → Delete Render Cache → All.
 
