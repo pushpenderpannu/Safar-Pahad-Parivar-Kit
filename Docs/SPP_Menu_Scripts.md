@@ -133,6 +133,13 @@ untouched, and after **+** or **−** the digits still go to Resolve, so *+10 En
 *Preferences → System → General → External scripting using* must be **Local**; log:
 `%LOCALAPPDATA%\Safar Pahad Parivar\hotkeys_log.txt`. Status: `Tools\.venv\Scripts\python.exe Tools\spp_hotkeys.py --status`.
 
+## Media - Tag 8-bit or 10-bit
+**Use it for:** sorting phone footage by type before grading — normal 8-bit video and 10-bit HDR need different handling.
+**How:** run it → choose *All clips in the Media Pool* or *Only the selected clips* → **Tag**. Optionally tick *Also move the clips into bins by type*.
+**You'll see:** each video clip gets a Keyword: **10-bit HDR HLG** (OnePlus *H.265 Main 10*), **10-bit HDR PQ**, **10-bit SDR** or **8-bit SDR**. Console: count per type.
+Sort by the **Keywords** column (Media Pool list view), type *10-bit* in the Media Pool search, or make a Smart Bin (right-click → Add Smart Bin → Keywords contains *10-bit*).
+**Again / undo:** safe to re-run — old SPP tags are replaced, your own keywords stay. Clip colours are not touched (they stay free for shot tags).
+
 ---
 
 # 2 Marking & Moments
