@@ -121,7 +121,9 @@ Script output and progress show in **Workspace → Console**.
 | `<trip>\_spp_clean\reflection_sheet.jpg` · `reflection_report.csv` | clips with reflections (after *Reflection - Scan Trip*) |
 | `<trip>\_spp_clean\<clip>__f….jpg` | before / after / removed picture for each cleaned clip |
 | `Docs\*.mp3` | demo reels: listen before choosing |
-| `Color_Grading_Field_Guide_DaVinci_Resolve.pdf` (kit folder) | the full colour method: scopes, node tree, balance, contrast, look, night, Rust & Blue, HSV saturation, skin |
+| `Docs\Color_Grading_Field_Guide_DaVinci_Resolve.pdf` | the full colour method: scopes, node tree, balance, contrast, look, night, Rust & Blue, HSV saturation, skin |
+| `Docs\Sound_Design_Field_Guide_DaVinci_Resolve.pdf` | sound design method in Fairlight |
+| `Docs\Phone_Master_Shots_OnePlus12.pdf` | how to film with the OnePlus 12 |
 
 ### Optional command-line tools (the menu scripts call these for you)
 `spp_gps.py` (GPS lookup, stops, route, GPX, local API) · `spp_key.py` (find a song's key / make a transition) ·
@@ -590,7 +592,7 @@ frame, the sky, the far view straight ahead.
 - Side windows reflect less than the windshield; an open window reflects nothing (when it's safe).
 
 ## 15f. Colour grading — the SPP node tree
-The full method, with measured values from your own clips, is in **`Color_Grading_Field_Guide_DaVinci_Resolve.pdf`** (kit folder).
+The full method, with measured values from your own clips, is in **`Docs\Color_Grading_Field_Guide_DaVinci_Resolve.pdf`**.
 This is the short version.
 
 1. **Project:** Color science **DaVinci YRGB** (not Color Managed); Timeline and Output colour space **Rec.709 (Scene)**.
