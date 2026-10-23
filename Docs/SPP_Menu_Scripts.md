@@ -7,7 +7,7 @@ changes in Resolve afterwards, how to redo / undo it, and what to do if it doesn
 **Contents**
 - [A. Before any script — a new project the right way](#a-before-any-script--a-new-project-the-right-way)
 - [B. Running a script and reading its messages](#b-running-a-script-and-reading-its-messages)
-- **1 Setup**: [Setup Render Presets](#setup-render-presets) · [New Timeline - YouTube 16x9](#new-timeline---youtube-16x9) · [New Timeline - Shorts 9x16](#new-timeline---shorts-9x16) · [Import Brand Graphics](#import-brand-graphics) · [Keyboard Shortcuts - On or Off](#keyboard-shortcuts---on-or-off)
+- **1 Setup**: [Setup Render Presets](#setup-render-presets) · [New Timeline - YouTube 16x9](#new-timeline---youtube-16x9) · [New Timeline - Shorts 9x16](#new-timeline---shorts-9x16) · [Import Brand Graphics](#import-brand-graphics) · [Keyboard Shortcuts - On or Off](#keyboard-shortcuts---on-or-off) · [Media - Tag 8-bit or 10-bit](#media---tag-8-bit-or-10-bit)
 - **2 Marking & Moments**: [Tag Shot Type 0–9](#tag-shot-type-09) · [Moments - Analyse Trip](#moments---analyse-trip) · [Moments - Add Markers](#moments---add-markers) · [Moments - Best Moments Timeline](#moments---best-moments-timeline) · [Moments - Search Transcript](#moments---search-transcript)
 - **3 Picture**: [Reflection - Scan Trip](#reflection---scan-trip) · [Reflection - Clean Selected Clips](#reflection---clean-selected-clips) · [Color - Add CST Nodes (by Clip)](#color---add-cst-nodes-by-clip) · [Render Cache - Whole Timeline](#render-cache---whole-timeline-on-or-off) · [Reflection - Show Original or Cleaned](#reflection---show-original-or-cleaned) · [SPP Glass Glare](#spp-glass-glare-colour-page-not-a-menu-script)
 - **4 Titles & Graphics**: [Info Cards - Fill from GPS](#info-cards---fill-from-gps) · [Route Map - Build from Timeline](#route-map---build-from-timeline) · [Route Map - Google Earth Fly-over](#route-map---google-earth-fly-over) · [Chapters - Number + YouTube List](#chapters---number--youtube-list) · [Titles - Follow Clip Length](#titles---follow-clip-length) · [Titles - Set Size for All](#titles---set-size-for-all)
@@ -72,7 +72,7 @@ TikTok 1080p presets; Shorts is 1080×1920).
 **How:** run it.
 **You'll see:**
 - A new timeline **SPP YouTube 16x9 - 2026-10-02 1930** (date/time of creation) in the Media Pool, opened on the Edit page.
-- Settings (its own, independent of the project): **3840×2160, 30 fps, scale to fit**.
+- Settings (its own, independent of the project): **3840×2160, 30 fps, square pixels, scale to fit**.
 - Tracks, already named:
 
   | Track | Name | Put here | Scripts that rely on the name |
@@ -91,7 +91,7 @@ but keep the track names **VO** and **SFX …**.
 **Problems:** `Could not create timeline` → a project must be open (not the Project Manager).
 
 ## New Timeline - Shorts 9x16
-Same as above but **1080×1920, 30 fps, scale to crop** (fills the vertical frame), named *SPP Shorts 9x16 - …*.
+Same as above but **1080×1920, 30 fps, square pixels, scale to crop** (fills the vertical frame), named *SPP Shorts 9x16 - …*.
 Use vertical footage from `<trip>\Footage\Vertical`. Route maps made on this timeline come out in portrait automatically.
 
 ## Import Brand Graphics

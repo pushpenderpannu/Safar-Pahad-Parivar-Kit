@@ -7,12 +7,12 @@ Menu scripts live in **Workspace → Scripts → Safar Pahad Parivar**; titles l
 Workspace → Scripts → Safar Pahad Parivar
 ├─ 1 Setup              Setup Render Presets · New Timeline - YouTube 16x9
 │                       New Timeline - Shorts 9x16 · Import Brand Graphics
-│                       Keyboard Shortcuts - On or Off
+│                       Keyboard Shortcuts - On or Off · Media - Tag 8-bit or 10-bit
 ├─ 2 Marking & Moments  Tag Shot Type ▸ 0–9 · Moments - Analyse Trip
 │                       Moments - Add Markers / Best Moments Timeline / Search Transcript
 ├─ 3 Picture            Reflection - Scan Trip / Clean Selected Clips
 │                       Reflection - Show Original or Cleaned
-│                       Color - Add CST Nodes (by Clip)
+│                       Color - Add CST Nodes (by Clip) · Render Cache - Whole Timeline
 ├─ 4 Titles & Graphics  Info Cards - Fill from GPS · Route Map - Build from Timeline
 │                       Chapters - Number + YouTube List · Titles - Follow Clip Length
 │                       Titles - Set Size for All
@@ -47,6 +47,8 @@ Workspace → Scripts → Safar Pahad Parivar
 15c. [Background music](#15c-background-music)
 15d. [Moment finder](#15d-moment-finder)
 15e. [Reflections and glare through the car window](#15e-reflections-and-glare-through-the-car-window)
+15f. [Colour grading — the SPP node tree](#15f-colour-grading--the-spp-node-tree)
+15g. [Smooth playback — proxies and render cache](#15g-smooth-playback--proxies-and-render-cache)
 16. [Render (Deliver)](#16-render-deliver)
 17. [Backup with git](#17-backup-with-git)
 18. [Troubleshooting](#18-troubleshooting)
@@ -70,6 +72,7 @@ The scripts sit in six folders, in the order you use them while making a video:
 | | **New Timeline - YouTube 16x9** / **Shorts 9x16** | — | named tracks (Main, B-Roll, GFX, Nat Sound, VO, Music, SFX, Subtitles) |
 | | **Import Brand Graphics** | — | intro, end card, watermarks into a bin |
 | | **Keyboard Shortcuts - On or Off** | — | number keys 4–0 tag clips; Ctrl+Alt+B / M / S import brand graphics / music / SFX |
+| | **Media - Tag 8-bit or 10-bit** | all or selected Media Pool clips | keyword *10-bit HDR HLG* / *10-bit HDR PQ* / *10-bit SDR* / *8-bit SDR* for sorting (optional bins) |
 | **2 Marking & Moments** | **Tag Shot Type → 0–9** | timeline or media-pool clips | colour + keyword (Hero, Family talk, Scenery, Road, Drone, Timelapse, Kids, Stay/Food, Reject) |
 | | **Moments - Analyse Trip** | trip footage in the project | finds laughter / kids / reactions + Hindi transcript (background) |
 | | **Moments - Add Markers** · **Best Moments Timeline** · **Search Transcript** | — | markers on clips · a selects timeline · a timeline of every clip where a word was said |
@@ -77,6 +80,7 @@ The scripts sit in six folders, in the order you use them while making a video:
 | | **Reflection - Clean Selected Clips** | video clips shot through the glass | removes dashboard / phone reflections → cleaned take on the same clip (background) |
 | | **Reflection - Show Original or Cleaned** | cleaned clips (or none = all) | before / after switch |
 | | **Color - Add CST Nodes (by Clip)** | clips on the timeline | CST IN → 4 grading nodes → CST OUT per clip (HLG / PQ / Rec.709 picked automatically) |
+| | **Render Cache - Whole Timeline (On or Off)** | — | *Render Cache Color Output* on / off for every video clip (smooth playback of graded clips) |
 | **4 Titles & Graphics** | **Info Cards - Fill from GPS** | — (all empty SPP Info Cards) | place, altitude, date, time, weather from the GPS of the shot underneath |
 | | **Route Map - Build from Timeline** | an SPP Route Map clip on the timeline | real-road route, stops, times for the trip |
 | | **Chapters - Number + YouTube List** | SPP Chapter titles on the timeline | numbers the chapters, adds markers, copies the YouTube chapter list |
@@ -117,6 +121,7 @@ Script output and progress show in **Workspace → Console**.
 | `<trip>\_spp_clean\reflection_sheet.jpg` · `reflection_report.csv` | clips with reflections (after *Reflection - Scan Trip*) |
 | `<trip>\_spp_clean\<clip>__f….jpg` | before / after / removed picture for each cleaned clip |
 | `Docs\*.mp3` | demo reels: listen before choosing |
+| `Color_Grading_Field_Guide_DaVinci_Resolve.pdf` (kit folder) | the full colour method: scopes, node tree, balance, contrast, look, night, Rust & Blue, HSV saturation, skin |
 
 ### Optional command-line tools (the menu scripts call these for you)
 `spp_gps.py` (GPS lookup, stops, route, GPX, local API) · `spp_key.py` (find a song's key / make a transition) ·
@@ -125,7 +130,8 @@ Script output and progress show in **Workspace → Console**.
 
 ### A video, start to finish
 1. **PowerShell:** `new_video.ps1` → copy footage into `<trip>\Footage` → `spp_sort_media.py --apply`.
-2. **Resolve:** new project → import footage → **New Timeline** → **Import Brand Graphics** → **Moments - Analyse Trip**
+2. **Resolve:** new project → import footage → **Media - Tag 8-bit or 10-bit** → select all clips → *Generate Proxy Media* →
+   **New Timeline** → **Import Brand Graphics** → **Moments - Analyse Trip**
    (and **Reflection - Scan Trip** if you filmed through the car windows).
 3. Read `Moments.md`; **Moments - Add Markers** / **Best Moments Timeline**; **Tag Shot Type** while you watch.
 4. Edit. Intro → **SPP Film Title** right after it; an **SPP Chapter** card at the start of each chapter.
@@ -134,8 +140,9 @@ Script output and progress show in **Workspace → Console**.
 5. Record the VO onto the **VO** track → subtitles → **Captions - Sync Words to VO**.
 6. Music from *SPP Music* → **Music - Key Transition** where tracks change. **SFX - Auto Sound for Titles**, real sounds from
    folders 20–24 (use **Loop Fill** for beds, **Distance** for far-away sounds, **Land at Playhead** for risers).
-7. Mix (VO recipe, §15) → render with an SPP preset → save to `<video>\Exports`.
-8. **Chapters - Number + YouTube List** → paste the chapter list into the YouTube description.
+7. Grade (§15f): **Color - Add CST Nodes** → nodes 02–05 per clip → SPP Look group → **Render Cache - Whole Timeline** when it's settled.
+8. Mix (VO recipe, §15) → render with an SPP preset → save to `<video>\Exports`.
+9. **Chapters - Number + YouTube List** → paste the chapter list into the YouTube description.
 
 ## 1. One-time setup
 Do this on a new or rebuilt PC (or after pulling kit changes).
@@ -173,6 +180,7 @@ Import the footage, then run **Moments - Analyse Trip** once per trip (it works 
 
 ## 3. New timeline
 **New Timeline - YouTube 16x9** (3840×2160, scale-to-fit) or **New Timeline - Shorts 9x16** (1080×1920, scale-to-crop).
+Both are **30 fps** with **square pixels** (set on the timeline itself, so a project left on 24 fps or *Cinemascope* doesn't matter).
 Every timeline gets the same named tracks:
 
 | Track | Name | Use |
@@ -581,6 +589,39 @@ frame, the sky, the far view straight ahead.
   dimming its brightness.
 - Side windows reflect less than the windshield; an open window reflects nothing (when it's safe).
 
+## 15f. Colour grading — the SPP node tree
+The full method, with measured values from your own clips, is in **`Color_Grading_Field_Guide_DaVinci_Resolve.pdf`** (kit folder).
+This is the short version.
+
+1. **Project:** Color science **DaVinci YRGB** (not Color Managed); Timeline and Output colour space **Rec.709 (Scene)**.
+2. **Color - Add CST Nodes (by Clip)** gives every clip: **01 CST IN → 02 EXPOSURE + WB → 03 CONTRAST → 04 COLOUR + SAT → 05 WINDOW / SKY → 06 CST OUT**.
+   CST IN is picked per clip (8-bit Rec.709 · 10-bit HLG · PQ) into DaVinci Wide Gamut / Intermediate; CST OUT goes to Rec.709 · **Gamma 2.2** (YouTube viewing),
+   with tone mapping custom max. input 100 nits (8-bit) / 1000 nits (HDR). Grade only in **02–05**. Trees: `Resolve\Grades\*.drx`.
+3. **Starting values in the tree (node 03):** Pivot ≈ **0.50**, Contrast **1.25–1.35** (8-bit) / **1.35–1.50** (HLG); blacks to ~64–100, sky under ~940 (Field Guide ch. 5A).
+4. **Shared look** in a colour group (Group Post-Clip, Rec.709): SPP Look (ch. 9–11), or the variations Night look (13A), Rust & Blue (13B), HSV saturation (13C).
+5. **Skin:** a node **07 SKIN** after CST OUT — tracked face window + qualifier → face 430–550 on the waveform → Sat to taste (ch. 13D).
+6. Shot through the windscreen: **SPP Glass Glare** on a node *before* 01 CST IN (Shift+S on node 01).
+
+| Scope target (0–1023) | Where |
+|---|---|
+| Deepest black | just above 0 (20–100), never a flat line |
+| Faces (daylight) | 430–550 for our family |
+| Clouds, snow, white cars | 800–950, still textured |
+| Only tiny spots | may touch 1023 |
+
+## 15g. Smooth playback — proxies and render cache
+4K H.265 10-bit HDR phone files are the hardest thing for Resolve to play, and the CST nodes add work on top.
+
+| Do | Where | When |
+|---|---|---|
+| **Generate Proxy Media** (Half, ProRes 422 Proxy) | Media Pool → select clips → right-click | after every import |
+| **Prefer Proxies** · **Timeline Proxy Resolution → Half** | Playback menu | once per project |
+| Decode with **Intel Quick Sync + NVIDIA** | Preferences → System → Decode Options | once per PC |
+| Render cache format **ProRes 422 HQ** (not Uncompressed) | Project Settings → Master Settings | once per project |
+| **Render Cache - Whole Timeline → Turn ON** | 3 Picture menu script | when the grade is settled |
+
+Red node numbers on the Color page = *waiting to be cached*, blue = cached. Leave Resolve idle a few seconds and they turn blue.
+
 ## 16. Render (Deliver)
 Pick a preset: **SPP YouTube 4K**, **SPP YouTube 1080p**, **SPP Shorts 9x16**.
 
@@ -619,4 +660,9 @@ Save the final file into `<video>\Exports`. Then *File → Export Project* (.drp
 | Reflection cleaning darkened the landscape / blotches | Run **Reflection - Clean Selected Clips** again with *Gentle*, or switch that clip back with *Show Original or Cleaned*. |
 | Cleaned take is shorter than the clip after trimming | Run **Reflection - Clean Selected Clips** again — it cleans the new range. |
 | No *SPP Glass Glare* in the DCTL list | Run `.\install.ps1` (as administrator if it says it couldn't copy), restart Resolve. DCTL needs Resolve Studio. |
+| Picture squeezed / waveform only in the middle third | Timeline *Pixel aspect ratio* is Cinemascope — Timeline → Timeline Settings → Format → **Square** (new SPP timelines are square). |
+| Clips look grey / washed after **Color - Add CST Nodes** | Old node tree: node 06 → *Use Custom Max. Input* → 100 (8-bit) / 1000 (HDR); or re-run the script with *Replace* on ungraded clips. |
+| Playback stutters after adding the colour nodes | No proxies — Generate Proxy Media; Playback → Timeline Proxy Resolution → Half (§15g). |
+| Red numbers on colour nodes | Render cache waiting — not an error; turns blue when cached (§15g). |
+| Script says "uses Resolve Color Management" | Project Settings → Color Management → Color science **DaVinci YRGB**. |
 | A sound is missing in the bin after a rebuild | Run **SFX - Import Library** / **Music - Import Library** again (only new files are added). |
