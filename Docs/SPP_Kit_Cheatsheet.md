@@ -129,6 +129,8 @@ spoken, trims the silences, marks words you stress (louder / stretched), and fil
 - Clip grey after an old run → node 06 → *Use Custom Max. Input* 100 (8-bit) / 1000 (HDR). Windscreen glare → *SPP Glass Glare* on a node before 01.
 - **Night look** (day for night, Group Post-Clip node): Gain 0.30 / 0.36 / 0.50 · Offset 22.00 / 22.50 / 24.00 · Sat 18 → then window the sky down + vignette. Best on overcast / after-sunset shots. Guide ch. 13A.
 - **Rust & Blue** (orange–teal): Soft = Gain 1.05 / 1.00 / 0.93 + Offset 23.00 / 24.50 / 27.00 · Bold = Gain 1.04 / 1.00 / 0.94 + Offset 22.00 / 24.50 / 28.00. Keep snow white, skin on the line. Guide ch. 13B.
+- **HSV saturation** (node → Color Space HSV, channels 1 + 3 off): soft knee on the G curve = colour limiter; Contrast 0.80 / pivot 0.30 = even palette. Lowering sat this way brightens a little — check the waveform. Guide ch. 13C.
+- **Skin**: node 07 SKIN after CST OUT → face window + track → qualifier → Gamma to face 430–550 → Sat 44–47 (muddy) / 54–58 (pale) → check skin line. Guide ch. 13D.
 - Full method: *Color Grading Field Guide*, chapter 5A (measured values) + chapters 6–11.
 
 ## 10. Sound effects (bin *SPP SFX*, 269 sounds / 846 files — `Docs\SFX_Library.md`)
