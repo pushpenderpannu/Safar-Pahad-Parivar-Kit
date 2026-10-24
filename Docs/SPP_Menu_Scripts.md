@@ -307,7 +307,7 @@ still → *Apply Grade*.
 CST IN is picked per clip: 8-bit phone video = Rec.709 / Gamma 2.4, 10-bit HDR (OnePlus *H.265 Main 10*) = Rec.2020 / Rec.2100 HLG,
 HDR10 = Rec.2100 ST2084 — all into DaVinci Wide Gamut / Intermediate. CST OUT = Rec.709 / **Gamma 2.2** (for YouTube viewing), DaVinci tone mapping
 with custom max. input 100 nits (8-bit) or 1000 nits (HDR). Console: how many clips of each kind.
-Grade in **02–05**, leave 01 and 06 alone. Starting values for this tree: *Color Grading Field Guide*, chapter 5A (Pivot ≈ 0.50, Contrast 1.25–1.35 for 8-bit, 1.35–1.50 for HLG).
+Grade in **02–05**. Nodes **01 and 06 are locked** (padlock icon) so a stray click can't change them — right-click → *Lock Node* to unlock one on purpose. Starting values for this tree: *Color Grading Field Guide*, chapter 5A (Pivot ≈ 0.50, Contrast 1.25–1.35 for 8-bit, 1.35–1.50 for HLG).
 **Again / undo:** run again — graded clips are skipped. Undo with Ctrl+Z, or right-click a clip thumbnail → Reset Grades.
 The node trees are `Resolve\Grades\SPP CST - *.drx` in the kit.
 **Problems:** a clip looks grey/washed after an *older* run → node 06 → *Use Custom Max. Input* → 100 (8-bit) / 1000 (HDR). Shot through the windscreen → add *SPP Glass Glare* on a node **before** 01 (Shift+S).

@@ -598,7 +598,7 @@ This is the short version.
 1. **Project:** Color science **DaVinci YRGB** (not Color Managed); Timeline and Output colour space **Rec.709 (Scene)**.
 2. **Color - Add CST Nodes (by Clip)** gives every clip: **01 CST IN → 02 EXPOSURE + WB → 03 CONTRAST → 04 COLOUR + SAT → 05 WINDOW / SKY → 06 CST OUT**.
    CST IN is picked per clip (8-bit Rec.709 · 10-bit HLG · PQ) into DaVinci Wide Gamut / Intermediate; CST OUT goes to Rec.709 · **Gamma 2.2** (YouTube viewing),
-   with tone mapping custom max. input 100 nits (8-bit) / 1000 nits (HDR). Grade only in **02–05**. Trees: `Resolve\Grades\*.drx`.
+   with tone mapping custom max. input 100 nits (8-bit) / 1000 nits (HDR). Grade only in **02–05**; 01 and 06 arrive **locked** (right-click → *Lock Node* to unlock). Trees: `Resolve\Grades\*.drx`.
 3. **Starting values in the tree (node 03):** Pivot ≈ **0.50**, Contrast **1.25–1.35** (8-bit) / **1.35–1.50** (HLG); blacks to ~64–100, sky under ~940 (Field Guide ch. 5A).
 4. **Shared look** in a colour group (Group Post-Clip, Rec.709): SPP Look (ch. 9–11), or the variations Night look (13A), Rust & Blue (13B), HSV saturation (13C).
 5. **Skin:** a node **07 SKIN** after CST OUT — tracked face window + qualifier → face 430–550 on the waveform → Sat to taste (ch. 13D).

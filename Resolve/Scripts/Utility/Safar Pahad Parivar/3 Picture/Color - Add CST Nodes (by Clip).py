@@ -5,7 +5,8 @@
 #   HDR10 (PQ)                                       -> Rec.2020 / Rec.2100 ST2084 -> DWG / Intermediate
 #   normal 8-bit video (H.265 Main / H.264)         -> Rec.709 / Gamma 2.4       -> DWG / Intermediate
 # CST OUT is always DWG / Intermediate -> Rec.709 Gamma 2.4 (DaVinci tone mapping + saturation compression).
-# Grade in nodes 02-05; leave 01 and 06 alone. Clips that already have a grade are skipped unless you tick 'Replace'.
+# Grade in nodes 02-05. Nodes 01 and 06 arrive LOCKED (padlock icon) so they can't be changed by accident;
+# to change one on purpose: right-click it -> Lock Node (unlocks). Clips that already have a grade are skipped unless you tick 'Replace'.
 # The node trees are in <kit>\Resolve\Grades\*.drx.
 import os, sys, shutil, subprocess
 try:
@@ -131,7 +132,7 @@ def main():
         print("Could not apply to: " + ", ".join(failed[:10]))
     if not counts and not skipped and not failed:
         print("No video clips on this timeline.")
-    print("Grade in nodes 02-05. Leave 01 CST IN and 06 CST OUT as they are.")
+    print("Grade in nodes 02-05. 01 CST IN and 06 CST OUT are locked (right-click -> Lock Node to unlock).")
 
 
 main()
